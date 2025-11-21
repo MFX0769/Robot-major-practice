@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "fdcan.h": "c",
+        "prot_rm_motor.h": "c"
+    }
+}
