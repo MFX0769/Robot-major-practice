@@ -1,0 +1,89 @@
+# ============================================================================
+# 1. 通用可执行 / 临时文件
+# ============================================================================
+*.exe
+*.obj
+*.bin
+*.hex
+*.elf
+*.out
+*.lib
+*.a
+*.map
+*.lst
+*.o
+*.d
+*.dep
+*.crf
+*.htm
+*.iex
+*.lnp
+*.sct
+*.Bak
+*.bac
+*.tmp
+*.ini
+*.log
+*.TXT
+sys_log.txt
+Thumbs.db
+desktop.ini
+
+# ============================================================================
+# 2. 工具链 & IDE
+# ============================================================================
+
+## 2.1 Keil
+MDK-ARM/Debug/
+MDK-ARM/Listings/
+MDK-ARM/Objects/
+*.uvguix.*
+*.uvopt
+*.uvoptx
+*.dbgconf
+# 保留工程文件
+!MDK-ARM/*.uvprojx
+!MDK-ARM/*.uvoptx
+!MDK-ARM/startup_*.s
+!arm_cortexM4lf_math.lib
+
+## 2.2 STM32CubeMX / CubeIDE
+*.ioc.backup
+.mxproject
+.cproject
+.project
+.launch
+*.txt.user
+
+## 2.3 VS Code
+.vscode/*
+!.vscode/c_cpp_properties.json   # 如团队统一配置可去掉感叹号
+!.vscode/launch.json
+.vscode/ipch/
+.vscode/*.log
+.vscode/browse.vc.db
+*.code-workspace
+
+## 2.4 CLion / CMake
+cmake-build-*/
+.idea/
+CMakeLists.txt.user
+CMakeCache.txt
+cmake_install.cmake
+Makefile.cmake
+
+# ============================================================================
+# 3. 调试 / 下载器
+# ============================================================================
+JLinkLog.txt
+JLinkSettings.ini
+*.jlink
+*.cfg.user
+EventRecorderStub.scvd
+
+# ============================================================================
+# 4. 项目专属（示例，可按需打开）
+# ============================================================================
+# Template4MSVC_WIN32/Debug/
+# Template4MSVC_WIN32/.vs/
+# *.db

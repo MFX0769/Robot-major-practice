@@ -1,0 +1,395 @@
+#include "mode_switch_task.h"
+#include "gimbal_task.h"
+#include "shoot_task.h"
+#include "can_comm.h"
+#include "control_def.h"
+#include "prot_TriggerMotor.h"
+#include "remote_msg.h"
+#include "cmsis_os.h"
+#include "prot_vision.h"
+#include "status_task.h"
+#include "prot_rm_judge.h"
+     
+
+static void unlock_init(void);
+static void sw1_mode_handler(void);
+static void rc_abnormal_proess(void);
+ 
+/* 系统状态机 */
+ctrl_mode_e ctrl_mode;
+
+/* 视觉状态机 */
+vision_mode_e vision_mode;
+
+/*遥控器上一次的数据——用于一些边沿检测*/
+//static uint8_t new_rc_last_pause=0;
+/* 解锁标志 */
+uint8_t lock_flag = 0;
+
+/*遥控器失联切图传标志位*/
+uint8_t RC_FAIL_KEYBOARD_FLAG;
+
+/* PIT锁死开关 */
+_gimbal_ctrl_ gimbal_ctrl_mode;
+
+/* 系统模式切换任务函数 */
+void mode_switch_task(void const *argu)
+{
+	ctrl_mode   = PROTECT_MODE;
+  lock_flag = 0;
+	RC_FAIL_KEYBOARD_FLAG=0;
+	
+    for(;;)
+    {
+//			if( Game_State.game_progress != 0)
+//				lock_flag = 1;
+			
+////			#if NEW_RC
+//			if(remote_online.NEW_OLD_RC_FLAG == 1)
+//			{				
+//				new_rc_safe_lock();
+//				
+//        if( !lock_flag  )
+//				{
+//            new_rc_unlock_init();  //解锁操作
+//				}
+
+//        else if( status.remote)//如果测拨盘则删掉imu检测
+//        {
+//            new_rc_mode_handler();  //根据左拨杆切换系统模式
+//        }
+//        else
+//				{
+//					new_rc_abnormal_proess();  //遥控器失联处理
+//				}
+////			#else
+//			}
+			
+//			else if(remote_online.NEW_OLD_RC_FLAG == 0)
+//			{
+				 if( !lock_flag  )
+				{
+            unlock_init();  //解锁操作
+				}
+				
+				
+        if( status.remote)//如果测拨盘则删掉imu检测
+        {
+            sw1_mode_handler();  //根据左拨杆切换系统模式
+        }
+        else
+				{
+            rc_abnormal_proess();  //遥控器失联处理
+				}
+//				#endif
+//			}
+				
+				wdg_user_set_bit(WDG_BIT_TASK_MODES);
+        osDelay(5);				
+    }
+}
+
+
+
+/* 遥控器失联处理函数 */
+static void rc_abnormal_proess(void)
+{
+
+	  if(status.remote)
+		{
+			return;//遥控器优先级最高，如果有遥控器，就无键盘解锁
+		}
+    RC_FAIL_KEYBOARD_FLAG=1;
+
+		rc.mouse.x=Remote_Control.mouse_x;
+		rc.mouse.y=Remote_Control.mouse_y;
+		rc.mouse.z=Remote_Control.mouse_z;
+		rc.mouse.l=Remote_Control.left_button_down;
+		rc.mouse.r=Remote_Control.right_button_down;
+		 
+		rc.kb.key_code=Remote_Control.keyboard_value;
+		
+//		
+//	shoot.firc_mode = FIRC_MODE_RUN;  //保持开启摩擦轮
+//	shoot.stir_mode = STIR_MODE_SERIES;
+//										
+//										
+//		if(rc.mouse.r)
+//		{
+//	  ctrl_mode=VISION_MODE;
+//		}
+//		else 
+//		{
+//	  ctrl_mode=KEYBOARD_MODE;
+//		}
+		
+	 Rc_Fail_mode_handler();
+
+
+}
+
+/* 系统模式切换函数 */
+uint8_t vision_flag;
+ctrl_mode_e last_vision_flag ;
+
+/*===============================================旧遥控（DT7）代码开始===========================*/
+static void sw1_mode_handler(void)  //由拨杆1决定系统模式切换，主要是云台、底盘和发射器
+{
+	last_vision_flag = ctrl_mode;
+    switch( rc.sw1 )
+    {
+			
+			
+        case RC_UP:
+        {
+						if( rc.ch4 <= -600 )//左拨杆下拨//普通自瞄
+						{
+							ctrl_mode = VISION_MODE;
+											vision_mode = vMODE_AUTO;
+						}
+
+						else
+						{
+										ctrl_mode = REMOTER_MODE;  //回中//遥控模式
+						}
+ 
+        }
+        break;
+				
+				
+        case RC_MI:
+        {
+            ctrl_mode = PROTECT_MODE;
+            		   
+        }
+        break;
+				
+				
+        case RC_DN:
+        {
+
+						if( rc.mouse.r == 1 )  //鼠标右键按住开视觉
+						{
+							ctrl_mode = VISION_MODE;
+						}
+						else
+						{
+								ctrl_mode = KEYBOARD_MODE;  //键盘模式
+								vision_mode = vMODE_AUTO;
+						}			
+        }
+        break;
+        default: break;
+	}
+		
+	
+	
+}
+
+
+	
+	
+
+
+//2025年5月16日添加 用于将图传链路的解锁相关操作适配进来，这是我目前能想到的快速完美兼容图传链路的最好方法
+void Rc_Fail_mode_handler(void)  //由拨杆1决定系统模式切换，主要是云台、底盘和发射器
+{
+if(rc.kb.bit.CTRL)	//防止误触，要按住CTRL才进入键盘切换ctrl mode功能
+{
+	     if(rc.kb.bit.R)// r for remote 但其实键盘切换模式是遥控器失联的时候才用的，所以这里其实没意义，仅保留
+        {
+						if( rc.ch4 <= -600 )//左拨杆下拨//普通自瞄
+						{
+							ctrl_mode = VISION_MODE;
+											vision_mode = vMODE_AUTO;
+						}
+
+						else
+						{
+										ctrl_mode = REMOTER_MODE;  //回中//遥控模式
+						}
+ 
+        }
+				
+				
+	     if(rc.kb.bit.S)//s for safe=protect
+        {
+            ctrl_mode = PROTECT_MODE;          		   
+        }
+				
+				
+	     if(rc.kb.bit.B)//b for keyboard
+        {
+
+						if( rc.mouse.r == 1 )  //鼠标右键按住开视觉
+						{
+							ctrl_mode = VISION_MODE;
+						}
+						else
+						{
+								ctrl_mode = KEYBOARD_MODE;  //键盘模式
+								vision_mode = vMODE_AUTO;
+						}			
+        }
+}
+}
+
+
+
+/* 解锁函数 */
+static void unlock_init(void)
+{
+    if( rc.sw1 == RC_MI && rc.sw2 == RC_UP )//左拨杆居中，右拨杆置上
+    {
+        if( rc.ch4 <= -600 && rc.ch3 >= 600 && rc.ch1 <= -600 && rc.ch2 <= -600 )
+        {
+            lock_flag = 1;  //内八
+        }
+		else  if( rc.ch4 >= 600 && rc.ch3 <= -600 && rc.ch1 >= 600 && rc.ch2 >= 600 )
+        {
+            lock_flag = 2;
+			
+        }
+    }
+		
+		/*2025年5月16日添加  遥控器断联时，若没有新遥控的控制逻辑，又没有裁判系统键鼠数据的话，没办法控制lock_flag。 所以，裁判系统键鼠数据，必须，同样能实现遥控器的逻辑*/
+		else if( rc.kb.bit.Q  )//Q 和 E同时按 相当于遥控器内八	  &&rc.kb.bit.E		
+		{
+            lock_flag = 1;  //内八
+		}
+		/**/
+	
+}
+/*===============================================旧遥控（DT7）代码结束===========================*/
+
+
+
+///*===============================================新遥控（N3）代码开始===========================*/
+//void new_rc_mode_handler(void)  //由拨杆1决定系统模式切换，主要是云台、底盘和发射器
+//{
+//	  last_vision_flag = ctrl_mode;
+//	
+//    switch( new_rc.mode_sw )
+//    {
+//			
+//		  case RC_MODE_C://最左边
+//			{
+//					ctrl_mode = PROTECT_MODE;							 
+//			}
+//			break;
+//				
+//			case RC_MODE_N://中间 遥控模式
+//			{
+//					if( new_rc.ch_2 <= -660 )//左拨杆下拨//自瞄
+//					{
+//						ctrl_mode = VISION_MODE;
+//						vision_mode = vMODE_AUTO;
+//					}				
+//					else
+//					{
+//						ctrl_mode = REMOTER_MODE;  //回中//遥控模式
+//					}			 
+//			}break;
+//       
+//			case RC_MODE_S://最右边 键鼠模式
+//			{
+//				if( new_rc.mouse_right == 1 )  //鼠标右键按住开视觉//默认自瞄无预测
+//				{
+//					  ctrl_mode = VISION_MODE;
+//				}
+//				else
+//				{
+//						ctrl_mode = KEYBOARD_MODE;  //键盘模式
+//						vision_mode = vMODE_AUTO;
+//				}			
+//      }break;
+//			
+//      default: break;
+//	  }
+//		
+//		if((last_vision_flag == VISION_MODE)&&(ctrl_mode != VISION_MODE))
+//		{	
+//			vision_flag = 1;
+//		}
+
+//}
+
+///* 解锁函数 */
+//void new_rc_unlock_init(void)
+//{
+//	ctrl_mode = PROTECT_MODE;	//如果出不去这个函数，就一直PROTECT_MODE;	
+//	
+//    if(new_rc.mode_sw == RC_MODE_C)//模式切换开关打到最左边 保护模式
+//    {
+//        if( new_rc.ch_0 == -660 && new_rc.ch_3 == 660 && new_rc.ch_1 == -660 && new_rc.ch_2 == -660 )
+//        {
+//            lock_flag = 1;  //内八
+//        }
+//        else if( new_rc.ch_0 == 660 && new_rc.ch_3 == -660 && new_rc.ch_1 == -660 && new_rc.ch_2 == -660 )
+//        {
+//            lock_flag = 2;			
+//        }
+//    }
+
+//		/*2025年5月16日添加  遥控器断联时，若没有新遥控的控制逻辑，又没有裁判系统键鼠数据的话，没办法控制lock_flag。 所以，裁判系统键鼠数据，必须，同样能实现遥控器的逻辑*/
+//		else if( rc.kb.bit.Q  )//Q 和 E同时按 相当于遥控器内八	  &&rc.kb.bit.E		
+//		{
+//            lock_flag = 1;  //内八
+//		}
+//		/**/
+//}
+
+///* 遥控器失联处理函数 */
+//void new_rc_abnormal_proess(void)
+//{
+
+////	  if(status.remote)
+////		{
+////			return;//遥控器优先级最高，如果有遥控器，就无键盘解锁
+////		}
+////    RC_FAIL_KEYBOARD_FLAG=1;
+
+////		rc.mouse.x=Remote_Control.mouse_x;
+////		rc.mouse.y=Remote_Control.mouse_y;
+////		rc.mouse.z=Remote_Control.mouse_z;
+////		rc.mouse.l=Remote_Control.left_button_down;
+////		rc.mouse.r=Remote_Control.right_button_down;
+////		 
+////		rc.kb.key_code=Remote_Control.keyboard_value;
+////		
+//////		
+//////	shoot.firc_mode = FIRC_MODE_RUN;  //保持开启摩擦轮
+//////	shoot.stir_mode = STIR_MODE_SERIES;
+//////										
+//////										
+//////		if(rc.mouse.r)
+//////		{
+//////	  ctrl_mode=VISION_MODE;
+//////		}
+//////		else 
+//////		{
+//////	  ctrl_mode=KEYBOARD_MODE;
+//////		}
+////		
+////	 Rc_Fail_mode_handler();
+
+//	  ctrl_mode=PROTECT_MODE;
+
+//}
+
+
+///* 遥控器紧急进保护 */
+//void new_rc_safe_lock(void)
+//{			
+//		
+//	  if( new_rc_last_pause==0 && new_rc.pause==1)//暂停按键被按下
+//		{
+//	     ctrl_mode=PROTECT_MODE;
+//			 lock_flag=0;//需要重新解锁		 
+//		}
+
+
+//	  new_rc_last_pause=new_rc.pause;
+//}
+
+/*===============================================新遥控（N3）代码结束===========================*/
