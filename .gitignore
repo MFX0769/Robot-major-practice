@@ -1,49 +1,46 @@
-# ========== Keil 编译输出 ==========
-MDK-ARM/*.o
-MDK-ARM/*.d
-MDK-ARM/*.crf
-MDK-ARM/*.iex
-MDK-ARM/*.lst
-MDK-ARM/*.map
-MDK-ARM/*.dep
-MDK-ARM/*.axf
-MDK-ARM/*.bin
-MDK-ARM/*.hex
-MDK-ARM/*.elf
-MDK-ARM/*.lib
-MDK-ARM/*.ini
-MDK-ARM/*.htm
-MDK-ARM/*.build_log.htm
+# ========== Keil MDK-ARM 编译输出 ==========
+MDK-ARM/**/*.o
+MDK-ARM/**/*.d
+MDK-ARM/**/*.crf
+MDK-ARM/**/*.iex
+MDK-ARM/**/*.lst
+MDK-ARM/**/*.map
+MDK-ARM/**/*.dep
+MDK-ARM/**/*.axf
+MDK-ARM/**/*.lib
+MDK-ARM/**/*.ini
+MDK-ARM/**/*.htm
+MDK-ARM/**/*.build_log.htm
 MDK-ARM/DebugConfig/
+# 发布文件（只保留 .elf 调试，.hex/.bin 忽略）
+MDK-ARM/**/*.hex
+MDK-ARM/**/*.bin
 
-# ========== CubeMX 临时 ==========
-.mxproject
+# ========== CubeMX 重定向文件（不需要） ==========
 Core/Src/syscalls.c
 Core/Src/sysmem.c
 Core/Src/Retarget_IO.c
 
-# ========== VS Code 临时 ==========
-.vscode/*.log
-.vscode/ipch/
-.vscode/*.cache
-*.code-workspace
-# 如果希望统一调试配置，取消下行注释
-#!.vscode/settings.json
-#!.vscode/tasks.json
-#!.vscode/launch.json
-
-# ========== FreeRTOS / USB 跟踪文件 ==========
-*.trace
-*.dump
-
-# ========== 硬件资料只留源文件 ==========
-hardware/*.zip
-hardware/*.rar
-hardware/Cache/
-
-# ========== 系统垃圾 ==========
-.DS_Store
-Thumbs.db
+# ========== CubeMX 临时 ==========
+.mxproject
 *.tmp
 *.bak
-*.cache
+*.log
+
+# ========== VS Code 缓存 ==========
+.vscode/*.log
+.vscode/ipch
+.vscode/*.cache
+*.code-workspace
+
+# ========== J-Link / ST-Link 日志 ==========
+*.log
+*.jlink
+*.dbg
+*.ini
+
+# ========== hardware 只留图片 ==========
+hardware/*
+!hardware/*.png
+!hardware/*.jpg
+!
