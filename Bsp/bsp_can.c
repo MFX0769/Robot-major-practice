@@ -205,6 +205,8 @@ HAL_StatusTypeDef can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_
     else if (can_periph == CAN_CHANNEL_3)
 		return HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan3, &tx_message, data);
 	return HAL_ERROR;
+
+    //测试2025年11月21日
 }
 
 
