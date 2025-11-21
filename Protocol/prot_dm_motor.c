@@ -57,7 +57,7 @@ void dm_set_cmd(dm_motor_t *motor,uint8_t cmd)
 		}break;
 		default:return;
 	}
-	can_std_transmit(motor->can_channel,motor->can_send_id,buf);
+	bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf);
 }
 /*
 * @brief    	达妙电机MIT参数设置
@@ -144,7 +144,7 @@ void dm_mit_control(dm_motor_t *motor)
 	buf[6] = ((kd_tmp&0xF)<<4)|(t_tmp>>8);
 	buf[7] = t_tmp;
 	
-	if(can_std_transmit(motor->can_channel,motor->can_send_id,buf) == HAL_OK)
+	if(bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf) == HAL_OK)
 	{
 		motor->send_cnt++;
 		motor->online = 0;

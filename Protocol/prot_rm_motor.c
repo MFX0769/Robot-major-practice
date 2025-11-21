@@ -10,7 +10,7 @@
 #define TORQUE_CONSTANT 2
 #define REDUCTION_RATIO 3
 
-// È«¾Ö±äÁ¿¶¨Òå
+// È«ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 dji_motor_t fric_motor[2];
 dji_motor_t pit_motor, yaw_motor;
 dji_motor_t trigger_motor;
@@ -19,19 +19,19 @@ can_std_msg_t motor_msg[CAN_CHANNEL_NUM][5];
 
 static const float motor_para_table[3][4] =
 {
-    //·¢ËÍÊý¾Ý·¶Î§            ·¢ËÍÊý¾ÝËù´ú±íµÄÎïÀíÁ¿·¶Î§       Á¦¾Ø³£Êý                        µç»úÄ¬ÈÏ¼õËÙ±È
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½Î§            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§       ï¿½ï¿½ï¿½Ø³ï¿½ï¿½ï¿½                        ï¿½ï¿½ï¿½Ä¬ï¿½Ï¼ï¿½ï¿½Ù±ï¿½
     {DJI_2006_MOTOR_DATA_RANGE, DJI_2006_MOTOR_CURRENT_RANGE, DJI_2006_MOTOR_TORQUE_CONSTANT, DJI_2006_ORIGINAL_REDUCTION_RATIO},
     {DJI_3508_MOTOR_DATA_RANGE, DJI_3508_MOTOR_CURRENT_RANGE, DJI_3508_MOTOR_TORQUE_CONSTANT, DJI_3508_ORIGINAL_REDUCTION_RATIO},
     {DJI_6020_MOTOR_DATA_RANGE, DJI_6020_MOTOR_CURRENT_RANGE, DJI_6020_MOTOR_TORQUE_CONSTANT, DJI_6020_ORIGINAL_REDUCTION_RATIO},
 };
 
 /*
- * @brief     ´ó½®µç»ú³õÊ¼»¯ÉèÖÃ
- * @param[in] motor          : µç»úÊý¾Ý½á¹¹Ìå
- * @param[in] motor_type     : µç»úÀàÐÍ
- * @param[in] can_channel    : µç»úËùÔÚcanÍ¨µÀ
- * @param[in] id             : µç»úid
- * @param[in] reduction_ratio: µç»úÊµ¼Ê¼õËÙ±È
+ * @brief     ï¿½ó½®µï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] motor          : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+ * @param[in] motor_type     : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] can_channel    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½canÍ¨ï¿½ï¿½
+ * @param[in] id             : ï¿½ï¿½ï¿½id
+ * @param[in] reduction_ratio: ï¿½ï¿½ï¿½Êµï¿½Ê¼ï¿½ï¿½Ù±ï¿½
  * @retval    void
  */
 void dji_motor_init(dji_motor_t *motor, uint8_t motor_type, can_channel_e can_channel, uint32_t id, float reduction_ratio)
@@ -43,9 +43,9 @@ void dji_motor_init(dji_motor_t *motor, uint8_t motor_type, can_channel_e can_ch
 }
 
 /*
- * @brief     ½ÓÊÕ´ó½®µç»úÊý¾Ý£¬²¢»¯Îª¹ú¼Êµ¥Î»
- * @param[in] motor: µç»úÊý¾Ý½á¹¹Ìå
- * @param[in] data : Êý¾ÝÖ¸Õë
+ * @brief     ï¿½ï¿½ï¿½Õ´ó½®µï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Êµï¿½Î»
+ * @param[in] motor: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+ * @param[in] data : ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
  * @retval    void
  */
 void dji_motor_get_single_data(dji_motor_t * motor, uint8_t *data)
@@ -92,16 +92,16 @@ void get_moto_offset(dji_motor_t * ptr, FDCAN_HandleTypeDef* hcan, uint8_t * CAN
 }
 
 /*
- * @brief     ÉèÖÃµç»ú×ª¾Ø
- * @param[in] motor: µç»úÊý¾Ý½á¹¹Ìå
- * @param[in] t    : Ä¿±ê×ª¾Ø£¨N*m£©
+ * @brief     ï¿½ï¿½ï¿½Ãµï¿½ï¿½×ªï¿½ï¿½
+ * @param[in] motor: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+ * @param[in] t    : Ä¿ï¿½ï¿½×ªï¿½Ø£ï¿½N*mï¿½ï¿½
  * @retval    void
  */
 void dji_motor_set_torque(dji_motor_t *motor, float t)
 {
     motor->t = t;
     
-    // ¸ù¾ÝÄ¿±ê×ª¾Ø¼ÆËã·¢ËÍµçÁ÷Öµ
+    // ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½×ªï¿½Ø¼ï¿½ï¿½ã·¢ï¿½Íµï¿½ï¿½ï¿½Öµ
     float current = t * motor_para_table[motor->motor_type][REDUCTION_RATIO] \
                     / motor_para_table[motor->motor_type][TORQUE_CONSTANT] \
                     / motor->reduction_ratio;
@@ -109,7 +109,7 @@ void dji_motor_set_torque(dji_motor_t *motor, float t)
     motor->tx_current = (int16_t)(current * motor_para_table[motor->motor_type][DATA_RANGE] \
                     / motor_para_table[motor->motor_type][CURRENT_RANGE]);
     
-    // ÏÞÖÆ·¢ËÍÊý¾Ý·¶Î§
+    // ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½Î§
     int16_t max_range = (int16_t)motor_para_table[motor->motor_type][DATA_RANGE];
     if (motor->tx_current > max_range)
         motor->tx_current = max_range;
@@ -117,7 +117,7 @@ void dji_motor_set_torque(dji_motor_t *motor, float t)
         motor->tx_current = -max_range;
 }
 
-/*ÏÂÃæÊÇ×¨ÃÅÊÊÅä´ó½®µç»úµÄ·¢ËÍº¯Êý*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó½®µï¿½ï¿½ï¿½Ä·ï¿½ï¿½Íºï¿½ï¿½ï¿½*/
 void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)
 {
     uint8_t FreeTxNum = 0;
@@ -139,7 +139,7 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 
 	
 	uint8_t block_cnt = 0;
-    //²éÑ¯·¢ËÍÓÊÏäÊÇ·ñÎª¿Õ
+    //ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
    FreeTxNum = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
     while(FreeTxNum == 0)
     {
@@ -147,18 +147,18 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
         FreeTxNum = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
         if(block_cnt >= 20)
         {
-            return;  // ³¬Ê±ÍË³ö£¬±ÜÃâ¶ÂÈû
+            return;  // ï¿½ï¿½Ê±ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
     }
 
-    // ·¢ËÍÏûÏ¢
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Tx1Message, CAN1_Tx_data);
 }
 
 
 /*
- * @brief     ½«´ó½®µç»ú·¢ËÍÊý¾ÝÕûÀíµ½·¢ËÍ»º³åÇø
- * @param[in] motor: µç»úÊý¾Ý½á¹¹Ìå
+ * @brief     ï¿½ï¿½ï¿½ó½®µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] motor: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
  * @retval    void
  */
 static void dji_motor_fill_data(dji_motor_t *motor)
@@ -168,14 +168,14 @@ static void dji_motor_fill_data(dji_motor_t *motor)
     
     if(motor->can_id < 0x205)
     {
-        // 0x201-0x204 µç»ú×é
+        // 0x201-0x204 ï¿½ï¿½ï¿½ï¿½ï¿½
         motor_msg[motor->can_channel][0].id = 0x200;
         motor_msg[motor->can_channel][0].data[(motor->can_id - 0x201) * 2] = motor->tx_current >> 8;
         motor_msg[motor->can_channel][0].data[(motor->can_id - 0x201) * 2 + 1] = motor->tx_current;
     }
     else if(motor->can_id < 0x209)
     {
-        // 0x205-0x208 µç»ú×é
+        // 0x205-0x208 ï¿½ï¿½ï¿½ï¿½ï¿½
         if(motor->can_channel == CAN_CHANNEL_1)
             motor_msg[motor->can_channel][4].id = 0x1fe;
         else 
@@ -189,8 +189,8 @@ static void dji_motor_fill_data(dji_motor_t *motor)
 }
 
 /*
- * @brief     1ÍÏ4´ó½®µç»ú·¢ËÍµçÁ÷
- * @param[in] motor1~4: ·Ö±ð¶ÔÓ¦ËÄ¸öµç»ú
+ * @brief     1ï¿½ï¿½4ï¿½ó½®µï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½
+ * @param[in] motor1~4: ï¿½Ö±ï¿½ï¿½Ó¦ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½
  * @retval    void
  */
 void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *motor3, dji_motor_t *motor4)
@@ -202,15 +202,15 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *mot
     dji_motor_fill_data(motor3);
     dji_motor_fill_data(motor4);
     
-    // ·¢ËÍÊý¾Ý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if(motor1 != NULL && motor1->can_id < 0x205)
     {
-        can_std_transmit(motor1->can_channel, motor_msg[motor1->can_channel][0].id,
+        bsp_can_std_transmit(motor1->can_channel, motor_msg[motor1->can_channel][0].id,
                         motor_msg[motor1->can_channel][0].data);
     }
     else if(motor1 != NULL && motor1->can_id < 0x209)
     {
-        can_std_transmit(motor1->can_channel, motor_msg[motor1->can_channel][4].id,
+        bsp_can_std_transmit(motor1->can_channel, motor_msg[motor1->can_channel][4].id,
                         motor_msg[motor1->can_channel][4].data);
     }
 }

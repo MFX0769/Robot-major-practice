@@ -195,7 +195,8 @@ void bsp_can_init(bsp_user_can_t *canx, void (*pFunc)(CAN_RxBuffer_t*))
  * @param[in] data      : 数据指针
  * @retval    HAL_StatusTypeDef
  */
-HAL_StatusTypeDef can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data)
+// HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data)
+HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data)
 {
     tx_message.Identifier = id;
     if (can_periph == CAN_CHANNEL_1)
@@ -206,7 +207,7 @@ HAL_StatusTypeDef can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_
 		return HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan3, &tx_message, data);
 	return HAL_ERROR;
 
-    //测试2025年11月21日
+
 }
 
 

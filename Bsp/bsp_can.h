@@ -118,7 +118,8 @@ extern bsp_can_filt_tbl_t bsp_can3_filt_tbl;
 
 /* Exported function declarations --------------------------------------------*/
 void bsp_can_init(bsp_user_can_t *canx, void (*pFunc)(CAN_RxBuffer_t*));       //BSP层封装的CAN通讯总的初始化，应在协议初始化文件中调用此函数（调用前填写过滤规则表
-HAL_StatusTypeDef can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
+// HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
+HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
 
 
 #endif
