@@ -30,4 +30,8 @@ typedef struct
     float yaw_output, pit_output;
 } gimbal_t;
 
+extern gimbal_t gimbal;
+
+void gimbal_task(void const *argu);
+
 #endif
