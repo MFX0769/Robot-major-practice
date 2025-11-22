@@ -175,7 +175,7 @@ uint8_t series_shoot_enable(void) {
 			return(
         ((ctrl_mode == REMOTER_MODE)// && vision.shoot_enable
             || (ctrl_mode == KEYBOARD_MODE && rc.mouse.l) 
-            || (ctrl_mode == VISION_MODE && vsn_drive.shoot_enable)
+            || (ctrl_mode == VISION_MODE && vision.shoot_enable)
         )
         && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* ÉäÆµ¿ØÖÆ */
     );

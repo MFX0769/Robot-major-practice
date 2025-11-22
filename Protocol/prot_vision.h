@@ -31,34 +31,112 @@ typedef enum {
     REPEAT_ERROR= 2,
 } vision_rx_status_e;
 
-/* 28 B 视觉帧 */
-typedef struct {
+typedef struct
+{
     uint32_t rx_repeat_cnt;
-    vision_rx_status_e  rx_status;
+    vision_rx_status_e rx_status;
     vision_aim_status_e aim_status;
-    uint8_t  online;
-    uint8_t  shoot_enable;
-    uint8_t  new_frame_flag;
-    uint8_t  trace_id;
-
-    float target_yaw_angle; // 度
-    float target_pit_angle; // 度
-    float yaw_min_err;      // 度
-    float pit_min_err;      // 度
-
-    union {
+    uint32_t new_frame_flag;
+    float target_yaw_angle, target_pit_angle;
+    float yaw_min_err;
+	float pit_min_err;
+    uint32_t shoot_enable;
+	uint8_t trace_id;
+    uint8_t online;
+    __packed union
+    {
         uint8_t buff[VISION_DATA_LEN];
-        struct {
-            float yaw,pit,dis,dis2,fire,pos;
-            uint8_t empty,cnt:6,ist_flag:1,aim_flag:1,trace_id,eof;
+         __packed struct
+        {
+            float yaw;
+            float pit;
+            float dis;
+						float dis2;
+            float fire;
+            float pos;
+            uint8_t empty;
+            uint8_t cnt : 6;
+            uint8_t ist_flag :1;
+            uint8_t aim_flag :1;
+						uint8_t trace_id;
+            uint8_t eof;
         } data;
     } rx[2];
-} vsn_drive_t;
+    __packed union
+    {
+        uint8_t buff[25];
+         __packed struct
+        {
+            uint8_t sof;
+            uint8_t imu_pit[4];
+            uint8_t imu_yaw[4];
+            uint8_t imu_pit_spd[4];
+            uint8_t imu_yaw_spd[4];
+					
+            uint8_t vacancy :1;
+            uint8_t camp :1;
+            uint8_t aiming_mode :3;
+            uint8_t shooter_speed :3;
+						uint8_t trace_id;
+						uint8_t shoot_speed[4];
+            uint8_t empty;
+            uint8_t eof1;
+            uint8_t eof2;
+					
+            uint16_t empty1;
+        } data;
+    } tx;
+    
+    __packed union
+    {
+        uint8_t buff[8];
+         __packed struct
+        {
+            uint8_t vision_shoot_enable;
+            uint8_t start_up_flag;
+            uint8_t empty2;
+            uint8_t empty3;
+            uint8_t empty4;
+            uint8_t empty5;
+            uint8_t empty6;
+            uint8_t empty7;            
+        } data;
+    } rxt;
+    
+} vision_t;
+
+typedef __packed union {
+/*==============================2025年4月12日 更改视觉tx格式使其和步兵统一=============================*/
+    uint8_t buff[25];//VISION_TX_BUFF_LEN
+    
+    __packed struct {
+        uint8_t SOF;  //帧头
+        uint8_t imu_pit[4];
+        uint8_t imu_yaw[4];  
+        uint8_t imu_pit_spd[4];
+        uint8_t imu_yaw_spd[4];
+        
+			uint8_t vacancy:1;
+			uint8_t camp:1;
+			uint8_t aiming_mode:3;
+      uint8_t shooter_speed:3;
+			
+			uint8_t trace_id;
+			uint8_t shoot_speed[4];
+			uint8_t eof1;  //帧尾1
+			uint8_t eof2;  //帧尾2
+
+    } data;
+		
+/*==============================新代码结束=============================*/
+} vision_tx_t;
 
 /* 全局变量 */
-extern vsn_drive_t vsn_drive;
-
+extern vision_t vision;
+extern vision_tx_t vision_tx;
+extern vision_mode_e vision_mode;
 /* 函数 */
 void vision_data_handler(uint8_t *data);   // 串口回调
 void vsn_gimbal_ref_calc(void);            // 1 ms 任务
+void vision_output_data(void);
 #endif 

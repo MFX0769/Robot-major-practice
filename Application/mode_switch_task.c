@@ -19,7 +19,7 @@ static void rc_abnormal_proess(void);
 ctrl_mode_e ctrl_mode;
 
 /* 视觉状态机 */
-vision_mode_e vision_mode;
+//vision_mode_e vision_mode;
 
 /*遥控器上一次的数据——用于一些边沿检测*/
 //static uint8_t new_rc_last_pause=0;
