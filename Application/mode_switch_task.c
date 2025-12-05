@@ -9,7 +9,8 @@
 #include "prot_vision.h"
 #include "status_task.h"
 #include "prot_rm_judge.h"
-     
+#include "prot_dr16.h"
+#include "prot_new_rc.h"
 
 static void unlock_init(void);
 static void sw1_mode_handler(void);

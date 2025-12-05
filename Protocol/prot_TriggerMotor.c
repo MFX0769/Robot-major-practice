@@ -25,6 +25,7 @@
 #include "prot_T_imu.h"
 #include "prot_rm_motor.h"
 #include "comm_task.h"
+#include "prot_dr16.h"
 extern shoot_t shoot;
 
 static void TriggerMotor_pidcal(void);

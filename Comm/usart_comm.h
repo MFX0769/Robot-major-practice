@@ -23,9 +23,11 @@ extern "C" {
 
 #include "prot_dr16.h"
 #include "prot_new_rc.h"
+#include "prot_rm_judge.h"
+#include "prot_vision.h"
 /* Private macros ------------------------------------------------------------*/
 #define USART1_RX_BUFFER_SIZE 18  //dt7遥控数据长度
-#define USART2_RX_BUFFER_SIZE 64
+#define USART2_RX_BUFFER_SIZE 100
 #define USART3_RX_BUFFER_SIZE 21  //新遥控数据长度
 #define USART4_RX_BUFFER_SIZE 256
 #define USART10_RX_BUFFER_SIZE 512

@@ -24,6 +24,7 @@
 #include "prot_vision.h"
 #include "prot_rm_motor.h"
 #include "prot_dm_motor.h"
+#include "prot_dr16.h"
 
 gimbal_t gimbal;
 

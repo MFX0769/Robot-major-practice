@@ -13,11 +13,11 @@
 //#include "status_task.h"
 #include "mode_switch_task.h"
 #include "pid.h"
+#include "prot_dr16.h"
 
-
-extern ext_game_robot_status_t		Game_Robot_Status;
-extern ext_game_state_t						Game_State;
-extern ext_aerial_robot_energy_t					Aerial_Robot_Energy;
+extern robot_status_t	robot_status;
+extern game_status_t game_status;
+//extern aerial_robot_energy_t					Aerial_Robot_Energy;
 shoot_t shoot;
 
 static void shoot_mode_sw(void);

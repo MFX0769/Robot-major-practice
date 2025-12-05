@@ -288,20 +288,20 @@ void PID_clear(pid_t *pid)
 
 
 
-#define g 9.81 //珠三角地区工程计算的重力加速度值
-/**
-	* @brief	pitch轴重力补偿计算
-	* @param 	pitch转动部分的质量  单位：kg
-	* @param 	转动部分质心距离转动重心的距离   单位：米
-	* @param 	转动部分质心距离转动重心的角度（重心和转动中心的连线与水平面的夹角） 单位：度
-	* @param 	pitch轴角度（注意正负号）单位：度
-	* @return 
-	* @note  B站：【中科大RM电控合集】阻力与重力加速度补偿
-	*/
-float Pitch_Gravity_Compensation(float mgr,float beta)
-{
-	return mgr*(float)arm_sin_f32(beta+15)*4.5+0.2;
-}
+//#define g 9.81 //珠三角地区工程计算的重力加速度值
+///**
+//	* @brief	pitch轴重力补偿计算
+//	* @param 	pitch转动部分的质量  单位：kg
+//	* @param 	转动部分质心距离转动重心的距离   单位：米
+//	* @param 	转动部分质心距离转动重心的角度（重心和转动中心的连线与水平面的夹角） 单位：度
+//	* @param 	pitch轴角度（注意正负号）单位：度
+//	* @return 
+//	* @note  B站：【中科大RM电控合集】阻力与重力加速度补偿
+//	*/
+//float Pitch_Gravity_Compensation(float mgr,float beta)
+//{
+//	return mgr*(float)arm_sin_f32(beta+15)*4.5+0.2;
+//}
 
 
 
