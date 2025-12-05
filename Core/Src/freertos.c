@@ -25,7 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "gimbal_task.h"
+#include "comm_task.h"
+#include "mode_switch_task.h"
+#include "shoot_task.h"
+#include "status_task.h"
+#include "debug_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +50,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+osThreadId gimbal_task_t;
+osThreadId mode_sw_task_t;
+osThreadId shoot_task_t;
+osThreadId status_task_t;
+osThreadId debug_task_t;
+osThreadId comm_task_t;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 
@@ -111,6 +121,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
+	taskENTER_CRITICAL();
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -123,7 +134,22 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+
+/***************************High priority task***************************/
+	osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
+    comm_task_t = osThreadCreate(osThread(canTask), NULL);
+
+/***********************AboveNormal priority task***********************/
+	osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
+    gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
+
+    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
+    shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
+/**************************Normal priority task**************************/
+	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
+    mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);
+
+  taskEXIT_CRITICAL();
   /* USER CODE END RTOS_THREADS */
 
 }

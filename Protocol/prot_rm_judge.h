@@ -1,13 +1,11 @@
 /**
   * @file bsp_judge.h
   * @version 1.0
-  * @date  2022.3.14
+  * @date  2025.12.5
 	*
-  * @brief 裁判系统串口协议v1.2的各种数据结构体
-	*        v1.3的协议只是改了人工智能挑战赛的部分，对我们没有影响
-	*				 所以没有写进去
+  * @brief 裁判系统串口协议
 	*
-  *	@author  空中组抄强哥的
+  *	@author  空中组
   *
   */
 #ifndef PROT_RM_JUDGE_H

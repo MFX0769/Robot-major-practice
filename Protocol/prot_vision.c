@@ -1,7 +1,7 @@
 /**
   * @file prot_vision.c
   * @version 1.1
-  * @date 2022 7 10
+  * @date 2025 12 15
 	*
   * @brief  视觉信息解算
 	*
@@ -21,6 +21,7 @@
 #include "prot_dr16.h"
 #include "prot_new_rc.h"
 #include "prot_rm_judge.h"
+#include "prot_dr16.h"
 
 #define ABS(x)  ((x)>0?(x):-(x))
 #define PI      3.14159265358979323846f
@@ -210,6 +211,25 @@ void vsn_gimbal_ref_calc(void)
         break;
     }
 }
+
+//void Trace_ID_Select_NEW(new_rc_info_t *new_rc)
+//{
+//	if(new_rc->key_W)  vision_tx.data.trace_id  = 7;
+//	if(new_rc->key_A)  vision_tx.data.trace_id  = 3;
+//	if(new_rc->key_Z)  vision_tx.data.trace_id  = 4;
+//	if(new_rc->key_D)  vision_tx.data.trace_id  = 1;
+//	if(new_rc->key_S)  vision_tx.data.trace_id  = 2;	
+//}
+
+void Trace_ID_Select_OLD(rc_info_t *rc)
+{
+	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;
+	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;
+	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;
+	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;
+	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	
+}
+
 //任务里调用函数即可发送
 void vision_output_data(void)
 {
@@ -230,8 +250,9 @@ void vision_output_data(void)
     vision_tx.data.camp = 0;
     vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺
     vision_tx.data.shooter_speed = 3;                       // 固定 3 档
-    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
+//    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
+	Trace_ID_Select_OLD(&rc);
     /* 4. DMA 一次发出 */
 //    HAL_UART_Transmit_DMA(&huart4, vision_tx.buff, 25);
 }

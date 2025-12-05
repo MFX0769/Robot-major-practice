@@ -105,7 +105,7 @@ typedef struct
     
 } vision_t;
 
-typedef __packed union {
+typedef union {
 /*==============================2025年4月12日 更改视觉tx格式使其和步兵统一=============================*/
     uint8_t buff[25];//VISION_TX_BUFF_LEN
     
@@ -129,7 +129,7 @@ typedef __packed union {
     } data;
 		
 /*==============================新代码结束=============================*/
-} vision_tx_t;
+}__attribute__((packed)) vision_tx_t;
 
 /* 全局变量 */
 extern vision_t vision;
