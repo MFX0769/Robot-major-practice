@@ -74,7 +74,7 @@ void comm_can_init(void)
 
     dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_1, 0x206, 1.0f);
 	dm_motor_init(&pitch_motor,DM4310,CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-
+	dm_motor_init(&dm3507_motor,DM3507,CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 }
     
 
@@ -142,6 +142,11 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 //    }
 	switch(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier)
 			{
+				case DM_3507_RECEIVE_ID:
+				{
+					dm_get_single_data(&dm3507_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
+					break;
+				}
 				case CAN_J4310_MOTOR_ID:
 				{
 					dm_get_single_data(&pitch_motor,bsp_user_can2.CAN_RxBuffer.rx_data);

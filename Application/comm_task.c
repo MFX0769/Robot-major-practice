@@ -20,6 +20,7 @@ void can_msg_send_task(void const *argu)
 //                can1_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
 //			    can1_send_message( FRIC_CAN_TX_ID , 0, 0, 0, 0);
 				dm_mit_control(&pitch_motor);
+				dm_mit_control(&dm3507_motor);
 				dji_send_current(&fric_motor[0],&fric_motor[1],NULL,NULL);
 				dji_send_current(&pit_motor,&yaw_motor,&trigger_motor ,NULL);
 				can_send_cnt++;
@@ -28,7 +29,7 @@ void can_msg_send_task(void const *argu)
             {
                 if( event.value.signals  )
                 {
-						
+					dm_mit_control(&dm3507_motor);	
 					dm_mit_control(&pitch_motor);				
 //					can1_send_message(FRIC_CAN_TX_ID,motor_cur.fric_cur[0], motor_cur.fric_cur[1], 0, 0);
 //					can1_send_message(GIMBAL_CAN_TX_ID,motor_cur.gimbal_cur[1], motor_cur.gimbal_cur[0], motor_cur.trigger_cur, 0);

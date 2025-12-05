@@ -15,17 +15,19 @@
 #define DM_CLEAR_CMD   0x04
 //电机发送ID
 #define DM_PITCH_SEND_ID 0x06
-
+#define DM_3507_SEND_ID 0x07
 //电机接收ID
 #define DM_PITCH_RECEIVE_ID 0X016
-
+#define DM_3507_RECEIVE_ID 0x07
 //电机减速比
 #define DM_4310_RATIO  10.0f
-
+#define DM_3507_RATIO 7.0f
 //电机安装零点偏置
 #define DM_PITCH_OFFSET  0
+#define DM_3507_OFFEST 0
 //达妙电机的型号
 #define DM4310   0x01
+#define DM3507 0x02
 //DM电机参数范围
 #define DM_P_MAX        12.56637f
 #define DM_P_MIN       -12.56637f
@@ -33,6 +35,8 @@
 #define DM_V_MIN       -45.0f
 #define DM4310_T_MAX    18.0f
 #define DM4310_T_MIN   -18.0f
+#define DM3507_T_MAX	18.0f
+#define DM3507_T_MIN   -18.0f
 #define DM_KP_MIN        0.0f		//Kp最小值
 #define DM_KP_MAX      500.0f		//Kp最大值
 #define DM_KD_MIN        0.0f		//Kd最小值
@@ -62,7 +66,7 @@ typedef struct
 	float p_tmp,real_p,real_v;
 }dm_motor_t;
 extern dm_motor_t pitch_motor;
-
+extern dm_motor_t dm3507_motor;
 
 void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point);
 void dm_set_cmd(dm_motor_t *motor,uint8_t cmd);

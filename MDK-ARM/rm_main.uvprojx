@@ -791,14 +791,14 @@
               <FilePath>..\Protocol\prot_new_rc.c</FilePath>
             </File>
             <File>
-              <FileName>prot_dm_motor.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Protocol\prot_dm_motor.h</FilePath>
-            </File>
-            <File>
               <FileName>prot_dm_motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Protocol\prot_dm_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_dm_motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_dm_motor.h</FilePath>
             </File>
             <File>
               <FileName>prot_rm_motor.c</FileName>

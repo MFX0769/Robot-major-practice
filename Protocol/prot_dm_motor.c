@@ -1,7 +1,7 @@
 #include "prot_dm_motor.h"
 #include "math_calcu.h"
 dm_motor_t pitch_motor;
-
+dm_motor_t dm3507_motor;
 /*
  * @brief    	达妙电机初始化设置
  * @param[in] *motor    : 电机数据结构体指针
@@ -83,8 +83,8 @@ void dm_mit_set_para(dm_motor_t *motor,float p,float v,float t,float kp,float kd
     LIMIT_MIN_MAX(motor->kd, DM_KD_MIN, DM_KD_MAX);
 	if(motor->motor_type == DM4310)
 		LIMIT_MIN_MAX(motor->t_ref, DM4310_T_MIN, DM4310_T_MAX);
-//	else if(motor->motor_type == DM4340P)
-//		LIMIT_MIN_MAX(motor->t_ref, DM4340P_T_MIN, DM4340P_T_MAX);
+	else if(motor->motor_type == DM3507)
+		LIMIT_MIN_MAX(motor->t_ref, DM3507_T_MIN, DM3507_T_MAX);
 
 }
 /*
@@ -125,11 +125,11 @@ void dm_mit_control(dm_motor_t *motor)
 		{
 			t_tmp = float_to_uint(motor->t_ref, DM4310_T_MIN,DM4310_T_MAX, 12);
 		}break;
-//		case DM4340P:
-//		{
-//			t_tmp = float_to_uint(motor->t_ref, DM4340P_T_MIN,DM4340P_T_MAX, 12);
-//		}break;
-//		
+		case DM3507:
+		{
+			t_tmp = float_to_uint(motor->t_ref, DM3507_T_MIN,DM3507_T_MAX, 12);
+		}break;
+		
 		default:break;
 	}
 	kp_tmp = float_to_uint(motor->kp, DM_KP_MIN, DM_KP_MAX, 12);
@@ -178,10 +178,10 @@ void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
 		{
 			motor->t = uint_to_float(t_int,DM4310_T_MIN,DM4310_T_MAX,12);
 		}break;
-//		case DM4340P:
-//		{
-//			motor->t = uint_to_float(t_int,DM4340P_T_MIN,DM4340P_T_MAX,12);
-//		}break;
+		case DM3507:
+		{
+			motor->t = uint_to_float(t_int,DM3507_T_MIN,DM3507_T_MAX,12);
+		}break;
 		
 		default:break;
 	}		

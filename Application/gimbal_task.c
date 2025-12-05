@@ -59,8 +59,9 @@ static void gimbal_pid_calc(void)
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;
     gimbal.pit_spd.fdb = imu_data.wy;
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
-/*电机实际控制输出名*/
+/*pitch电机实际控制输出名*/
 	pitch_motor.t_ref = gimbal.pit_output;
+	dm3507_motor.t_ref = gimbal.pit_output;
 //--------------------yaw_pid_calu----------------------------------//
 	
     gimbal.yaw_angle.fdb = imu_data.yaw;
