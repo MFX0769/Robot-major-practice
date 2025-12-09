@@ -148,7 +148,10 @@ void MX_FREERTOS_Init(void) {
 /**************************Normal priority task**************************/
 	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
     mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);
-
+/**************************Low priority task**************************/
+	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
+	status_task_t = osThreadCreate(osThread(statusTask),NULL);
+	
   taskEXIT_CRITICAL();
   /* USER CODE END RTOS_THREADS */
 

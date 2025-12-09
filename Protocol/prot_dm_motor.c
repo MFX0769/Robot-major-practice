@@ -181,7 +181,7 @@ void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
 		case DM3507:
 		{
 			motor->t = uint_to_float(t_int,DM3507_T_MIN,DM3507_T_MAX,12);
-		}break;
+		}break; 
 		
 		default:break;
 	}		

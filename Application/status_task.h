@@ -43,7 +43,7 @@ typedef __packed struct {
 
 extern status_t status;
 
-extern void wdg_user_set_bit(uint32_t status_bit);
+void wdg_user_set_bit(uint32_t status_bit);
 void status_task(void const *argu);
 
 

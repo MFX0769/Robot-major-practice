@@ -11,7 +11,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usart_comm.h"
-#
+#include "status_task.h"
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -60,9 +60,10 @@ Uart1_Rx_Buff[0] = 0xAB;
 /*-----------------------------USART-----------------------------------*/
 static uint32_t User_USART1_RxCpltCallback(uint8_t *buf, uint16_t len)
 {
-  rc_callback_handler(&rc,buf);   
+	wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
+	rc_callback_handler(&rc,buf);   
 
-  memset(buf,0,sizeof(buf));  
+	memset(buf,0,sizeof(buf));  
 
 
 	return 0;

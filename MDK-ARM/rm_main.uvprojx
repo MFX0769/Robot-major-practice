@@ -761,14 +761,14 @@
               <FilePath>..\Application\control_def.h</FilePath>
             </File>
             <File>
-              <FileName>status_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Application\status_task.h</FilePath>
-            </File>
-            <File>
               <FileName>status_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\status_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>status_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\status_task.h</FilePath>
             </File>
           </Files>
         </Group>

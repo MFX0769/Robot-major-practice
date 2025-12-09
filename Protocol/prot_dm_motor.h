@@ -33,10 +33,12 @@
 #define DM_P_MIN       -12.56637f
 #define DM_V_MAX        45.0f
 #define DM_V_MIN       -45.0f
+#define DM3507_V_MAX        50.0f
+#define DM3507_V_MIN       -50.0f
 #define DM4310_T_MAX    18.0f
 #define DM4310_T_MIN   -18.0f
-#define DM3507_T_MAX	18.0f
-#define DM3507_T_MIN   -18.0f
+#define DM3507_T_MAX	5.0f
+#define DM3507_T_MIN   -5.0f
 #define DM_KP_MIN        0.0f		//Kp最小值
 #define DM_KP_MAX      500.0f		//Kp最大值
 #define DM_KD_MIN        0.0f		//Kd最小值
