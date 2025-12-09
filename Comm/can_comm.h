@@ -83,5 +83,9 @@ void Task_CAN1Transmit(void *arg);
 void Task_CAN2Transmit(void *arg);
 void Task_CAN3Transmit(void *arg);
 
+extern uint32_t trigger_can_receive_cnt;
+extern uint32_t fric_can_recive_cnt;
+extern uint32_t yaw_can_receive_cnt;
+
 //void encoder_data_handler(moto_measure_t *ptr, FDCAN_HandleTypeDef *hfdcan, uint8_t *CAN_Rx_data);
 #endif

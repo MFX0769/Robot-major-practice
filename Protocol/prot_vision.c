@@ -32,6 +32,7 @@ vision_tx_t vision_tx;
 vision_mode_e vision_mode;
 /*调试数值*/
 uint8_t vis_e[2];
+uint32_t cnt_time;
 /*  NAN 保护宏  */
 #define NAN_PROCESS(now, last)  \
     do { if (isnan(now)) now = last; else last = now; } while (0)
@@ -187,8 +188,8 @@ void vsn_gimbal_ref_calc(void)
     switch (vision.aim_status){
     case AIMING:
         if (vision.new_frame_flag){
-            gimbal.pit_angle.ref = vision.target_pit_angle * PI / 180.0f;
-            gimbal.yaw_angle.ref = vision.target_yaw_angle * PI / 180.0f;
+            gimbal.pit_angle.ref = vision.target_pit_angle;//* PI / 180.0f
+            gimbal.yaw_angle.ref = vision.target_yaw_angle; // * PI / 180.0f
             vision.new_frame_flag = 0;
         }
         break;
@@ -255,4 +256,9 @@ void vision_output_data(void)
 	Trace_ID_Select_OLD(&rc);
     /* 4. DMA 一次发出 */
 //    HAL_UART_Transmit_DMA(&huart4, vision_tx.buff, 25);
+
+	vision.tx_cnt++;
+	
+	cnt_time=osKernelSysTick()/1000;//单位：秒
+	vision.rx_freq=vision.rx_cnt/cnt_time;
 }

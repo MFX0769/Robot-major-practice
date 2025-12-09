@@ -53,7 +53,7 @@ static void gimbal_pid_calc(void)
     float  pit_max, pit_min;
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
-    data_limit(gimbal.pit_angle.ref, pit_min, pit_max);
+    data_limit(gimbal.pit_angle.ref, 50, -12);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;

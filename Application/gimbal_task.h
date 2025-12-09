@@ -31,7 +31,7 @@ typedef struct
 } gimbal_t;
 
 extern gimbal_t gimbal;
-
+extern float yaw_err;
 void gimbal_task(void const *argu);
 
 #endif

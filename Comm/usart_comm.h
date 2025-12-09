@@ -30,7 +30,7 @@ extern "C" {
 #define USART2_RX_BUFFER_SIZE 100
 #define USART3_RX_BUFFER_SIZE 21  //新遥控数据长度
 #define USART4_RX_BUFFER_SIZE 256
-#define USART10_RX_BUFFER_SIZE 512
+#define USART10_RX_BUFFER_SIZE 28   //vision数据长度
 #define USART6_RX_BUFFER_SIZE 18
 /* Private type --------------------------------------------------------------*/
 

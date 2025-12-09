@@ -33,6 +33,12 @@ typedef enum {
 
 typedef struct
 {
+	uint32_t rx_cnt;
+    uint32_t tx_cnt;
+	
+	double rx_freq;
+    float tx_freq;
+	
     uint32_t rx_repeat_cnt;
     vision_rx_status_e rx_status;
     vision_aim_status_e aim_status;

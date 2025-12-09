@@ -27,9 +27,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 //moto_measure_t moto_test;
-
-
-
+uint32_t trigger_can_receive_cnt=0;
+uint32_t fric_can_recive_cnt = 0;
+uint32_t yaw_can_receive_cnt = 0;
 /*-----------------------------过滤规则表结束-----------------------------------*/
 
 /* Private type --------------------------------------------------------------*/
@@ -102,6 +102,7 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 				case CAN_3508_FRIC_L_ID :
 				case CAN_3508_FRIC_R_ID :
 				{
+					fric_can_recive_cnt++;
 					static uint8_t i;
 					i = bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier - CAN_3508_FRIC_L_ID ;
 					dji_motor_get_single_data(&fric_motor[i],bsp_user_can1.CAN_RxBuffer.rx_data);
@@ -115,7 +116,7 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 				}
 				case CAN_YAW_MOTOR_ID:
 				{
-		
+					
 					dji_motor_get_single_data(&yaw_motor,bsp_user_can1.CAN_RxBuffer.rx_data);
 //					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
 			break;
@@ -123,6 +124,7 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 		
 				case CAN_TRIGGER_MOTOR1_ID :
 				{
+					trigger_can_receive_cnt++;
 					dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);   
 					break;
 				}
