@@ -49,14 +49,18 @@ void comm_can_init(void)
 	  /*-----------用户在此修改过滤器内容（最多10条规则，但可以在bsp文件里改）--------*/
     bsp_can1_filt_tbl.count = 1;//CAN1一共用了多少条过滤规则
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can1_filt_tbl.data[1]=0x207&0x7ff;
-	  bsp_can1_filt_tbl.data[2]=0x007&0x7ff;
-	
-	  bsp_can2_filt_tbl.count = 1;//CAN2一共用了多少条过滤规则
+	  bsp_can1_filt_tbl.data[1]=0x206&0x7ff;
+	  bsp_can1_filt_tbl.data[2]=0x207&0x7ff;
+		bsp_can1_filt_tbl.data[3]=FLT_DUAL;
+		bsp_can1_filt_tbl.data[4]=0x017&0x7ff;
+		bsp_can1_filt_tbl.data[5]=0x018&0x7ff;
+	bsp_can2_filt_tbl.count = 2;//CAN2一共用了多少条过滤规则
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can2_filt_tbl.data[1]=0x001&0x7ff;
-	  bsp_can2_filt_tbl.data[2]=0x001&0x7ff;
- 
+	  bsp_can2_filt_tbl.data[2]=0x007&0x7ff;
+		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
+		bsp_can2_filt_tbl.data[4]=0x001&0x7ff;
+		bsp_can2_filt_tbl.data[5]=0x007&0x7ff;
     bsp_can3_filt_tbl.count = 1;//CAN3一共用了多少条过滤规则
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can3_filt_tbl.data[1]=0x206&0x7ff;
@@ -121,7 +125,17 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 //					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
 			break;
 				}
-		
+				case TIMU_PALSTANCE_ID:
+				{
+					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can2.CAN_RxBuffer.rx_data);
+					break;
+				}
+				case TIMU_ANGLE_ID:
+				{
+					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can2.CAN_RxBuffer.rx_data);
+//					wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
+					break;
+				}
 				case CAN_TRIGGER_MOTOR1_ID :
 				{
 					trigger_can_receive_cnt++;
