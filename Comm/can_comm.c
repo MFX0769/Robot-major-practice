@@ -127,12 +127,12 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 				}
 				case TIMU_PALSTANCE_ID:
 				{
-					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can2.CAN_RxBuffer.rx_data);
+					T_imu_calcu(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can1.CAN_RxBuffer.rx_data);
 					break;
 				}
 				case TIMU_ANGLE_ID:
 				{
-					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can2.CAN_RxBuffer.rx_data);
+					T_imu_calcu(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can1.CAN_RxBuffer.rx_data);
 //					wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
 					break;
 				}
