@@ -103,7 +103,7 @@ static void bsp_can_filter_init( bsp_user_can_t *canx)
    {
         can_filter.FilterIndex = i;										    //规则索引
             
-        switch (p[0])                                                       //数组固定格式：  type；high_id；low_id  第一个就是type
+        switch (p[i*3])                                                       //数组固定格式：  type；high_id；low_id  第一个就是type
         {
         case FLT_RANGE:{
             can_filter.FilterType = FDCAN_FILTER_RANGE;
@@ -119,8 +119,8 @@ static void bsp_can_filter_init( bsp_user_can_t *canx)
         default:break;
         }
 
-        uint16_t hight_id  = p[1]& 0x7FFU ;                                 //装填用户填写在tbl上的id   与上0x7FFU是因为过滤器需要的是11位数据
-        uint16_t low_id    = p[2]& 0x7FFU ;                                       
+        uint16_t hight_id  = p[i*3+1]& 0x7FFU ;                                 //装填用户填写在tbl上的id   与上0x7FFU是因为过滤器需要的是11位数据
+        uint16_t low_id    = p[i*3+2]& 0x7FFU ;                                       
         can_filter.FilterID1 = 		hight_id;					
         can_filter.FilterID2 = 		low_id;					
 				

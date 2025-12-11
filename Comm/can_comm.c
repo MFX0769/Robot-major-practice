@@ -47,7 +47,7 @@ uint32_t yaw_can_receive_cnt = 0;
 void comm_can_init(void)
 {
 	  /*-----------用户在此修改过滤器内容（最多10条规则，但可以在bsp文件里改）--------*/
-    bsp_can1_filt_tbl.count = 1;//CAN1一共用了多少条过滤规则
+    bsp_can1_filt_tbl.count = 2;//CAN1一共用了多少条过滤规则
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can1_filt_tbl.data[1]=0x206&0x7ff;
 	  bsp_can1_filt_tbl.data[2]=0x207&0x7ff;
