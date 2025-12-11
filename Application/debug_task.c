@@ -249,8 +249,8 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
             break;
         }
         case 111: { /* 云台PIT PID IMU */
-					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_max);
-			      DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_min);
+//					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_max);
+//			      DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_min);
 					
 						DataScope_Get_Channel_Data(vision.aim_status);
 						DataScope_Get_Channel_Data(vision .rx_freq);
@@ -285,32 +285,32 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
             break;
         }
         case 112: { /* 云台YAW PID IMU*/
-					 	DataScope_Get_Channel_Data(vision.target_yaw_angle);
-					 	DataScope_Get_Channel_Data(yaw_err);
+//					 	DataScope_Get_Channel_Data(vision.target_yaw_angle);
+//					 	DataScope_Get_Channel_Data(yaw_err);
             DataScope_Get_Channel_Data(imu_data.yaw);
-					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_max);
-            DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_min);
+//					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_max);
+//            DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_min);
 					
             DataScope_Get_Channel_Data(gimbal.yaw_angle.ref);
             DataScope_Get_Channel_Data(gimbal.yaw_angle.fdb);
 //            DataScope_Get_Channel_Data(moto_yaw.ecd);
 					
-            DataScope_Get_Channel_Data(gimbal.yaw_angle.pid.pout);
+//            DataScope_Get_Channel_Data(gimbal.yaw_angle.pid.pout);
 //            DataScope_Get_Channel_Data(gimbal.yaw_angle.pid.dout);
 //		
 
             DataScope_Get_Channel_Data(gimbal.yaw_spd.ref);
             DataScope_Get_Channel_Data(gimbal.yaw_spd.fdb);
-            DataScope_Get_Channel_Data(gimbal.yaw_spd.pid.pos_out);
+//            DataScope_Get_Channel_Data(gimbal.yaw_spd.pid.pos_out);
 //			DataScope_Get_Channel_Data(D_AGL_FeedForward_yaw.Out);
 
-            DataScope_Get_Channel_Data(imucnt);
-					
-					DataScope_Get_Channel_Data(yaw_motor.send_cnt);
-					DataScope_Get_Channel_Data(yaw_can_receive_cnt);
-									
-					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_max);
-			      DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_min);
+//            DataScope_Get_Channel_Data(imucnt);
+//					
+//					DataScope_Get_Channel_Data(yaw_motor.send_cnt);
+//					DataScope_Get_Channel_Data(yaw_can_receive_cnt);
+//									
+//					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_max);
+//			      DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_min);
             break;
         }
 				case 118: { /* 云台ROLL roll IMU*/
@@ -446,18 +446,18 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
 
 void DataWavePkg(void) {
 //    VisionDataWavePkg(111);
-    OtherDataWavePkg(110); //Trigger
-      OtherDataWavePkg(111); //gimbal_pit_imu
+//    OtherDataWavePkg(110); //Trigger
+//      OtherDataWavePkg(111); //gimbal_pit_imu
 		  OtherDataWavePkg(112); //gimbal_yaw_imu
-		OtherDataWavePkg(118); //gimbal_roll_imu
-		OtherDataWavePkg(113); //yaw_ecd
-		OtherDataWavePkg(114); //pit_ecd
-		OtherDataWavePkg(115); //Fric
-		OtherDataWavePkg(116); //T_IMU
-  		OtherDataWavePkg(117); //能量相关
-	    OtherDataWavePkg(124); //其余待打印
-	    OtherDataWavePkg(126); //rc
-    OtherDataWavePkg(debug_wave);
+//		OtherDataWavePkg(118); //gimbal_roll_imu
+//		OtherDataWavePkg(113); //yaw_ecd
+//		OtherDataWavePkg(114); //pit_ecd
+//		OtherDataWavePkg(115); //Fric
+//		OtherDataWavePkg(116); //T_IMU
+//  		OtherDataWavePkg(117); //能量相关
+//	    OtherDataWavePkg(124); //其余待打印
+//	    OtherDataWavePkg(126); //rc
+//    OtherDataWavePkg(debug_wave);
 }
 
 /* 串口上位机数据发送任务 */

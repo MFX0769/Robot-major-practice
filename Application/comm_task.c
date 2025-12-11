@@ -25,19 +25,15 @@ void can_msg_send_task(void const *argu)
 				dji_send_current(&pit_motor,&yaw_motor,&trigger_motor ,NULL);
 				can_send_cnt++;
             }
-            else if( lock_flag )  //有陀螺仪数据才给电流
+            else if( lock_flag )
             {
-                if( event.value.signals  )
-                {
 					dm_mit_control(&dm3507_motor);	
 					dm_mit_control(&pitch_motor);				
 //					can1_send_message(FRIC_CAN_TX_ID,motor_cur.fric_cur[0], motor_cur.fric_cur[1], 0, 0);
 //					can1_send_message(GIMBAL_CAN_TX_ID,motor_cur.gimbal_cur[1], motor_cur.gimbal_cur[0], motor_cur.trigger_cur, 0);
 				 	dji_send_current(&fric_motor[0],&fric_motor[1],NULL,NULL);
-					dji_send_current(&pit_motor,&yaw_motor,&trigger_motor ,NULL);				
-					can_send_cnt++;
-
-                }
+					dji_send_current(&yaw_motor,&yaw_motor,&trigger_motor ,NULL);				
+					can_send_cnt++;               
             }
 						
           osDelayUntil(&wake_time, 1);

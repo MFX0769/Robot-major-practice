@@ -56,7 +56,7 @@ void comm_can_init(void)
 		bsp_can1_filt_tbl.data[5]=0x018&0x7ff;
 	bsp_can2_filt_tbl.count = 2;//CAN2一共用了多少条过滤规则
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can2_filt_tbl.data[1]=0x001&0x7ff;
+	  bsp_can2_filt_tbl.data[1]=0x206&0x7ff;
 	  bsp_can2_filt_tbl.data[2]=0x007&0x7ff;
 		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
 		bsp_can2_filt_tbl.data[4]=0x001&0x7ff;
@@ -76,7 +76,7 @@ void comm_can_init(void)
 		
     dji_motor_init(&trigger_motor, DJI_2006_MOTOR,CAN_CHANNEL_1, 0x207, 82.8);
 
-    dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_1, 0x206, 1.0f);
+    dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_2, 0x206, 1.0f);
 	dm_motor_init(&pitch_motor,DM4310,CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
 	dm_motor_init(&dm3507_motor,DM3507,CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 }
@@ -161,6 +161,13 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 				case DM_3507_RECEIVE_ID:
 				{
 					dm_get_single_data(&dm3507_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
+					break;
+				}
+				case CAN_YAW_MOTOR_ID:
+				{
+					
+					dji_motor_get_single_data(&yaw_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
+//					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
 					break;
 				}
 				case CAN_J4310_MOTOR_ID:
