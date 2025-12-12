@@ -188,3 +188,10 @@ void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
 	
 	motor->last_p =  motor->p;
 }
+
+void dm_clear(dm_motor_t *motor)
+{
+	motor->p_ref = 0;
+	motor->v_ref = 0;
+	motor->t_ref = 0;
+}

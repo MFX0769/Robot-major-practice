@@ -76,6 +76,7 @@ void dm_mit_set_para(dm_motor_t *motor,float p,float v,float t,float kp,float kd
 void dm_mit_control(dm_motor_t *motor);
 void dm_get_single_data(dm_motor_t *motor,uint8_t *data);
 void dm_mit_set_torque(dm_motor_t *motor,float ff_out,float pos_out);
+void dm_clear(dm_motor_t *motor);
 
 extern dm_motor_t pitch_motor;
 

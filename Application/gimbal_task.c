@@ -34,8 +34,8 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);//20 0 0 ÓĞ²âËÙÄ£¿é
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);//-1.0 -0.008
+	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
     PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
     PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -92,7 +92,7 @@ void gimbal_PID_clear(gimbal_t *g)
     PID_clear(&g->pit_spd.pid);
     PID_clear(&g->yaw_ecd.pid);
     PID_clear(&g->yaw_spd_ecd.pid);
-	
+	dm_clear(&dm3507_motor);
     g->yaw_output = 0.0f;
     g->pit_output = 0.0f;
 }

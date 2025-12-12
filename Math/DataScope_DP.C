@@ -49,11 +49,11 @@ void DataScope_Get_Channel_Data(float Data)
         return;  //通道个数大于最大通道数，不执行函数
     else
     {
-    #ifdef MINIBALANCE
-        Float2Byte(&Data,CK.OutPut_Buffer,( (CK.Data_Num-1) * 4 +1 ) );  //留出帧头
-    #else  //VOFA
+//    #ifdef MINIBALANCE
+//        Float2Byte(&Data,CK.OutPut_Buffer,( (CK.Data_Num-1) * 4 +1 ) );  //留出帧头
+//    #else  //VOFA
         Float2Byte(&Data,CK.DataScope_OutPut_Buffer,( (CK.DataCnt-1) * 4) );
-    #endif
+//    #endif
     }
 }
 
@@ -69,19 +69,19 @@ unsigned char DataScope_Data_Generate(unsigned char Channel_Number)
     }
     else
     {
-    #ifdef MINIBALANCE
-        CK.DataScope_OutPut_Buffer[0] = '$';  //帧头
-        uint8_t temp_cnt = Channel_Number*4+1;
-        CK.DataScope_OutPut_Buffer[temp_cnt]  =  temp_cnt;  //帧尾
-        return (temp_cnt+1);  //返回一个数据包的字节数
-    #else  //VOFA+
+//    #ifdef MINIBALANCE
+//        CK.DataScope_OutPut_Buffer[0] = '$';  //帧头
+//        uint8_t temp_cnt = Channel_Number*4+1;
+//        CK.DataScope_OutPut_Buffer[temp_cnt]  =  temp_cnt;  //帧尾
+//        return (temp_cnt+1);  //返回一个数据包的字节数
+//    #else  //VOFA+
         uint8_t temp_cnt = Channel_Number*4+4;
         CK.DataScope_OutPut_Buffer[4*Channel_Number + 0] = 0x00;
         CK.DataScope_OutPut_Buffer[4*Channel_Number + 1] = 0x00;
         CK.DataScope_OutPut_Buffer[4*Channel_Number + 2] = 0x80;
         CK.DataScope_OutPut_Buffer[4*Channel_Number + 3] = 0x7f;
         return temp_cnt;  //返回一个数据包的字节数
-    #endif
+//    #endif
     }
 }
 
@@ -96,12 +96,7 @@ void DataWave(UART_HandleTypeDef* huart)
 {
     DataWavePkg();
     CK.Send_Count = DataScope_Data_Generate(CK.DataCnt);
-//    for( uint8_t cnt = 0; cnt < CK.Send_Count; cnt++)
-//    {
-//        while((huart->Instance->SR&0X40)==0);
-//        huart->Instance->DR = CK.DataScope_OutPut_Buffer[cnt];
-//    }
-	 
+
 	  HAL_UART_Transmit_DMA(&huart6,CK.DataScope_OutPut_Buffer,CK.Send_Count);
     CK.DataCnt=0;
     CK.Send_Count = 0;

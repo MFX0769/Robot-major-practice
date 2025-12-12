@@ -50,7 +50,7 @@ void comm_usart_init(void)
     bsp_user_usart_Init(&huart1,Uart1_Rx_Buff,USART1_RX_BUFFER_SIZE,User_USART1_RxCpltCallback);
     bsp_user_usart_Init(&huart2, Uart2_Rx_Buff, USART2_RX_BUFFER_SIZE, User_USART2_RxCpltCallback);
 //    bsp_user_usart_Init(&huart3, Uart3_Rx_Buff, USART3_RX_BUFFER_SIZE, User_USART3_RxCpltCallback);
-    bsp_user_usart_Init(&huart6, Uart6_Rx_Buff, USART4_RX_BUFFER_SIZE, User_USART6_RxCpltCallback);
+    bsp_user_usart_Init(&huart6, Uart6_Rx_Buff, USART6_RX_BUFFER_SIZE, User_USART6_RxCpltCallback);
     bsp_user_usart_Init(&huart10,Uart10_Rx_Buff,USART10_RX_BUFFER_SIZE,User_USART10_RxCpltCallback);
     // bsp_user_usart_Init(&huart1,Uart1_Rx_Buff,USART1_RX_BUFFER_SIZE,rc_callback_handler);
 //    bsp_user_usart_Init(&huart6,Uart6_Rx_Buff,USART6_RX_BUFFER_SIZE,User_USART6_RxCpltCallback);
