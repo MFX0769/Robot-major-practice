@@ -58,4 +58,5 @@ Core/Src/Retarget_IO.c
 hardware/*
 !hardware/*.png
 !hardware/*.jpg
-!
+!hardware/*.docx          # 允许 Word
+!hardware/*.doc           # 允许旧版 Word
