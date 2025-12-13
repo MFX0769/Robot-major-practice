@@ -37,77 +37,19 @@ uint32_t cnt_time;
 #define NAN_PROCESS(now, last)  \
     do { if (isnan(now)) now = last; else last = now; } while (0)
 
-/* ----------------------------------------------------------------------- */
-/* ① 串口回调：收包→落盘→限幅→射击标志                                     */
-/* ----------------------------------------------------------------------- */
-//void vision_data_handler(uint8_t *Vision_Data)
-//{
-//    static vision_aim_status_e last_aim_status;
 
-//    /* 1. 拷帧 */
-//    memcpy(vision.rx[0].buff, Vision_Data, VISION_DATA_LEN);
 
-//    /* 2. 帧尾 & 重复帧检查 */
-//    if (vision.rx[0].data.eof != 0xCC){
-//        vision.rx_status = TAIL_ERROR; return;
-//    }
-//    if (vision.rx[0].data.cnt == vision.rx[1].data.cnt){
-//        if (++vision.rx_repeat_cnt > 10){ vision.rx_status = REPEAT_ERROR; return; }
-//    }
-//    vision.online = 1;
-//    vision.rx_status = NORMAL;
-//    vision.rx_repeat_cnt = 0;
-//    vision.rx[1].data.cnt = vision.rx[0].data.cnt;
-//    vision.trace_id         = vision.rx[0].data.trace_id;
-
-//    /* 3. NAN 保护 */
-//    #define NAN_PROCESS(now, last)  \
-//        do { if (isnan(now)) now = last; else last = now; } while (0)
-
-//    NAN_PROCESS(vision.rx[0].data.yaw,  vision.rx[1].data.yaw);
-//    NAN_PROCESS(vision.rx[0].data.pit,  vision.rx[1].data.pit);
-//    NAN_PROCESS(vision.rx[0].data.dis,  vision.rx[1].data.dis);
-//    NAN_PROCESS(vision.rx[0].data.fire, vision.rx[1].data.fire);
-//    NAN_PROCESS(vision.rx[0].data.pos,  vision.rx[1].data.pos);
-
-//    /* 4. 目标有效 */
-//    if (vision.rx[0].data.aim_flag){
-//        vision.aim_status        = AIMING;
-//        vision.new_frame_flag    = 1;
-//        vision.target_yaw_angle  = vision.rx[0].data.yaw;   // 度
-//        vision.target_pit_angle  = -vision.rx[0].data.pit;  // 坐标系对齐
-//        vision.yaw_min_err       = vision.rx[0].data.dis;
-//        vision.pit_min_err       = vision.rx[0].data.dis2;
-
-//        /* 简易限幅（度） */
-//        if (vision.target_pit_angle < -23.0f)
-//            vision.target_pit_angle = -23.0f;
-//        if (fabs(vision.target_yaw_angle - gimbal.yaw_angle.fdb * 180.0f / PI) > 99.13f)
-//            vision.target_yaw_angle = gimbal.yaw_angle.fdb * 180.0f / PI;
-
-//        /* 射击判定 */
-//        float yaw_err = fabs(gimbal.yaw_angle.fdb * 180.0f / PI - vision.target_yaw_angle);
-//        float pit_err = fabs(gimbal.pit_angle.fdb * 180.0f / PI - vision.target_pit_angle);
-//        vision.shoot_enable = (yaw_err < vision.yaw_min_err &&
-//                               pit_err < vision.pit_min_err &&
-//                               (vision.rx[0].data.fire == 1 || vision.rx[0].data.fire == 2));
-//    }else{
-//        vision.aim_status   = UNAIMING;
-//        vision.shoot_enable = 0;
-//    }
-
-//    /* 首次丢失 */
-//    if (last_aim_status == AIMING && vision.aim_status == UNAIMING)
-//        vision.aim_status = FIRST_LOST;
-//    last_aim_status = vision.aim_status;
-//}
-
-void vision_data_handler(uint8_t *Vision_Data)
+/**
+* @brief  视觉数据解包函数  decoding the vision data 
+* @param  uint8_t *pVision_Data  串口中断函数传出来的数据缓冲区指针 pointer to the vision_uart_data_buf
+* @retval None
+*/
+void vision_data_handler(uint8_t *pVision_Data)
 {
     static vision_aim_status_e last_aim_status;
 
     /* 1. 拷帧 */
-    memcpy(vision.rx[0].buff, Vision_Data, VISION_DATA_LEN);
+    memcpy(vision.rx[0].buff, pVision_Data, VISION_DATA_LEN);
 
     /* 2. 帧尾 & 重复帧检查 */
     if (vision.rx[0].data.eof != 0xCC) {
@@ -121,6 +63,7 @@ void vision_data_handler(uint8_t *Vision_Data)
         }
     }
     vision.online           = 1;
+    vision.rx_cnt++;
     vision.rx_status        = NORMAL;
     vision.rx_repeat_cnt    = 0;
     vision.rx[1].data.cnt   = vision.rx[0].data.cnt;
@@ -180,9 +123,11 @@ void vision_data_handler(uint8_t *Vision_Data)
     last_aim_status = vision.aim_status;
 }
 
-/* ----------------------------------------------------------------------- */
-/* ② 1 ms 任务：给云台参考                                                 */
-/* ----------------------------------------------------------------------- */
+/**
+* @brief  云台任务状态机用的视觉控制状态机  aimming mode calculation function
+* @param  None
+* @retval None
+*/
 void vsn_gimbal_ref_calc(void)
 {
     switch (vision.aim_status){
@@ -222,16 +167,26 @@ void vsn_gimbal_ref_calc(void)
 //	if(new_rc->key_S)  vision_tx.data.trace_id  = 2;	
 //}
 
+
+/**
+* @brief  选择优先级更高的目标  Choose the target with higher priority
+* @param  None
+* @retval None
+*/
 void Trace_ID_Select_OLD(rc_info_t *rc)
 {
-	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;
-	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;
-	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;
-	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;
-	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	
+	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;         //"w"意味着前面：前哨站
+	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;         //"z"无意味：飞坡过来的步兵 4号
+	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;         //"a"意味着左边：飞坡过来的步兵 3号
+	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;         //"d"意味着右边：处在吊射位的英雄
+	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	        //"s"意味着后面：处在中心兑换站的工程
 }
 
-//任务里调用函数即可发送
+/**
+* @brief  视觉数据打包  Vision data packaging
+* @param  None
+* @retval None
+*/
 void vision_output_data(void)
 {
     /* 1. 帧头/尾固定 */
@@ -247,16 +202,23 @@ void vision_output_data(void)
     tmp = Shoot_Data.bullet_speed;         memcpy(vision_tx.data.shoot_speed, &tmp, 4);
 
     /* 3. 位域+单字节 */
-    vision_tx.data.vacancy       = 0;                       // 预留，填 0
     vision_tx.data.camp = 0;
-    vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺
+    vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺  这是抄步兵的，飞机记得后面改一下
     vision_tx.data.shooter_speed = 3;                       // 固定 3 档
-//    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
+    vision_tx.data.vacancy       = 0;                       // 预留，填 0
+    
 
 	Trace_ID_Select_OLD(&rc);
-    /* 4. DMA 一次发出 */
-//    HAL_UART_Transmit_DMA(&huart4, vision_tx.buff, 25);
+    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
+    /* 4. 串口DMA 发出 */
+//  HAL_UART_Transmit_DMA(&huart4, vision_tx.buff, 25);
+
+    /* 4. 使用usb 发出 */
+//  CDC_Transmit_HS(vision_tx.buff, 25);                 //这个长度好像是28，记得参考步兵代码改一下
+
+
+    /*帧率处理相关*/
 	vision.tx_cnt++;
 	
 	cnt_time=osKernelSysTick()/1000;//单位：秒

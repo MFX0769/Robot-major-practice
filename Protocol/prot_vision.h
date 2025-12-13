@@ -1,6 +1,6 @@
 /**
   * @file  prot_vision.h
-  * @brief ÊÓ¾õ´®¿Ú½ÓÊÕ + ÔÆÌ¨²Î¿¼Êä³ö£¨×îĞ¡°æ£©
+  * @brief ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ + ï¿½ï¿½Ì¨ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡ï¿½æ£©
   */
 
 #ifndef __PROT_VISION_H__
@@ -10,15 +10,15 @@
 
 #define VISION_DATA_LEN  28
 
-/* ÊÓ¾õ²àÄ£Ê½ */
+/* ï¿½Ó¾ï¿½ï¿½ï¿½Ä£Ê½ */
 typedef enum {
-    vMODE_AUTO        = 0,    /* ×ÔÃé */
-    vMODE_bENERGY     = 1,    /* ´óÄÜÁ¿»ú¹Ø */
-    vMODE_sENERGY     = 2,    /* Ğ¡ÄÜÁ¿»ú¹Ø */
-    vMODE_ANTISPIN    = 4,    /* ÖĞÔ¶¾àÀë·´Ğ¡ÍÓÂİÄ£Ê½ */
+    vMODE_AUTO        = 0,    /* ï¿½ï¿½ï¿½ï¿½ */
+    vMODE_bENERGY     = 1,    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    vMODE_sENERGY     = 2,    /* Ğ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    vMODE_ANTISPIN    = 4,    /* ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ë·´Ğ¡ï¿½ï¿½ï¿½ï¿½Ä£Ê½ */
 } vision_mode_e;
 
-/* ÊÓ¾õ×´Ì¬ */
+/* ï¿½Ó¾ï¿½×´Ì¬ */
 typedef enum {
     UNAIMING   = 0,
     AIMING     = 1,
@@ -33,13 +33,14 @@ typedef enum {
 
 typedef struct
 {
+    /*æ”¶å‘è®¡æ•°*/
 	uint32_t rx_cnt;
     uint32_t tx_cnt;
 	
+    /*æ”¶å‘å¸§ç‡*/
 	double rx_freq;
-    float tx_freq;
+    float  tx_freq;
 	
-    uint32_t rx_repeat_cnt;
     vision_rx_status_e rx_status;
     vision_aim_status_e aim_status;
     uint32_t new_frame_flag;
@@ -112,7 +113,7 @@ typedef struct
 } vision_t;
 
 typedef union {
-/*==============================2025Äê4ÔÂ12ÈÕ ¸ü¸ÄÊÓ¾õtx¸ñÊ½Ê¹ÆäºÍ²½±øÍ³Ò»=============================*/
+/*==============================2025ï¿½ï¿½4ï¿½ï¿½12ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½txï¿½ï¿½Ê½Ê¹ï¿½ï¿½Í²ï¿½ï¿½ï¿½Í³Ò»=============================*/
     uint8_t buff[25];//VISION_TX_BUFF_LEN
     
     __packed struct {
@@ -134,15 +135,15 @@ typedef union {
 
     } data;
 		
-/*==============================ĞÂ´úÂë½áÊø=============================*/
+/*==============================ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½=============================*/
 }__attribute__((packed)) vision_tx_t;
 
-/* È«¾Ö±äÁ¿ */
+/* È«ï¿½Ö±ï¿½ï¿½ï¿½ */
 extern vision_t vision;
 extern vision_tx_t vision_tx;
 extern vision_mode_e vision_mode;
-/* º¯Êı */
-void vision_data_handler(uint8_t *data);   // ´®¿Ú»Øµ÷
-void vsn_gimbal_ref_calc(void);            // 1 ms ÈÎÎñ
+/* ï¿½ï¿½ï¿½ï¿½ */
+void vision_data_handler(uint8_t *pVision_Data);   // ï¿½ï¿½ï¿½Ú»Øµï¿½
+void vsn_gimbal_ref_calc(void);            // 1 ms ï¿½ï¿½ï¿½ï¿½
 void vision_output_data(void);
 #endif 

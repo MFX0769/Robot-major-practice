@@ -22,7 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "prot_vision.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -266,6 +266,10 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 11 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceHS);
+
+  /*Taurus_user:usb recieve data will be decode through below function usb接收的数据用以下函数处理（usb主要接收视觉数据）*/
+  vision_data_handler()
+  /*Taurus_user:decode  function end 处理函数调用结束*/
   return (USBD_OK);
   /* USER CODE END 11 */
 }
