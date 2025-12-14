@@ -37,7 +37,7 @@ uint32_t cnt_time;
 #define NAN_PROCESS(now, last)  \
     do { if (isnan(now)) now = last; else last = now; } while (0)
 
-
+extern QueueHandle_t VISION_send_queue;
 
 /**
 * @brief  视觉数据解包函数  decoding the vision data 
@@ -57,7 +57,7 @@ void vision_data_handler(uint8_t *pVision_Data)
         return;
     }
     if (vision.rx[0].data.cnt == vision.rx[1].data.cnt) {
-        if (++vision.rx_repeat_cnt > 10) {
+        if (++vision.rx_cnt > 10) {
             vision.rx_status = REPEAT_ERROR;
             return;
         }
@@ -65,7 +65,7 @@ void vision_data_handler(uint8_t *pVision_Data)
     vision.online           = 1;
     vision.rx_cnt++;
     vision.rx_status        = NORMAL;
-    vision.rx_repeat_cnt    = 0;
+    vision.rx_cnt    = 0;
     vision.rx[1].data.cnt   = vision.rx[0].data.cnt;
     vision.trace_id         = vision.rx[0].data.trace_id;
 
@@ -212,15 +212,27 @@ void vision_output_data(void)
     vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
     /* 4. 串口DMA 发出 */
-//  HAL_UART_Transmit_DMA(&huart4, vision_tx.buff, 25);
+//  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
 
     /* 4. 使用usb 发出 */
-//  CDC_Transmit_HS(vision_tx.buff, 25);                 //这个长度好像是28，记得参考步兵代码改一下
+    if (xQueueSend(VISION_send_queue,(uint8_t *)vision_tx.data, 10) == pdTRUE) 
+    {
+        vision.tx_cnt++;
+    }
+    else
+    {
+            // 队列满，错误处理：丢弃这帧新数据，继续下一帧
 
 
-    /*帧率处理相关*/
-	vision.tx_cnt++;
+    // 可选：统计丢包次数，用于调试
+    // static uint32_t drop_count = 0;
+    // drop_count++;
+    }
+
+
 	
 	cnt_time=osKernelSysTick()/1000;//单位：秒
+    vision.tx_freq=vision.tx_cnt/cnt_time;
 	vision.rx_freq=vision.rx_cnt/cnt_time;
+
 }

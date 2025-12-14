@@ -17,7 +17,6 @@
 #include "mode_switch_task.h"
 #include "control_def.h"
 #include "can_comm.h"
-#include "comm_task.h"
 #include "prot_rm_motor.h"
 
 extern TaskHandle_t can_msg_send_task_t;

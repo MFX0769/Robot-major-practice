@@ -27,7 +27,7 @@
 #include "remote_msg.h"
 #include "prot_dm_motor.h"
 #include "prot_rm_motor.h"
-#include "comm_task.h"
+
 //#define DEBUG_TASK_ENABLE
 
 //#define ABS(x) ((x>0)? (x): (-(x)))

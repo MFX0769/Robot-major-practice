@@ -10,14 +10,13 @@
       <TargetName>rm_main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5060960::V5.06 update 7 (build 960)::.\keil5</pArmCC>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\keil5</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32H723VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32H7xx_DFP.4.0.0</PackID>
+          <PackID>Keil.STM32H7xx_DFP.4.1.2</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x2001FFFF) IRAM2(0x24000000-0x2401FFFF) IROM(0x8000000-0x80FFFFF) CLOCK(12000000) FPU3(DFPU) CPUTYPE("Cortex-M7") ELITTLE TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -726,16 +725,6 @@
               <FilePath>..\Application\debug_task.h</FilePath>
             </File>
             <File>
-              <FileName>comm_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Application\comm_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>comm_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Application\comm_task.h</FilePath>
-            </File>
-            <File>
               <FileName>mode_switch_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\mode_switch_task.c</FilePath>
@@ -769,6 +758,11 @@
               <FileName>status_task.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Application\status_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>Vision_Send_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\Vision_Send_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -879,6 +873,11 @@
               <FileName>i2c_comm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Comm\i2c_comm.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_comm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Comm\usb_comm.c</FilePath>
             </File>
           </Files>
         </Group>

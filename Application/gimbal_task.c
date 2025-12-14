@@ -16,7 +16,7 @@
 #include "shoot_task.h"
 #include "mode_switch_task.h"
 #include "control_def.h"
-#include "comm_task.h"
+
 #include "can_comm.h"
 #include "status_task.h"
 #include "prot_T_imu.h"

@@ -25,12 +25,17 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usb_comm.h"
+
 #include "gimbal_task.h"
-#include "comm_task.h"
-#include "mode_switch_task.h"
 #include "shoot_task.h"
+#include "Vision_Send_task.h"
+
+
+#include "mode_switch_task.h"
 #include "status_task.h"
 #include "debug_task.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +62,12 @@ osThreadId status_task_t;
 osThreadId debug_task_t;
 osThreadId comm_task_t;
 osThreadId debug_task_t;
+osThreadId vision_send_task_t;
+osThreadId usb_task_t;
+
+
+QueueHandle_t VISION_send_queue; 
+
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -127,7 +138,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+  VISION_send_queue = xQueueCreate(5, 30);          //哨兵 1 128 
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -141,12 +152,21 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     comm_task_t = osThreadCreate(osThread(canTask), NULL);
 
+	osThreadDef(usbTask, Task_USB_Transmit, osPriorityHigh, 0, 512);
+    usb_task_t = osThreadCreate(osThread(usbTask), NULL);
+
+
+
+    
 /***********************AboveNormal priority task***********************/
 	osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
     gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 
-    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
+  osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
     shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
+
+  osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 512);
+    vision_send_task_t = osThreadCreate(osThread(visionsendTask), NULL);
 /**************************Normal priority task**************************/
 	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
     mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);

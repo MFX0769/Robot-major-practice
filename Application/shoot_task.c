@@ -9,7 +9,7 @@
 #include "prot_rm_judge.h"
 #include "prot_vision.h"
 #include "remote_msg.h"
-#include "comm_task.h"
+
 //#include "status_task.h"
 #include "mode_switch_task.h"
 #include "pid.h"
