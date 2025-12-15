@@ -94,8 +94,7 @@ static void TriggerMotor_pidcal(void)
     pid_calc(&pid_trigger_spd, shoot.pid.trigger_spd_fdb, shoot.pid.trigger_spd_ref);
     shoot.current = pid_trigger_spd.pos_out;  //速度环
 
-    motor_cur.trigger_cur = shoot.current;
-	trigger_motor.tx_current = motor_cur.trigger_cur;
+    trigger_motor.tx_current = shoot.current;
 }
 
 
@@ -208,7 +207,6 @@ void TriggerMotor_control(void)
 						shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//让其原地停下，防干碎拨盘
 						shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;            
 					  pid_trigger_spd.iout  = 0;
-            motor_cur.trigger_cur = 0;
 				trigger_motor.tx_current = 0;
             break;
         }
@@ -348,7 +346,6 @@ void TriggerMotor_control(void)
 						if(ABS((int)trigger_motor.rx_current)>10000 && ABS(trigger_motor.speed_rpm)<500)//
 							{
 								back_flag_cnt++;
-								motor_cur.trigger_cur = 0;
 								trigger_motor.tx_current = 0;
 							}
 							

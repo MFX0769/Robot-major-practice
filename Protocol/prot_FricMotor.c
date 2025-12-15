@@ -105,11 +105,9 @@ void FricMotor_Control(void)
 						{
 							fric[b].spd_fdb = fric_motor[b].speed_rpm;
 							fric[b].current = pid_calc(&fric_spd_pid[b],fric[b].spd_fdb ,fric[b].spd_ref );
-							motor_cur.fric_cur[b] = fric[b].current;
-							fric_motor[b].tx_current=motor_cur.fric_cur[b];
+							fric_motor[b].tx_current = fric[b].current;
 							if( ABS(fric[b].spd_fdb) < 500)//停下的时候不给电
-								motor_cur.fric_cur[b] = 0 ;
-							fric_motor[b].tx_current=motor_cur.fric_cur[b];
+								fric_motor[b].tx_current = 0 ;
 						}
         }break;
         case FIRC_MODE_RUN:
@@ -124,8 +122,7 @@ void FricMotor_Control(void)
 						{	
 						    fric[a].spd_fdb = fric_motor[a].speed_rpm;
                             fric[a].current = pid_calc(&fric_spd_pid[a],fric[a].spd_fdb ,fric[a].spd_ref );							               
-							motor_cur.fric_cur[a] = fric[a].current;
-							fric_motor[a].tx_current=motor_cur.fric_cur[a];
+							fric_motor[a].tx_current = fric[a].current;
 						}
         }break;
         default: break;
