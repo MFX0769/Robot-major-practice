@@ -215,7 +215,7 @@ void vision_output_data(void)
 //  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
 
     /* 4. 使用usb 发出 */
-    if (xQueueSend(VISION_send_queue,(uint8_t *)vision_tx.data, 10) == pdTRUE) 
+    if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 
     {
         vision.tx_cnt++;
     }

@@ -15,6 +15,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t usb_buf[30];
+extern QueueHandle_t VISION_send_queue;
 /* Private type --------------------------------------------------------------*/
 
 /* Private function declarations ---------------------------------------------*/

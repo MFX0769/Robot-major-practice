@@ -34,5 +34,5 @@ extern "C" {
 
 /* Exported function declarations --------------------------------------------*/
 void comm_usb_init(void);
-
+void Task_USB_Transmit(void *arg);
 #endif

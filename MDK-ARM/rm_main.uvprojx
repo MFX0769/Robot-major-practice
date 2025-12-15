@@ -759,11 +759,6 @@
               <FileType>5</FileType>
               <FilePath>..\Application\status_task.h</FilePath>
             </File>
-            <File>
-              <FileName>Vision_Send_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Application\Vision_Send_task.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -878,6 +873,11 @@
               <FileName>usb_comm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Comm\usb_comm.c</FilePath>
+            </File>
+            <File>
+              <FileName>Vision_Send_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Comm\Vision_Send_task.c</FilePath>
             </File>
           </Files>
         </Group>

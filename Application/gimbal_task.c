@@ -49,7 +49,6 @@ static void gimbal_init(void)
 float yaw_err;
 static void gimbal_pid_calc(void)
 {
-    float  pit_max, pit_min;
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     data_limit(gimbal.pit_angle.ref, 50, -12);

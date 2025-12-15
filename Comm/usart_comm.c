@@ -28,13 +28,12 @@ uint8_t usb_tx_buf[128];
 //uint8_t Uart4_Rx_Buff[USART4_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart4 */
 //uint8_t Uart10_Rx_Buff[USART5_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart5 */
 //uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart6 */
-
+/*为什么从上面这种变成下面这种呢？ 是因为上面那种使用keil的debug——watch的时候会出现看不到数据的情况，拷打了一下ai发现只是watch不到，数据是有的。为了防止后续调试的时候懵了，故解决这个看不到的问题如下，具体情况请见开发日志，大概在2025年10月18日*/
 volatile uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 volatile uint8_t Uart2_Rx_Buff[USART2_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 volatile uint8_t Uart3_Rx_Buff[USART3_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 volatile uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 volatile uint8_t Uart10_Rx_Buff[USART10_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-/* 强制把数组首字节改成一个魔法数 */
 
 
 
@@ -54,14 +53,11 @@ static uint32_t User_USART10_RxCpltCallback(uint8_t *buf, uint16_t len);
 
 void comm_usart_init(void)
 {
-    bsp_user_usart_Init(&huart1,Uart1_Rx_Buff,USART1_RX_BUFFER_SIZE,User_USART1_RxCpltCallback);
-    bsp_user_usart_Init(&huart2, Uart2_Rx_Buff, USART2_RX_BUFFER_SIZE, User_USART2_RxCpltCallback);
-//    bsp_user_usart_Init(&huart3, Uart3_Rx_Buff, USART3_RX_BUFFER_SIZE, User_USART3_RxCpltCallback);
-    bsp_user_usart_Init(&huart6, Uart6_Rx_Buff, USART6_RX_BUFFER_SIZE, User_USART6_RxCpltCallback);
-    bsp_user_usart_Init(&huart10,Uart10_Rx_Buff,USART10_RX_BUFFER_SIZE,User_USART10_RxCpltCallback);
-    // bsp_user_usart_Init(&huart1,Uart1_Rx_Buff,USART1_RX_BUFFER_SIZE,rc_callback_handler);
-//    bsp_user_usart_Init(&huart6,Uart6_Rx_Buff,USART6_RX_BUFFER_SIZE,User_USART6_RxCpltCallback);
-Uart1_Rx_Buff[0] = 0xAB;
+    bsp_user_usart_Init(&huart1,(uint8_t *)Uart1_Rx_Buff,USART1_RX_BUFFER_SIZE,User_USART1_RxCpltCallback);
+    bsp_user_usart_Init(&huart2, (uint8_t *)Uart2_Rx_Buff, USART2_RX_BUFFER_SIZE, User_USART2_RxCpltCallback);
+    bsp_user_usart_Init(&huart6, (uint8_t *)Uart6_Rx_Buff, USART6_RX_BUFFER_SIZE, User_USART6_RxCpltCallback);
+    bsp_user_usart_Init(&huart10,(uint8_t *)Uart10_Rx_Buff,USART10_RX_BUFFER_SIZE,User_USART10_RxCpltCallback);
+
 
 }
 
