@@ -32,6 +32,9 @@ extern "C" {
 #define USART9_RX_BUFFER_SIZE 256
 #define USART10_RX_BUFFER_SIZE 28   //vision数据长度
 #define USART6_RX_BUFFER_SIZE 18
+
+#define   JUDGE_HUART   huart2
+
 /* Private type --------------------------------------------------------------*/
 
 /* Exported macros -----------------------------------------------------------*/

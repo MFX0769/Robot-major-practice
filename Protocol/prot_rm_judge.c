@@ -11,7 +11,7 @@
 /*****************数据结构体定义**********************/
 frame_header											FrameHeader;		//帧头
 
-game_status_t									game_status;
+game_status_t									Game_status;
 game_result_t									Game_Result;
 game_robot_HP_t               RobotHP;
 dart_status_t									Dart_Status;
@@ -73,7 +73,7 @@ int Judge_Read_Data(uint8_t *ReadFromUsart)
     switch (CmdID)
     {
         case ID_game_state:
-            memcpy(&game_status,  ReadFromUsart + DATA, LEN_game_state);
+            memcpy(&Game_status,  ReadFromUsart + DATA, LEN_game_state);
             break;
 
         case ID_game_result:

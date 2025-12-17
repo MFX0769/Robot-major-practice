@@ -12,7 +12,7 @@
 #define PROT_RM_JUDGE_H
 #include "stdint.h"
 #include "crc.h"
-//#include "modeswitch_task.h"
+#include "mode_switch_task.h"
 
 
 #define 	JUDGESEND_PERIOD 	10  //发送间隔，理论上越短越快
@@ -370,7 +370,7 @@ int Judge_Read_Data(uint8_t *ReadFromUsart);
 
 
 extern shoot_data_t Shoot_Data;
-extern game_status_t game_status;
+extern game_status_t Game_status;
 extern remote_control_t Remote_Control;
 extern power_heat_data_t Power_Heat_Data;//(2025年2月27日 仔细测试各个电机的功率，给硬件组的大佬做降压！
 #endif //版本定义

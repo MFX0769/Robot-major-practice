@@ -849,6 +849,16 @@
               <FileType>5</FileType>
               <FilePath>..\Protocol\prot_FricMotor.h</FilePath>
             </File>
+            <File>
+              <FileName>prot_judge_send.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_judge_send.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_judge_send.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_judge_send.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -878,6 +888,16 @@
               <FileName>Vision_Send_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Comm\Vision_Send_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>judge_comm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Comm\judge_comm.c</FilePath>
+            </File>
+            <File>
+              <FileName>judge_comm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Comm\judge_comm.h</FilePath>
             </File>
           </Files>
         </Group>
