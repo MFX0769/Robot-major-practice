@@ -146,4 +146,5 @@ extern vision_mode_e vision_mode;
 void vision_data_handler(uint8_t *pVision_Data);   // ���ڻص�
 void vsn_gimbal_ref_calc(void);            // 1 ms ����
 void vision_output_data(void);
+
 #endif 

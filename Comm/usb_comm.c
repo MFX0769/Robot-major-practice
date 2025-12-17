@@ -43,7 +43,7 @@ void comm_usb_init(void)
 * @param  None.
 * @return None.
 */
-void Task_USB_Transmit(void *arg)
+void Task_USB_Transmit(void const *arg)
 {
   /* Cache for Task */
 

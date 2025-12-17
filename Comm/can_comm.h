@@ -79,9 +79,9 @@ void comm_can_init(void);
 void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf);
 void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf);
 void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf);
-void Task_CAN1Transmit(void *arg);
-void Task_CAN2Transmit(void *arg);
-void Task_CAN3Transmit(void *arg);
+void Task_CAN1Transmit(void const *arg);
+void Task_CAN2Transmit(void const *arg);
+void Task_CAN3Transmit(void const *arg);
 
 extern uint32_t trigger_can_receive_cnt;
 extern uint32_t fric_can_recive_cnt;

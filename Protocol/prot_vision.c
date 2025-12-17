@@ -22,6 +22,7 @@
 #include "prot_new_rc.h"
 #include "prot_rm_judge.h"
 #include "prot_dr16.h"
+#include "usart.h"
 
 #define ABS(x)  ((x)>0?(x):-(x))
 #define PI      3.14159265358979323846f
@@ -205,11 +206,11 @@ void vision_output_data(void)
     vision_tx.data.camp = 0;
     vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺  这是抄步兵的，飞机记得后面改一下
     vision_tx.data.shooter_speed = 3;                       // 固定 3 档
-    vision_tx.data.vacancy       = 0;                       // 预留，填 0
+//    vision_tx.data.vacancy       = 0;                       // 预留，填 0
     
 
 	Trace_ID_Select_OLD(&rc);
-    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
+//    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
     /* 4. 串口DMA 发出 */
 //  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
@@ -222,8 +223,6 @@ void vision_output_data(void)
     else
     {
             // 队列满，错误处理：丢弃这帧新数据，继续下一帧
-
-
     // 可选：统计丢包次数，用于调试
     // static uint32_t drop_count = 0;
     // drop_count++;

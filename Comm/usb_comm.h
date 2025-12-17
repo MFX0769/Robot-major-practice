@@ -34,5 +34,5 @@ extern "C" {
 extern uint8_t usb_buf[30];
 /* Exported function declarations --------------------------------------------*/
 void comm_usb_init(void);
-void Task_USB_Transmit(void *arg);
+void Task_USB_Transmit(void const *arg);
 #endif

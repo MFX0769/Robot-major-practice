@@ -209,17 +209,18 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 * @param  None.
 * @return None.
 */
-void Task_CAN1Transmit(void *arg)
+void Task_CAN1Transmit(void const *arg)
 {
   /* Cache for Task */
 //  uint8_t free_can_mailbox;
   /* Pre-Load for task */
-  
+   uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
   
   for(;;)
   {
-	  dji_send_current(&trigger_motor,0,0,0);
+	  dji_send_current(&fric_motor[0],&fric_motor[1],NULL,NULL);
+	  osDelayUntil(&wake_time, 1);
     /* CAN1 Send Port */
 //    if(xQueueReceive(CAN1_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
 //    {
@@ -231,17 +232,20 @@ void Task_CAN1Transmit(void *arg)
   }
 }
 
-void Task_CAN2Transmit(void *arg)
+void Task_CAN2Transmit(void const *arg)
 {
   /* Cache for Task */
 //  uint8_t free_can_mailbox;
   /* Pre-Load for task */
-  
+   uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
   
   for(;;)
   {
+	  dji_send_current(&pit_motor,&yaw_motor,&trigger_motor ,NULL);
 	  dm_mit_control(&pitch_motor);
+	  dm_mit_control(&dm3507_motor);
+	  osDelayUntil(&wake_time, 1);
     /* CAN2 Send Port */
 //    if(xQueueReceive(CAN2_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
 //    {
@@ -254,17 +258,18 @@ void Task_CAN2Transmit(void *arg)
 }
 
 
-void Task_CAN3Transmit(void *arg)
+void Task_CAN3Transmit(void const *arg)
 {
   /* Cache for Task */
 //  uint8_t free_can_mailbox;
 
   /* Pre-Load for task */
-  
+   uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
   
   for(;;)
   {
+	  osDelayUntil(&wake_time, 1);
     /* CAN2 Send Port */
 //    if(xQueueReceive(CAN2_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
 //    {
@@ -275,14 +280,6 @@ void Task_CAN3Transmit(void *arg)
 //    }
   }
 }
-
-
-
-
-
-
-
-
 
 //void encoder_data_handler(moto_measure_t *ptr, FDCAN_HandleTypeDef *hfdcan, uint8_t *CAN_Rx_data)
 //{
