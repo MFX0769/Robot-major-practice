@@ -34,11 +34,11 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 13.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.006f,0.0004f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
     PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,1.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -49,6 +49,7 @@ static void gimbal_init(void)
 float yaw_err;
 static void gimbal_pid_calc(void)
 {
+	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     data_limit(gimbal.pit_angle.ref, 50, -12);
@@ -77,10 +78,10 @@ static void gimbal_pid_calc(void)
 
 void gimbal_PID_clear(gimbal_t *g)
 {
-    g->yaw_angle.ref = 0.0f;
-    g->yaw_spd.ref   = 0.0f;
-    g->pit_angle.ref = 0.0f;
-    g->pit_spd.ref   = 0.0f;
+    g->yaw_angle.ref = g->yaw_angle.fdb = imu_data.yaw;
+    g->yaw_spd.ref   = g->yaw_spd.fdb = 0;
+    g->pit_angle.ref = g->pit_angle.fdb = imu_data.pitch;
+    g->pit_spd.ref   = g->pit_spd.fdb = 0;
     g->yaw_ecd.ref   = 0.0f;
     g->yaw_spd_ecd.ref = 0.0f;
 

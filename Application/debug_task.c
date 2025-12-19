@@ -84,12 +84,12 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
 //					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_max);
 //			      DataScope_Get_Channel_Data(gimbal.gimbal_limit.pitch_angle_min);
 					
-						DataScope_Get_Channel_Data(vision.aim_status);
-						DataScope_Get_Channel_Data(vision .rx_freq);
-						DataScope_Get_Channel_Data(vision.rx_cnt);
-						DataScope_Get_Channel_Data(vision.target_pit_angle);
+//						DataScope_Get_Channel_Data(vision.aim_status);
+//						DataScope_Get_Channel_Data(vision .rx_freq);
+//						DataScope_Get_Channel_Data(vision.rx_cnt);
+//						DataScope_Get_Channel_Data(vision.target_pit_angle);
 					
-			          DataScope_Get_Channel_Data(imu_data.pitch);
+//			          DataScope_Get_Channel_Data(imu_data.pitch);
 					  DataScope_Get_Channel_Data(gimbal.pit_angle.ref);
             DataScope_Get_Channel_Data(gimbal.pit_angle.fdb);
 				 
@@ -100,8 +100,8 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
             DataScope_Get_Channel_Data(dm3507_motor.t_ref);
             DataScope_Get_Channel_Data(dm3507_motor.t_set);
 								  
-            DataScope_Get_Channel_Data(dm3507_motor.send_cnt);
-            DataScope_Get_Channel_Data(dm3507_motor.receive_cnt);
+//            DataScope_Get_Channel_Data(dm3507_motor.send_cnt);
+//            DataScope_Get_Channel_Data(dm3507_motor.receive_cnt);
 						
 					
 //            DataScope_Get_Channel_Data(moto_pit_4005.ecd_pos);
@@ -119,7 +119,7 @@ static void OtherDataWavePkg(uint8_t debug_wave) {
         case 112: { /* ÔÆÌ¨YAW PID IMU*/
 //					 	DataScope_Get_Channel_Data(vision.target_yaw_angle);
 //					 	DataScope_Get_Channel_Data(yaw_err);
-            DataScope_Get_Channel_Data(imu_data.yaw);
+//            DataScope_Get_Channel_Data(imu_data.yaw);
 //					  DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_max);
 //            DataScope_Get_Channel_Data(gimbal.gimbal_limit.yaw_angle_min);
 					
