@@ -37,14 +37,14 @@ void MX_IWDG1_Init(void)
   /* USER CODE BEGIN IWDG1_Init 1 */
 
   /* USER CODE END IWDG1_Init 1 */
-//  hiwdg1.Instance = IWDG1;
-//  hiwdg1.Init.Prescaler = IWDG_PRESCALER_32;
-//  hiwdg1.Init.Window = 4095;
-//  hiwdg1.Init.Reload = 1000;
-//  if (HAL_IWDG_Init(&hiwdg1) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  hiwdg1.Instance = IWDG1;
+  hiwdg1.Init.Prescaler = IWDG_PRESCALER_32;
+  hiwdg1.Init.Window = 4095;
+  hiwdg1.Init.Reload = 1000;
+  if (HAL_IWDG_Init(&hiwdg1) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN IWDG1_Init 2 */
 
   /* USER CODE END IWDG1_Init 2 */

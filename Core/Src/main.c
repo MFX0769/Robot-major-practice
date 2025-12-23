@@ -23,6 +23,7 @@
 #include "fdcan.h"
 #include "iwdg.h"
 #include "memorymap.h"
+#include "spi.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -110,8 +111,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USART6_UART_Init();
   MX_USART10_UART_Init();
-
-  MX_USB_DEVICE_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
 	comm_can_init();
