@@ -7,11 +7,11 @@
   * @version 1.0
   * @note 
 	
- * -----------------------------------¹ýÂË¹æÔò½âÊÍ-----------------------------------
- * Õâ¸ö¹æÔò±íµÄ¶¨ÒåºÍÊµÀý»¯¾ùÔÚbsp_can£¬ÓÃ»§ÔÚÖÐ¼ä²ãÌîÈë¾ßÌå¹æÔò²ÎÊý
- * count£ºÕâ¸öcan¹ýÂË¹æÔòÌõÊý£¨ÉÏÏÞ10Ìõ£¬µ«¿ÉÒÔÈ¥bsp_can.h¸Äbsp_can_filt_tbl_tµÄdataÊý×éµÄ³¤¶È£©
- * £¡£¡£¡Ò»Ìõ¹æÔòÕ¼dataÊý×éÖÐ3¸öÎ»ÖÃ£¬×¢Òâ¸ñÊ½£ºtype;id_high;id_low £¨¾ùÎªu16ÀàÐÍ£©£¡£¡£¡
- * TypeÓÐÕâÐ©¿ÉÒÔÑ¡Ôñ£º
+ * -----------------------------------ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-----------------------------------
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bsp_canï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * countï¿½ï¿½ï¿½ï¿½ï¿½canï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥bsp_can.hï¿½ï¿½bsp_can_filt_tbl_tï¿½ï¿½dataï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½È£ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼dataï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3ï¿½ï¿½Î»ï¿½Ã£ï¿½×¢ï¿½ï¿½ï¿½Ê½ï¿½ï¿½type;id_high;id_low ï¿½ï¿½ï¿½ï¿½Îªu16ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * Typeï¿½ï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
             * FLT_RANGE = 0x0000U
             * FLT_DUAL  = 0x0001U
             * FLT_MASK  = 0x0002U
@@ -30,7 +30,7 @@
 uint32_t trigger_can_receive_cnt=0;
 uint32_t fric_can_recive_cnt = 0;
 uint32_t yaw_can_receive_cnt = 0;
-/*-----------------------------¹ýÂË¹æÔò±í½áÊø-----------------------------------*/
+/*-----------------------------ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-----------------------------------*/
 
 /* Private type --------------------------------------------------------------*/
 
@@ -38,36 +38,36 @@ uint32_t yaw_can_receive_cnt = 0;
 
 /* function prototypes -------------------------------------------------------*/
 
-/*-----------------------------CAN³õÊ¼»¯¿ªÊ¼-----------------------------------*/
+/*-----------------------------CANï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê¼-----------------------------------*/
 /**
-* @brief  ³õÊ¼»¯CAN
-* @param  bsp_user_can_t BSP²ã·â×°µÄCAN¶Ë¿Ú
+* @brief  ï¿½ï¿½Ê¼ï¿½ï¿½CAN
+* @param  bsp_user_can_t BSPï¿½ï¿½ï¿½×°ï¿½ï¿½CANï¿½Ë¿ï¿½
 * @retval None
 */
 void comm_can_init(void)
 {
-	  /*-----------ÓÃ»§ÔÚ´ËÐÞ¸Ä¹ýÂËÆ÷ÄÚÈÝ£¨×î¶à10Ìõ¹æÔò£¬µ«¿ÉÒÔÔÚbspÎÄ¼þÀï¸Ä£©--------*/
-    bsp_can1_filt_tbl.count = 2;//CAN1Ò»¹²ÓÃÁË¶àÉÙÌõ¹ýÂË¹æÔò
+	  /*-----------ï¿½Ã»ï¿½ï¿½Ú´ï¿½ï¿½Þ¸Ä¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½10ï¿½ï¿½ï¿½ï¿½ï¿½ò£¬µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bspï¿½Ä¼ï¿½ï¿½ï¿½Ä£ï¿½--------*/
+    bsp_can1_filt_tbl.count = 2;//CAN1Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can1_filt_tbl.data[1]=0x206&0x7ff;
 	  bsp_can1_filt_tbl.data[2]=0x207&0x7ff;
 		bsp_can1_filt_tbl.data[3]=FLT_DUAL;
 		bsp_can1_filt_tbl.data[4]=0x017&0x7ff;
 		bsp_can1_filt_tbl.data[5]=0x018&0x7ff;
-	bsp_can2_filt_tbl.count = 2;//CAN2Ò»¹²ÓÃÁË¶àÉÙÌõ¹ýÂË¹æÔò
+	bsp_can2_filt_tbl.count = 2;//CAN2Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can2_filt_tbl.data[1]=0x206&0x7ff;
 	  bsp_can2_filt_tbl.data[2]=0x007&0x7ff;
 		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
 		bsp_can2_filt_tbl.data[4]=0x001&0x7ff;
 		bsp_can2_filt_tbl.data[5]=0x007&0x7ff;
-    bsp_can3_filt_tbl.count = 1;//CAN3Ò»¹²ÓÃÁË¶àÉÙÌõ¹ýÂË¹æÔò
+    bsp_can3_filt_tbl.count = 1;//CAN3Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can3_filt_tbl.data[1]=0x206&0x7ff;
 	  bsp_can3_filt_tbl.data[2]=0x207&0x7ff;
 	
 
-	  /*ÔÙµ÷ÓÃº¯ÊýÀ´³õÊ¼»¯*/
+	  /*ï¿½Ùµï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½*/
     bsp_can_init(&bsp_user_can1,User_CAN1_RxCpltCallback);
     bsp_can_init(&bsp_user_can2,User_CAN2_RxCpltCallback);
     bsp_can_init(&bsp_user_can3,User_CAN3_RxCpltCallback);
@@ -82,7 +82,7 @@ void comm_can_init(void)
 }
     
 
-/*-----------------------------CAN³õÊ¼»¯¿ªÊ¼-----------------------------------*/
+/*-----------------------------CANï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê¼-----------------------------------*/
 
 
 /**
@@ -205,14 +205,14 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 }
 
 /**
-* @brief  CAN·¢ËÍÈÎÎñ
+* @brief  CANï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 * @param  None.
 * @return None.
 */
 void Task_CAN1Transmit(void const *arg)
 {
   /* Cache for Task */
-//  uint8_t free_can_mailbox;
+ static uint8_t  can1_free_mailbox;
   /* Pre-Load for task */
    uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
@@ -283,15 +283,15 @@ void Task_CAN3Transmit(void const *arg)
 
 //void encoder_data_handler(moto_measure_t *ptr, FDCAN_HandleTypeDef *hfdcan, uint8_t *CAN_Rx_data)
 //{
-//    // ×ª×Ó×ªËÙ
+//    // ×ªï¿½ï¿½×ªï¿½ï¿½
 //    ptr->speed_rpm = (int16_t)(CAN_Rx_data[2] << 8 | CAN_Rx_data[3]);
 //    ptr->given_current = (int16_t)(CAN_Rx_data[4] << 8 | CAN_Rx_data[5]);
 
-//    // »úÐµ½Ç¶È
+//    // ï¿½ï¿½Ðµï¿½Ç¶ï¿½
 //    ptr->last_ecd = ptr->ecd;
 //    ptr->ecd = (uint16_t)(CAN_Rx_data[0] << 8 | CAN_Rx_data[1]);
 
-//    // Ïà¶Ô¿ª»úºóµÄ½Ç¶È
+//    // ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ç¶ï¿½
 //    if (ptr->ecd - ptr->last_ecd > 4096)
 //        ptr->round_cnt--;
 //    else if (ptr->ecd - ptr->last_ecd < -4096)

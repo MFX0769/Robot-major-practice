@@ -14,15 +14,19 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-uint8_t usb_buf[30];
-extern QueueHandle_t VISION_send_queue;
+uint8_t vision_usb_buf[30];//仅用作视觉数据在队列消息接收时的缓冲区
 /* Private type --------------------------------------------------------------*/
+
+/* Exported types ------------------------------------------------------------*/ 
+extern QueueHandle_t VISION_send_queue;
 
 /* Private function declarations ---------------------------------------------*/
 
 /* function prototypes -------------------------------------------------------*/
 
-/*-----------------------------CAN��ʼ����ʼ-----------------------------------*/
+
+/* Private functions -------------------------------------------------------*/
+
 /**
 * @brief  ��ʼ��CAN
 * @param  bsp_user_can_t BSP���װ��CAN�˿�
@@ -54,9 +58,9 @@ void Task_USB_Transmit(void const *arg)
   for(;;)
   {
 
-   if(xQueueReceive(VISION_send_queue,usb_buf,portMAX_DELAY) == pdPASS)
+   if(xQueueReceive(VISION_send_queue,vision_usb_buf,portMAX_DELAY) == pdPASS)
    {
-     CDC_Transmit_HS(usb_buf, 30);
+     CDC_Transmit_HS(vision_usb_buf, 30);
    }
   }
 }

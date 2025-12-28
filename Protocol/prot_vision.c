@@ -8,6 +8,8 @@
   *	@author
   *
   */
+
+/* Includes ------------------------------------------------------------------*/
 #include "prot_vision.h"
 #include "control_def.h"
 #include "string.h"
@@ -23,10 +25,15 @@
 #include "prot_rm_judge.h"
 #include "prot_dr16.h"
 #include "usart.h"
-
+/* Private define ------------------------------------------------------------*/
 #define ABS(x)  ((x)>0?(x):-(x))
 #define PI      3.14159265358979323846f
+/*  NAN 保护宏  */
+#ifndef NAN_PROCESS
+#define NAN_PROCESS(now, last)  \
+    do { if (isnan(now)) now = last; else last = now; } while (0)
 
+/* Private variables ---------------------------------------------------------*/
 /* 唯一全局变量 */
 vision_t vision;
 vision_tx_t vision_tx;
@@ -34,11 +41,11 @@ vision_mode_e vision_mode;
 /*调试数值*/
 uint8_t vis_e[2];
 uint32_t cnt_time;
-/*  NAN 保护宏  */
-#define NAN_PROCESS(now, last)  \
-    do { if (isnan(now)) now = last; else last = now; } while (0)
-
+/* Private type --------------------------------------------------------------*/
 extern QueueHandle_t VISION_send_queue;
+/* Private function declarations ---------------------------------------------*/
+
+/* function prototypes -------------------------------------------------------*/
 
 /**
 * @brief  视觉数据解包函数  decoding the vision data 
