@@ -32,7 +32,7 @@
 #ifndef NAN_PROCESS
 #define NAN_PROCESS(now, last)  \
     do { if (isnan(now)) now = last; else last = now; } while (0)
-
+#endif
 /* Private variables ---------------------------------------------------------*/
 /* 唯一全局变量 */
 vision_t vision;
