@@ -2,14 +2,14 @@
   ******************************************************************************
   * @file    bsp.c
   * @author  ZZY 1950828677@qq.com
-  * @brief   对所有bsp层库文件的总调用，包括：初始化；发送；接收
+  * @brief   对所有bsp层库文件的总调�?，包�?：初始化；发送；接收
   * @date    2025-10
   * @version 1.0
   * @note 
 	
- * -----------------------------------���˹������-----------------------------------
+ * -----------------------------------���˹������?-----------------------------------
  * ���������Ķ����ʵ��������bsp_can���û����м���������������
- * count�����can���˹�������������10����������ȥbsp_can.h��bsp_can_filt_tbl_t��data����ĳ��ȣ�
+ * count�����can���˹�������������10����������ȥbsp_can.h��bsp_can_filt_tbl_t��data����ĳ��ȣ�?
  * ������һ������ռdata������3��λ�ã�ע���ʽ��type;id_high;id_low ����Ϊu16���ͣ�������
  * Type����Щ����ѡ��
             * FLT_RANGE = 0x0000U
@@ -20,9 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "can_comm.h"
-#include "prot_rm_motor.h"
-#include "prot_dm_motor.h"
-#include "prot_T_imu.h"
+
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -30,12 +28,14 @@
 uint32_t trigger_can_receive_cnt=0;
 uint32_t fric_can_recive_cnt = 0;
 uint32_t yaw_can_receive_cnt = 0;
-/*-----------------------------���˹��������-----------------------------------*/
+/*-----------------------------���˹��������?-----------------------------------*/
 
 /* Private type --------------------------------------------------------------*/
 
 /* Private function declarations ---------------------------------------------*/
-
+extern QueueHandle_t CAN1_Tx_queue;
+extern QueueHandle_t CAN2_Tx_queue;
+extern QueueHandle_t CAN3_Tx_queue;
 /* function prototypes -------------------------------------------------------*/
 
 /*-----------------------------CAN��ʼ����ʼ-----------------------------------*/
@@ -46,7 +46,7 @@ uint32_t yaw_can_receive_cnt = 0;
 */
 void comm_can_init(void)
 {
-	  /*-----------�û��ڴ��޸Ĺ��������ݣ����10�����򣬵�������bsp�ļ���ģ�--------*/
+	  /*-----------�û��ڴ��޸Ĺ��������ݣ����?10�����򣬵�������bsp�ļ���ģ�?--------*/
     bsp_can1_filt_tbl.count = 2;//CAN1һ�����˶��������˹���
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can1_filt_tbl.data[1]=0x206&0x7ff;
@@ -204,6 +204,89 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 //    }
 }
 
+
+
+/*-----------------------------CAN���Ͳ��֣����з��ͽӿ�����н��շ�������? CAN Send function (queue send interface)-----------------------------------*/
+
+/**
+* @brief  
+* @param  None.
+* @return None.
+*/
+void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
+{
+    CanFrame_t msg = {0};
+
+    msg.ID   = id;
+    msg.DLC  = (dlc > 8) ? 8 : dlc;
+
+    if (data != NULL)
+    {
+        memcpy(msg.Data, data, msg.DLC);
+    }
+
+    BaseType_t ret = xQueueSend(CAN1_Tx_queue, &msg, 0);
+
+    if (ret != pdPASS)
+    {
+        // ��ѡ����֡����
+    }
+}
+
+/**
+* @brief  
+* @param  None.
+* @return None.
+*/void Prot_CAN2_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
+{
+    CanFrame_t msg = {0};
+
+    msg.ID   = id;
+    msg.DLC  = (dlc > 8) ? 8 : dlc;
+
+    if (data != NULL)
+    {
+        memcpy(msg.Data, data, msg.DLC);
+    }
+
+    BaseType_t ret = xQueueSend(CAN2_Tx_queue, &msg, 0);
+
+    if (ret != pdPASS)
+    {
+        // ѡ֡
+    }
+}
+
+/**
+* @brief  
+* @param  None.
+* @return None.
+*/
+void Prot_CAN3_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
+{
+    CanFrame_t msg = {0};
+
+    msg.ID   = id;
+    msg.DLC  = (dlc > 8) ? 8 : dlc;
+
+    if (data != NULL)
+    {
+        memcpy(msg.Data, data, msg.DLC);
+    }
+
+    BaseType_t ret = xQueueSend(CAN3_Tx_queue, &msg, 0);
+
+    if (ret != pdPASS)
+    {
+        // ѡ֡
+    }
+}
+
+
+
+
+/*-----------------------------CAN�������� CAN Send task (queue receive)-----------------------------------*/
+
 /**
 * @brief  CAN��������
 * @param  None.
@@ -212,90 +295,105 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 void Task_CAN1Transmit(void const *arg)
 {
   /* Cache for Task */
- static uint8_t  can1_free_mailbox;
+  uint8_t  can1_free_mailbox;
+  CanFrame_t msg;
   /* Pre-Load for task */
-   uint32_t wake_time = osKernelSysTick();
+  uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
-  
-  for(;;)
-  {
-	  dji_send_current(&fric_motor[0],&fric_motor[1],NULL,NULL);
-	  osDelayUntil(&wake_time, 1);
-    /* CAN1 Send Port */
-//    if(xQueueReceive(CAN1_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
-//    {
-//      do{
-//        free_can_mailbox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-//      }while(free_can_mailbox == 0);
-//      bsp_can_std_send(&bsp_user_can1,CAN_TxMsg.ID,CAN_TxMsg.Data);
-//    }
-  }
+    for (;;)
+    {
+        if (xQueueReceive(CAN1_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
+        {
+//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0 && timeout > 0)
+//            {
+//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+//                timeout--;
+//            }
+
+//            if (timeout > 0)
+//            {
+//                // 有空闲邮箱，发送
+//                bsp_can_std_send(&hcan1, msg.ID, msg.Data, msg.DLC);
+//            }
+//            else
+//            {
+//                // 超时：丢帧或日志
+//                // can_tx_timeout_cnt++;
+//            }
+                bsp_can_std_transmit(CAN_CHANNEL_1, msg.ID, msg.Data);
+
+        }
+    }
 }
 
 void Task_CAN2Transmit(void const *arg)
 {
+
   /* Cache for Task */
-//  uint8_t free_can_mailbox;
+  uint8_t  can2_free_mailbox;
+  CanFrame_t msg;
   /* Pre-Load for task */
-   uint32_t wake_time = osKernelSysTick();
+  uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
-  
-  for(;;)
-  {
-	  dji_send_current(&pit_motor,&yaw_motor,&trigger_motor ,NULL);
-	  dm_mit_control(&pitch_motor);
-	  dm_mit_control(&dm3507_motor);
-	  osDelayUntil(&wake_time, 1);
-    /* CAN2 Send Port */
-//    if(xQueueReceive(CAN2_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
-//    {
-//      do{
-//        free_can_mailbox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
-//      }while(free_can_mailbox == 0);
-//      bsp_can_std_send(&bsp_user_can2,CAN_TxMsg.ID,CAN_TxMsg.Data);
-//    }
-  }
+    for (;;)
+    {
+        if (xQueueReceive(CAN2_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
+        {
+//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0 && timeout > 0)
+//            {
+//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+//                timeout--;
+//            }
+
+//            if (timeout > 0)
+//            {
+//                // 有空闲邮箱，发送
+//                bsp_can_std_send(&hcan2, msg.ID, msg.Data, msg.DLC);
+//            }
+//            else
+//            {
+//                // 超时：丢帧或日志
+//                // can_tx_timeout_cnt++;
+//            }
+					bsp_can_std_transmit(CAN_CHANNEL_2, msg.ID, msg.Data);
+        }
+    }
 }
 
 
 void Task_CAN3Transmit(void const *arg)
 {
   /* Cache for Task */
-//  uint8_t free_can_mailbox;
-
+  uint8_t  can3_free_mailbox;
+  CanFrame_t msg;
   /* Pre-Load for task */
-   uint32_t wake_time = osKernelSysTick();
+  uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
-  
-  for(;;)
-  {
-	  osDelayUntil(&wake_time, 1);
-    /* CAN2 Send Port */
-//    if(xQueueReceive(CAN2_TxPort,&CAN_TxMsg,portMAX_DELAY) == pdPASS)
-//    {
-//      do{
-//        free_can_mailbox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
-//      }while(free_can_mailbox == 0);
-//      bsp_can_std_send(&bsp_user_can3,CAN_TxMsg.ID,CAN_TxMsg.Data);
-//    }
-  }
+    for (;;)
+    
+    {
+        if (xQueueReceive(CAN3_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
+        {
+//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan3) == 0 && timeout > 0)
+//            {
+//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+//                timeout--;
+//            }
+
+//            if (timeout > 0)
+//            {
+//                // 有空闲邮箱，发送
+//                bsp_can_std_send(&hcan3, msg.ID, msg.Data, msg.DLC);
+//            }
+//            else
+//            {
+//                // 超时：丢帧或日志
+//                // can_tx_timeout_cnt++;
+//            }
+						bsp_can_std_transmit(CAN_CHANNEL_3, msg.ID, msg.Data);
+        }
+    }
 }
-
-//void encoder_data_handler(moto_measure_t *ptr, FDCAN_HandleTypeDef *hfdcan, uint8_t *CAN_Rx_data)
-//{
-//    // ת��ת��
-//    ptr->speed_rpm = (int16_t)(CAN_Rx_data[2] << 8 | CAN_Rx_data[3]);
-//    ptr->given_current = (int16_t)(CAN_Rx_data[4] << 8 | CAN_Rx_data[5]);
-
-//    // ��е�Ƕ�
-//    ptr->last_ecd = ptr->ecd;
-//    ptr->ecd = (uint16_t)(CAN_Rx_data[0] << 8 | CAN_Rx_data[1]);
-
-//    // ��Կ�����ĽǶ�
-//    if (ptr->ecd - ptr->last_ecd > 4096)
-//        ptr->round_cnt--;
-//    else if (ptr->ecd - ptr->last_ecd < -4096)
-//        ptr->round_cnt++;
-
-//    ptr->total_ecd = ptr->round_cnt * 8192 + ptr->ecd - ptr->offset_ecd;
-//}

@@ -47,13 +47,13 @@ typedef enum{
       FLT_MASK = 0x0002U
 }bsp_can_filter_type_t;
 
-typedef enum
-{
-	CAN_CHANNEL_1,
-	CAN_CHANNEL_2,
-	CAN_CHANNEL_3,
-	CAN_CHANNEL_NUM,
-}can_channel_e;
+ typedef enum
+ {
+ 	CAN_CHANNEL_1,
+ 	CAN_CHANNEL_2,
+ 	CAN_CHANNEL_3,
+ 	CAN_CHANNEL_NUM,
+ }can_channel_e;
 
 /*----------------------------------CAN过滤器规则配置相关-------------------------------------*/
 // bsp_can_filter规则表，由上层使用者填写 。变长表头 + 

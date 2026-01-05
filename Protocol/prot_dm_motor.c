@@ -1,21 +1,54 @@
 #include "prot_dm_motor.h"
-#include "math_calcu.h"
+
 dm_motor_t pitch_motor;
 dm_motor_t dm3507_motor;
-/*
- * @brief    	´ïÃîµç»ú³õÊ¼»¯ÉèÖÃ
- * @param[in] *motor    : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
- * @param[in] motor_type: µç»úÀàÐÍ
- * @param[in] can_periph: µç»úËùÔÚcanÍ¨µÀ
+
+
+/**
+ * @brief     ´ïÃîµç»úÐ­Òé²ã¶ÔCAN·¢ËÍ½Ó¿ÚµÄ·â×°   Encapsulation of the CAN sending interface at the protocol layer of DM motor
+ * @param[in] *motor   : ´ïÃîµç»ú½á¹¹ÌåÖ¸Õë   Pointer to DM motor structure
+ * @param[in] id      : CANÖ¡ID  CAN frame ID
+ * @param[in] data    : CANÖ¡Êý¾Ý  CAN frame data
+ * @param[in] dlc     : CANÖ¡³¤¶È  CAN frame length	
+ * @retval    void
+ * @note	  ¸Ãº¯Êýµ÷ÓÃprot_can_send_interface.hÖÐÉùÃ÷µÄCAN·¢ËÍ½Ó¿Úº¯Êý,Èç¹ûÒªÐÞ¸ÄCAN·¢ËÍ½Ó¿Ú,Ö»ÐèÐÞ¸Äµç»ú½á¹¹ÌåÀïÃæµÄcan_channel¼´¿É×Ô¶¯ÊµÏÖÇÐ»»
+ *            This function calls the CAN sending interface function declared in prot_can_send_interface.h. If you want to modify the CAN sending interface, you only need to modify the can_channel in the motor structure to automatically switch.
+ */
+static void dm_motor_can_interface_send(dm_motor_t *motor, uint32_t id, const uint8_t *data)
+{
+	switch (motor->prot_can_channel)
+	{
+		case PROT_CAN_CHANNEL_1:
+			Prot_CAN1_Send_Frame(id, data, 8);
+			break;
+		case PROT_CAN_CHANNEL_2:
+			Prot_CAN2_Send_Frame(id, data, 8);
+			break;
+		case PROT_CAN_CHANNEL_3:
+			Prot_CAN3_Send_Frame(id, data, 8);
+			break;
+		default:
+			// ´íÎó´¦Àí£ºÎÞÐ§µÄ CAN Í¨µÀ
+			break;
+	}	
+}
+
+
+
+/**
+ * @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] *motor    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
+ * @param[in] motor_type: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
+ * @param[in] can_periph: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½canÍ¨ï¿½ï¿½
  * @param[in] r_id      : Master_id
  * @param[in] t_id      : Can_id
- * @param[in] ratio     : µç»ú¼õËÙ±È
- * @param[in] zero_point: µç»ú°²×°Áãµã
+ * @param[in] ratio     : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù±ï¿?
+ * @param[in] zero_point: ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½
  * @retval    void
  */
 void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point)
 {
-	motor->can_channel = can_channel;
+	motor->prot_can_channel = can_channel;
     motor->can_receive_id = r_id;
 	motor->can_send_id = t_id;
     motor->ratio = ratio;
@@ -29,9 +62,9 @@ void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,can_channel_e can_channe
 	HAL_Delay(1);
 }
 /*
-* @brief    	´ïÃîµç»ú·¢ËÍÃüÁî
- * @param[in] *motor    : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
- * @param[in] cmd		: µç»úÃüÁî
+* @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] *motor    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
+ * @param[in] cmd		: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
  * @retval    void
  */
 void dm_set_cmd(dm_motor_t *motor,uint8_t cmd)
@@ -39,44 +72,45 @@ void dm_set_cmd(dm_motor_t *motor,uint8_t cmd)
 	uint8_t buf[8] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00};
 	switch(cmd)
 	{
-		case DM_ENABLE_CMD://Ê¹ÄÜ
+		case DM_ENABLE_CMD://Ê¹ï¿½ï¿½
 		{
 			buf[7] = 0xFC;
 		}break;
-		case DM_DISABLE_CMD://Ê§ÄÜ
+		case DM_DISABLE_CMD://Ê§ï¿½ï¿½
 		{
 			buf[7] = 0xFD;
 		}break;
-		case DM_ZERO_CMD://ÖÃÁã
+		case DM_ZERO_CMD://ï¿½ï¿½ï¿½ï¿½
 		{
 			buf[7] = 0xFE;
 		}break;
-		case DM_CLEAR_CMD://Çå³ý´íÎó
+		case DM_CLEAR_CMD://ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
 		{
 			buf[7] = 0xFB;
 		}break;
 		default:return;
 	}
-	bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf);
+	// bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf);
+	dm_motor_can_interface_send(motor, motor->can_send_id, buf);
 }
 /*
-* @brief    	´ïÃîµç»úMIT²ÎÊýÉèÖÃ
- * @param[in] *motor    : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
- * @param[in] p     	: µç»úÄ¿±êÎ»ÖÃ
- * @param[in] v     	: µç»úÄ¿±êËÙ¶È
- * @param[in] t 	    : µç»úÄ¿±êÁ¦¾Ø
- * @param[in] kp     	: µç»úkp
- * @param[in] kd     	: µç»úkd
+* @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½MITï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param[in] *motor    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
+ * @param[in] p     	: ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Î»ï¿½ï¿?
+ * @param[in] v     	: ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ù¶ï¿?
+ * @param[in] t 	    : ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
+ * @param[in] kp     	: ï¿½ï¿½ï¿½kp
+ * @param[in] kd     	: ï¿½ï¿½ï¿½kd
  * @retval    void
  */
 void dm_mit_set_para(dm_motor_t *motor,float p,float v,float t,float kp,float kd)
 {
-	motor->p_ref = p;	//Éè¶¨Ä¿±êÎ»ÖÃ
-	motor->v_ref = v;	//Éè¶¨Ä¿±êËÙ¶È
-	motor->t_ref = t;	//Éè¶¨Ä¿±êÁ¦¾Ø
+	motor->p_ref = p;	//ï¿½è¶¨Ä¿ï¿½ï¿½Î»ï¿½ï¿½
+	motor->v_ref = v;	//ï¿½è¶¨Ä¿ï¿½ï¿½ï¿½Ù¶ï¿½
+	motor->t_ref = t;	//ï¿½è¶¨Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	motor->kp = kp;		
 	motor->kd = kd;
-	//refÏÞ·ù
+	//refï¿½Þ·ï¿½
 	LIMIT_MIN_MAX(motor->p_ref, DM_P_MIN, DM_P_MAX);
     LIMIT_MIN_MAX(motor->v_ref, DM_V_MIN, DM_V_MAX);
     LIMIT_MIN_MAX(motor->kp, DM_KP_MIN, DM_KP_MAX);
@@ -88,10 +122,10 @@ void dm_mit_set_para(dm_motor_t *motor,float p,float v,float t,float kp,float kd
 
 }
 /*
-* @brief    	´ïÃîµç»úMITÄ£Ê½ÏÂ´¿Á¦¾Ø¿ØÖÆ
- * @param[in] *motor    : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
- * @param[in] out     	: µç»úpid¼ÆËã³öÀ´µÄÖµ
- * @param[in] ff 	    : µç»úÇ°À¡Á¦¾Ø
+* @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½MITÄ£Ê½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½ï¿½ï¿½
+ * @param[in] *motor    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
+ * @param[in] out     	: ï¿½ï¿½ï¿½pidï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö?
+ * @param[in] ff 	    : ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
  * @retval    void
  */
 void dm_mit_set_torque(dm_motor_t *motor,float ff_out,float pos_out)
@@ -99,18 +133,18 @@ void dm_mit_set_torque(dm_motor_t *motor,float ff_out,float pos_out)
 	dm_mit_set_para(motor,0,0,ff_out + pos_out,0,0);
 }
 /*
-* @brief    	´ïÃîµç»úMIT¿ØÖÆ
- * @param[in] *motor     : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
+* @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½MITï¿½ï¿½ï¿½ï¿½
+ * @param[in] *motor     : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
  * @retval    void
  */
 void dm_mit_control(dm_motor_t *motor)
 {
-	if(motor->err_code == 0)//Èç¹ûµç»úÊ§ÄÜ
+	if(motor->err_code == 0)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
 	{
 		dm_set_cmd(motor,DM_ENABLE_CMD);
 		return;
 	}
-	else if(motor->err_code != 0 && motor->err_code != 1 && motor->err_code != 5)//Èç¹û²»ÊÇÊ§ÄÜ£¬Ê¹ÄÜ×´Ì¬£¬¾ÍÇå³ý´íÎó
+	else if(motor->err_code != 0 && motor->err_code != 1 && motor->err_code != 5)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½Ê¹ï¿½ï¿½×´Ì?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
 	{
 		dm_set_cmd(motor,DM_CLEAR_CMD);
 		return;
@@ -144,16 +178,20 @@ void dm_mit_control(dm_motor_t *motor)
 	buf[6] = ((kd_tmp&0xF)<<4)|(t_tmp>>8);
 	buf[7] = t_tmp;
 	
-	if(bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf) == HAL_OK)
-	{
-		motor->send_cnt++;
-		motor->online = 0;
-	}
+	// if(bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf) == HAL_OK)
+//	{
+//		motor->send_cnt++;
+//		motor->online = 0;
+//	}
+	
+	dm_motor_can_interface_send(motor, motor->can_send_id, buf);
+	motor->send_cnt++;
+	motor->online = 0;
 }
 /*
- * @brief    	´ïÃîµç»úÊý¾Ý½ÓÊÕ´¦Àí
- * @param[in] *motor    : µç»úÊý¾Ý½á¹¹ÌåÖ¸Õë
- * @param[in] *data		: µç»ú½ÓÊÕÊý¾ÝÖ¸Õë
+ * @brief    	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½Õ´ï¿½ï¿½ï¿½
+ * @param[in] *motor    : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿?
+ * @param[in] *data		: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿?
  * @retval    void
  */
 void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
@@ -162,9 +200,9 @@ void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
     motor->receive_cnt++;
 	motor->online = 1;
     motor->err_percent = ((float)motor->send_cnt - (float)motor->receive_cnt) / (float)motor->send_cnt;
-	//»ñÈ¡µç»ú´íÎó×´Ì¬ÐÅÏ¢
+	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì?ï¿½ï¿½Ï¢
 	motor->err_code = data[0]>> 4;
-	//¸ù¾ÝÐ­Òé£¬¶Ôuint²ÎÊý½øÐÐ×ª»»
+	//ï¿½ï¿½ï¿½ï¿½Ð­ï¿½é£¬ï¿½ï¿½uintï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½
     p_int = (data[1] << 8) | data[2];
 	motor->p = uint_to_float(p_int,DM_P_MIN,DM_P_MAX,16);
 			  

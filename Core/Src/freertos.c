@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "usb_comm.h"
 #include "can_comm.h"
+#include "can_message.h"   // 新增：包含公共 CAN 帧结构体
 #include "usart_comm.h"
 
 #include "gimbal_task.h"
@@ -57,6 +58,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+
+/*Thread handles*/
 osThreadId usb_task_t;
 osThreadId can1_transmit_task_t;
 osThreadId can2_transmit_task_t;
@@ -75,8 +78,13 @@ osThreadId judge_send_task_t;
 
 
 
+/*Queues handles*/
+QueueHandle_t VISION_send_queue=NULL; 
 
-QueueHandle_t VISION_send_queue; 
+QueueHandle_t CAN1_Tx_queue=NULL;
+QueueHandle_t CAN2_Tx_queue=NULL;
+QueueHandle_t CAN3_Tx_queue=NULL;
+
 
 
 /* USER CODE END Variables */
@@ -149,6 +157,18 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_QUEUES */
   VISION_send_queue = xQueueCreate(5, 30);          //哨兵 1 128 
+  CAN1_Tx_queue     = xQueueCreate(5, sizeof(CanFrame_t));          
+  CAN2_Tx_queue     = xQueueCreate(5, sizeof(CanFrame_t));          
+  CAN3_Tx_queue     = xQueueCreate(5, sizeof(CanFrame_t));  
+
+//  if (VISION_send_queue|CAN1_Tx_queue|CAN2_Tx_queue|CAN3_Tx_queue == NULL) 
+//  {        
+//    /* Queue was not created and must not be used. */
+//		while (1)
+//		{
+//				// 2026.1调试阶段使用，用完就删掉这个while
+//		}
+//  }
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -159,14 +179,14 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
 
 /***************************High priority task***************************/
-//		osThreadDef(can1Task, Task_CAN1Transmit, osPriorityAboveNormal, 0, 512);
-//    can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
-//	
+		osThreadDef(can1Task, Task_CAN1Transmit, osPriorityAboveNormal, 0, 512);
+   can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
+
 	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 512);
     can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
-//		
-//	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 512);
-//    can3_transmit_task_t = osThreadCreate(osThread(can3Task), NULL);
+	
+	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 512);
+   can3_transmit_task_t = osThreadCreate(osThread(can3Task), NULL);
 
 
 

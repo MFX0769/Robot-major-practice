@@ -1,34 +1,38 @@
 #ifndef __PROT_DM_MOTOR_H
 #define __PROT_DM_MOTOR_H
-#include "stm32h7xx.h"                  // Device header
-#include "bsp_can.h"
-#include "can_comm.h"
+// #include "stm32h7xx.h"                  // Device header
+// #include "bsp_can.h"
 
-//ÏÞ·ù
+
+#include "can_comm.h"
+#include "can_message.h"
+#include "prot_can_send_interface.h"
+#include "math_calcu.h"
+//Þ·
 #ifndef LIMIT_MIN_MAX
 	#define LIMIT_MIN_MAX(x,min,max) (x)=(((x)<=(min))?(min):(((x)>=(max))?(max):(x)))
 #endif
-//¿ØÖÆÃüÁî
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define DM_ENABLE_CMD  0x01
 #define DM_DISABLE_CMD 0x02
 #define DM_ZERO_CMD    0x03
 #define DM_CLEAR_CMD   0x04
-//µç»ú·¢ËÍID
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
 #define DM_PITCH_SEND_ID 0x06
 #define DM_3507_SEND_ID 0x07
-//µç»ú½ÓÊÕID
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
 #define DM_PITCH_RECEIVE_ID 0X016
 #define DM_3507_RECEIVE_ID 0x07
-//µç»ú¼õËÙ±È
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù±ï¿½
 #define DM_4310_RATIO  10.0f
 #define DM_3507_RATIO 7.0f
-//µç»ú°²×°ÁãµãÆ«ÖÃ
+//ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
 #define DM_PITCH_OFFSET  0
 #define DM_3507_OFFEST 0
-//´ïÃîµç»úµÄÐÍºÅ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½
 #define DM4310   0x01
 #define DM3507 0x02
-//DMµç»ú²ÎÊý·¶Î§
+//DMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
 #define DM_P_MAX        12.56637f
 #define DM_P_MIN       -12.56637f
 #define DM_V_MAX        45.0f
@@ -39,32 +43,33 @@
 #define DM4310_T_MIN   -18.0f
 #define DM3507_T_MAX	5.0f
 #define DM3507_T_MIN   -5.0f
-#define DM_KP_MIN        0.0f		//Kp×îÐ¡Öµ
-#define DM_KP_MAX      500.0f		//Kp×î´óÖµ
-#define DM_KD_MIN        0.0f		//Kd×îÐ¡Öµ
-#define DM_KD_MAX        5.0f		//Kd×î´óÖµ
-//´ïÃîµç»ú½á¹¹Ìå
+#define DM_KP_MIN        0.0f		//Kpï¿½ï¿½Ð¡Öµ
+#define DM_KP_MAX      500.0f		//Kpï¿½ï¿½ï¿½Öµ
+#define DM_KD_MIN        0.0f		//Kdï¿½ï¿½Ð¡Öµ
+#define DM_KD_MAX        5.0f		//Kdï¿½ï¿½ï¿½Öµ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
 typedef struct
 {
-	//µç»ú²ÎÊý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	uint8_t motor_type;
-	can_channel_e can_channel;	
+//	can_channel_e can_channel;	
+	prot_can_channel_e prot_can_channel;
 	uint32_t can_receive_id,can_send_id;
 	uint32_t send_cnt, receive_cnt;
 	float err_percent;
-	//°²×°½Ç¶È²¹³¥
+	//ï¿½ï¿½×°ï¿½Ç¶È²ï¿½ï¿½ï¿½
 	float zero_point;	
-	//µç»ú¼õËÙ±È
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù±ï¿½
 	float ratio;
-	//¿ØÖÆÊý¾Ýmit
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mit
 	float p_ref, v_ref, t_ref, kp, kd;
-	//´¿Á¦¾Ø
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float p_set, v_set, t_set;
-	//·´À¡Êý¾Ý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float last_p, p, v, t;
 	uint8_t err_code;
 	uint8_t online;
-	//ÓÐ´«¶¯±ÈµÄÇé¿öÏÂ£¬·´À¡Êý¾Ý»»Ëãµ½Êä³öÖá
+	//ï¿½Ð´ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ãµ½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float p_tmp,real_p,real_v;
 }dm_motor_t;
 extern dm_motor_t pitch_motor;

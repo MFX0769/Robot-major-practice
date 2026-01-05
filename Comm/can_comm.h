@@ -33,6 +33,11 @@ extern "C" {
 #include <task.h>
 #include <queue.h>
 
+#include "prot_rm_motor.h"
+#include "prot_dm_motor.h"
+#include "prot_T_imu.h"
+
+#include "can_message.h"
 
 /* Private macros ------------------------------------------------------------*/
 /* Private type --------------------------------------------------------------*/
@@ -40,24 +45,7 @@ extern "C" {
 /* Exported macros -----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
-//typedef struct
-//{
-//  uint16_t ecd;
-//  uint16_t last_ecd;
 
-//  int16_t speed_rpm;
-//  int16_t given_current;
-
-//  int32_t round_cnt;
-//  int32_t total_ecd;
-
-//  uint16_t offset_ecd;
-//  uint32_t msg_cnt;
-//} moto_measure_t;
-
-//__BSP_CAN_EXT moto_measure_t moto_fric[2] ;
-//__BSP_CAN_EXT moto_measure_t moto_yaw;
-//__BSP_CAN_EXT moto_measure_t motor_trigger;
 
 typedef enum
 {
@@ -65,12 +53,12 @@ typedef enum
     CAN_3508_FRIC_R_ID       = 0x202,
     CAN_TRIGGER_MOTOR1_ID = 0x207,
 	
-    CAN_YAW_MOTOR_ID      = 0x206,//2025Äê1ÔÂ17ÈÕ ¹Û²ì·¢ÏÖÄ¿Ç°
+    CAN_YAW_MOTOR_ID      = 0x206,//2025ï¿½ï¿½1ï¿½ï¿½17ï¿½ï¿½ ï¿½Û²ì·¢ï¿½ï¿½Ä¿Ç°
     CAN_J4310_MOTOR_ID      = 0x016,
 	
-	CAN_J4310_ID=0X06,//J4310µç»ú¿ØÖÆÖ¡ID   
-	CAN_MG4005_T_ID=0x147 ,//2025Äê1ÔÂ6ÈÕ£ºÔ¤¼ÆÐÂpitµç»úMG4005µÄidÎª0x07£¨µç»ú±³Ãæ±àÂë¿ª¹ØµÄÊýÖµ Òà¼´motorId£©   ¼´ 0x140(³§¼Ò¹æ¶¨) + 0x07 
-	CAN_MG4005_R_ID=0x187,//2025Äê1ÔÂ10ÈÕ £º³§¼Ò¹æ¶¨µÄCAN·´À¡idÊÇ0x180+id£¬¼ÙµÄ£¬ÆäÊµ»¹ÊÇ0x140  
+	CAN_J4310_ID=0X06,//J4310ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ID   
+	CAN_MG4005_T_ID=0x147 ,//2025ï¿½ï¿½1ï¿½ï¿½6ï¿½Õ£ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½pitï¿½ï¿½ï¿½MG4005ï¿½ï¿½idÎª0x07ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ªï¿½Øµï¿½ï¿½ï¿½Öµ ï¿½à¼´motorIdï¿½ï¿½   ï¿½ï¿½ 0x140(ï¿½ï¿½ï¿½Ò¹æ¶¨) + 0x07 
+	CAN_MG4005_R_ID=0x187,//2025ï¿½ï¿½1ï¿½ï¿½10ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¹æ¶¨ï¿½ï¿½CANï¿½ï¿½ï¿½ï¿½idï¿½ï¿½0x180+idï¿½ï¿½ï¿½ÙµÄ£ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½0x140  
 
 } can_msg_id_e;
 
@@ -79,6 +67,9 @@ void comm_can_init(void);
 void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf);
 void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf);
 void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf);
+void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc);
+void Prot_CAN2_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc);
+void Prot_CAN3_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc);
 void Task_CAN1Transmit(void const *arg);
 void Task_CAN2Transmit(void const *arg);
 void Task_CAN3Transmit(void const *arg);
@@ -87,5 +78,4 @@ extern uint32_t trigger_can_receive_cnt;
 extern uint32_t fric_can_recive_cnt;
 extern uint32_t yaw_can_receive_cnt;
 
-//void encoder_data_handler(moto_measure_t *ptr, FDCAN_HandleTypeDef *hfdcan, uint8_t *CAN_Rx_data);
 #endif
