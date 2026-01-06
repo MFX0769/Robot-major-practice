@@ -49,7 +49,7 @@ static void gimbal_init(void)
 float yaw_err;
 static void gimbal_pid_calc(void)
 {
-	if(ctrl_mode == PROTECT_MODE){return;}
+//	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     data_limit(gimbal.pit_angle.ref, 50, -12);
@@ -60,7 +60,10 @@ static void gimbal_pid_calc(void)
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
 /*pitch电机实际控制输出名*/
 	pitch_motor.t_ref = gimbal.pit_output;
-	dm3507_motor.t_ref = gimbal.pit_output;
+//	dm3507_motor.t_ref = gimbal.pit_output;
+	dm3507_motor.t_ref = 0;
+		dm_mit_control(&dm3507_motor);
+
 //--------------------yaw_pid_calu----------------------------------//
 	
     gimbal.yaw_angle.fdb = imu_data.yaw;

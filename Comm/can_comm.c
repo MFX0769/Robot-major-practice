@@ -305,7 +305,6 @@ void Task_CAN1Transmit(void const *arg)
   /* Infinite loop */
     for (;;)
     {
-			osDelay(1);
         if (xQueueReceive(CAN1_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
             uint32_t timeout = 100;  // 最大等待 100ms（可调）
