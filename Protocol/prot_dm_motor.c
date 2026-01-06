@@ -46,7 +46,7 @@ static void dm_motor_can_interface_send(dm_motor_t *motor, uint32_t id, const ui
  * @param[in] zero_point: �����װ���
  * @retval    void
  */
-void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point)
+void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,prot_can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point)
 {
 	motor->prot_can_channel = can_channel;
     motor->can_receive_id = r_id;

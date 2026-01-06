@@ -75,7 +75,7 @@ typedef struct
 extern dm_motor_t pitch_motor;
 extern dm_motor_t dm3507_motor;
 
-void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point);
+void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,prot_can_channel_e can_channel, uint32_t r_id, uint32_t t_id, float ratio,float zero_point);
 void dm_set_cmd(dm_motor_t *motor,uint8_t cmd);
 void dm_mit_set_para(dm_motor_t *motor,float p,float v,float t,float kp,float kd);
 void dm_mit_control(dm_motor_t *motor);

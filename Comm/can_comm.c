@@ -77,8 +77,8 @@ void comm_can_init(void)
     dji_motor_init(&trigger_motor, DJI_2006_MOTOR,CAN_CHANNEL_1, 0x207, 82.8);
 
     dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_2, 0x206, 1.0f);
-	dm_motor_init(&pitch_motor,DM4310,CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-	dm_motor_init(&dm3507_motor,DM3507,CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 }
     
 
@@ -295,7 +295,7 @@ void Prot_CAN3_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
 void Task_CAN1Transmit(void const *arg)
 {
   /* Cache for Task */
-  uint8_t  can1_free_mailbox;
+//  uint8_t  can1_free_mailbox;
   CanFrame_t msg;
   /* Pre-Load for task */
   uint32_t wake_time = osKernelSysTick();
@@ -304,24 +304,23 @@ void Task_CAN1Transmit(void const *arg)
     {
         if (xQueueReceive(CAN1_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0 && timeout > 0)
-//            {
-//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-//                timeout--;
-//            }
+            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1) == 0 && timeout > 0)
+            {
+                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+                timeout--;
+            }
 
-//            if (timeout > 0)
-//            {
-//                // 有空闲邮箱，发送
-//                bsp_can_std_send(&hcan1, msg.ID, msg.Data, msg.DLC);
-//            }
-//            else
-//            {
-//                // 超时：丢帧或日志
-//                // can_tx_timeout_cnt++;
-//            }
+            if (timeout > 0)
+            {
+                // 有空闲邮箱，发送
                 bsp_can_std_transmit(CAN_CHANNEL_1, msg.ID, msg.Data);
+            }
+            else
+            {
+                // 超时：丢帧或日志
+                // can_tx_timeout_cnt++;
+            }
 
         }
     }
@@ -331,7 +330,7 @@ void Task_CAN2Transmit(void const *arg)
 {
 
   /* Cache for Task */
-  uint8_t  can2_free_mailbox;
+//  uint8_t  can2_free_mailbox;
   CanFrame_t msg;
   /* Pre-Load for task */
   uint32_t wake_time = osKernelSysTick();
@@ -340,24 +339,23 @@ void Task_CAN2Transmit(void const *arg)
     {
         if (xQueueReceive(CAN2_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0 && timeout > 0)
-//            {
-//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-//                timeout--;
-//            }
+            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2) == 0 && timeout > 0)
+            {
+                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+                timeout--;
+            }
 
-//            if (timeout > 0)
-//            {
-//                // 有空闲邮箱，发送
-//                bsp_can_std_send(&hcan2, msg.ID, msg.Data, msg.DLC);
-//            }
-//            else
-//            {
-//                // 超时：丢帧或日志
-//                // can_tx_timeout_cnt++;
-//            }
-					bsp_can_std_transmit(CAN_CHANNEL_2, msg.ID, msg.Data);
+            if (timeout > 0)
+            {
+                // 有空闲邮箱，发送
+                bsp_can_std_transmit(CAN_CHANNEL_2, msg.ID, msg.Data);
+            }
+            else
+            {
+                // 超时：丢帧或日志
+                // can_tx_timeout_cnt++;
+            }
         }
     }
 }
@@ -366,7 +364,7 @@ void Task_CAN2Transmit(void const *arg)
 void Task_CAN3Transmit(void const *arg)
 {
   /* Cache for Task */
-  uint8_t  can3_free_mailbox;
+//  uint8_t  can3_free_mailbox;
   CanFrame_t msg;
   /* Pre-Load for task */
   uint32_t wake_time = osKernelSysTick();
@@ -376,24 +374,23 @@ void Task_CAN3Transmit(void const *arg)
     {
         if (xQueueReceive(CAN3_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-//            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-//            while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan3) == 0 && timeout > 0)
-//            {
-//                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-//                timeout--;
-//            }
+            uint32_t timeout = 100;  // 最大等待 100ms（可调）
+            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan3) == 0 && timeout > 0)
+            {
+                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
+                timeout--;
+            }
 
-//            if (timeout > 0)
-//            {
-//                // 有空闲邮箱，发送
-//                bsp_can_std_send(&hcan3, msg.ID, msg.Data, msg.DLC);
-//            }
-//            else
-//            {
-//                // 超时：丢帧或日志
-//                // can_tx_timeout_cnt++;
-//            }
-						bsp_can_std_transmit(CAN_CHANNEL_3, msg.ID, msg.Data);
+            if (timeout > 0)
+            {
+                // 有空闲邮箱，发送
+                bsp_can_std_transmit(CAN_CHANNEL_3, msg.ID, msg.Data);
+            }
+            else
+            {
+                // 超时：丢帧或日志
+                // can_tx_timeout_cnt++;
+            }
         }
     }
 }

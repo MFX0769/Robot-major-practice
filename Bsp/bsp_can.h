@@ -40,7 +40,7 @@ extern "C" {
 //                                    uint32_t len);
                                
 
-/* CAN过滤器过滤规则宏定义封装 为了尽量减少更换平台之后要改的部分，所以再封装一次，减少对"HAL"的使用 */
+/* CAN过滤器过滤规则宏定义封装 comm层要用到，为了尽量减少comm对底层的依赖，所以再封装一次，减少对"HAL"的使用 */
 typedef enum{
       FLT_RANGE = 0x0000U,
       FLT_DUAL = 0x0001U,

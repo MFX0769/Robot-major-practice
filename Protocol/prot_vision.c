@@ -3,7 +3,7 @@
   * @version 1.1
   * @date 2025 12 15
 	*
-  * @brief  ÊÓ¾õÐÅÏ¢½âËã
+  * @brief  ï¿½Ó¾ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½
 	*
   *	@author
   *
@@ -26,19 +26,24 @@
 #include "prot_dr16.h"
 #include "usart.h"
 /* Private define ------------------------------------------------------------*/
+#ifndef ABS
 #define ABS(x)  ((x)>0?(x):-(x))
+#endif
+
+#ifndef PI
 #define PI      3.14159265358979323846f
-/*  NAN ±£»¤ºê  */
+#endif
+/*  NAN  */
 #ifndef NAN_PROCESS
 #define NAN_PROCESS(now, last)  \
     do { if (isnan(now)) now = last; else last = now; } while (0)
 #endif
 /* Private variables ---------------------------------------------------------*/
-/* Î¨Ò»È«¾Ö±äÁ¿ */
+/* Î¨Ò»È«ï¿½Ö±ï¿½ï¿½ï¿½ */
 vision_t vision;
 vision_tx_t vision_tx;
 vision_mode_e vision_mode;
-/*µ÷ÊÔÊýÖµ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ*/
 uint8_t vis_e[2];
 uint32_t cnt_time;
 /* Private type --------------------------------------------------------------*/
@@ -48,18 +53,18 @@ extern QueueHandle_t VISION_send_queue;
 /* function prototypes -------------------------------------------------------*/
 
 /**
-* @brief  ÊÓ¾õÊý¾Ý½â°üº¯Êý  decoding the vision data 
-* @param  uint8_t *pVision_Data  ´®¿ÚÖÐ¶Ïº¯Êý´«³öÀ´µÄÊý¾Ý»º³åÇøÖ¸Õë pointer to the vision_uart_data_buf
+* @brief  ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  decoding the vision data 
+* @param  uint8_t *pVision_Data  ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ïºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ pointer to the vision_uart_data_buf
 * @retval None
 */
 void vision_data_handler(uint8_t *pVision_Data)
 {
     static vision_aim_status_e last_aim_status;
 
-    /* 1. ¿½Ö¡ */
+    /* 1. ï¿½ï¿½Ö¡ */
     memcpy(vision.rx[0].buff, pVision_Data, VISION_DATA_LEN);
 
-    /* 2. Ö¡Î² & ÖØ¸´Ö¡¼ì²é */
+    /* 2. Ö¡Î² & ï¿½Ø¸ï¿½Ö¡ï¿½ï¿½ï¿½ */
     if (vision.rx[0].data.eof != 0xCC) {
         vision.rx_status = TAIL_ERROR;
         return;
@@ -77,33 +82,33 @@ void vision_data_handler(uint8_t *pVision_Data)
     vision.rx[1].data.cnt   = vision.rx[0].data.cnt;
     vision.trace_id         = vision.rx[0].data.trace_id;
 
-    /* 3. NAN ±£»¤ */
+    /* 3. NAN ï¿½ï¿½ï¿½ï¿½ */
     NAN_PROCESS(vision.rx[0].data.yaw,  vision.rx[1].data.yaw);
     NAN_PROCESS(vision.rx[0].data.pit,  vision.rx[1].data.pit);
     NAN_PROCESS(vision.rx[0].data.dis,  vision.rx[1].data.dis);
     NAN_PROCESS(vision.rx[0].data.fire, vision.rx[1].data.fire);
     NAN_PROCESS(vision.rx[0].data.pos,  vision.rx[1].data.pos);
 
-    /* 4. Ä¿±êÓÐÐ§ */
+    /* 4. Ä¿ï¿½ï¿½ï¿½ï¿½Ð§ */
     if (vision.rx[0].data.aim_flag) {
         vision.aim_status     = AIMING;
         vision.new_frame_flag = 1;
 
-        /* 4.1 ±£´æÊÓ¾õÔ­Ê¼½Ç¶È£¨µ¥Î»±£³ÖÊÓ¾õÖ¡±¾Éí£¬¶È£© */
+        /* 4.1 ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½Ô­Ê¼ï¿½Ç¶È£ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ */
         vision.target_yaw_angle = vision.rx[0].data.yaw;
         vision.target_pit_angle = vision.rx[0].data.pit;
 
-        /* 4.2 ÏÞ·ù¡ª¡ªÄ¬ÈÏ¹Ø±Õ£¬ÓÃÊ±´ò¿ª */
+        /* 4.2 ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½Ï¹Ø±Õ£ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ */
         // if (vsn_drive.target_pit_angle < -23.0f)
         //     vsn_drive.target_pit_angle = -23.0f;
         // if (fabs(vsn_drive.target_yaw_angle - gimbal.pid.yaw_angle_ref * 180.0f / PI) > 99.13f)
         //     vsn_drive.target_yaw_angle = gimbal.pid.yaw_angle_ref * 180.0f / PI;
 
-        /* 4.3 ±£´æÊÓ¾õÏÂ·¢µÄÎó²îÃÅÏÞ£¨µ¥Î»£º»¡¶È£© */
-        vision.yaw_min_err = vision.rx[0].data.dis;   // ÊÓ¾õ°ü dis ÒÑÊÇ»¡¶È
-        vision.pit_min_err = vision.rx[0].data.dis2;  // ÊÓ¾õ°ü dis2 ÒÑÊÇ»¡¶È
+        /* 4.3 ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ£ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½ */
+        vision.yaw_min_err = vision.rx[0].data.dis;   // ï¿½Ó¾ï¿½ï¿½ï¿½ dis ï¿½ï¿½ï¿½Ç»ï¿½ï¿½ï¿½
+        vision.pit_min_err = vision.rx[0].data.dis2;  // ï¿½Ó¾ï¿½ï¿½ï¿½ dis2 ï¿½ï¿½ï¿½Ç»ï¿½ï¿½ï¿½
 
-        /* 4.4 Éä»÷ÅÐ¶¨£ºPID ²Î¿¼ vs ·´À¡£¬µ¥Î»Í³Ò»Îª»¡¶È */
+        /* 4.4 ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½PID ï¿½Î¿ï¿½ vs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»Í³Ò»Îªï¿½ï¿½ï¿½ï¿½ */
         float yaw_err = fabsf(gimbal.yaw_angle.ref - gimbal.yaw_angle.fdb);
         float pit_err = fabsf(gimbal.pit_angle.ref  - gimbal.pit_angle.fdb);
 
@@ -120,11 +125,11 @@ void vision_data_handler(uint8_t *pVision_Data)
         vision.shoot_enable = 0;
     }
 
-    /* 5. µ÷ÊÔ±êÖ¾Î»£¨Óë¾É´úÂëÒ»ÖÂ£© */
+    /* 5. ï¿½ï¿½ï¿½Ô±ï¿½Ö¾Î»ï¿½ï¿½ï¿½ï¿½É´ï¿½ï¿½ï¿½Ò»ï¿½Â£ï¿½ */
     vis_e[0] = (ABS(gimbal.yaw_angle.fdb- vision.target_yaw_angle * PI / 180.0f) < vision.yaw_min_err) ? 1 : 0;
     vis_e[1] = (ABS(gimbal.pit_angle.fdb  - vision.target_pit_angle * PI / 180.0f) < vision.pit_min_err) ? 1 : 0;
 
-    /* 6. Ê×´Î¶ªÊ§ */
+    /* 6. ï¿½×´Î¶ï¿½Ê§ */
     if (last_aim_status == AIMING && vision.aim_status == UNAIMING)
         vision.aim_status = FIRST_LOST;
 
@@ -132,7 +137,7 @@ void vision_data_handler(uint8_t *pVision_Data)
 }
 
 /**
-* @brief  ÔÆÌ¨ÈÎÎñ×´Ì¬»úÓÃµÄÊÓ¾õ¿ØÖÆ×´Ì¬»ú  aimming mode calculation function
+* @brief  ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½Ãµï¿½ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½  aimming mode calculation function
 * @param  None
 * @retval None
 */
@@ -154,7 +159,7 @@ void vsn_gimbal_ref_calc(void)
         break;
 
     case UNAIMING:
-        /* ¶ªÊ§Ä¿±ê£ºÒ£¿ØÔöÁ¿ */
+        /* ï¿½ï¿½Ê§Ä¿ï¿½ê£ºÒ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
         if (rc.sw1 == RC_DN){
             gimbal.yaw_angle.ref += (-rc.mouse.x) * KEYBOARD_SCALE_YAW;
             gimbal.pit_angle.ref += (-rc.mouse.y) * KEYBOARD_SCALE_PIT;
@@ -177,67 +182,67 @@ void vsn_gimbal_ref_calc(void)
 
 
 /**
-* @brief  Ñ¡ÔñÓÅÏÈ¼¶¸ü¸ßµÄÄ¿±ê  Choose the target with higher priority
+* @brief  Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ßµï¿½Ä¿ï¿½ï¿½  Choose the target with higher priority
 * @param  None
 * @retval None
 */
 void Trace_ID_Select_OLD(rc_info_t *rc)
 {
-	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;         //"w"ÒâÎ¶×ÅÇ°Ãæ£ºÇ°ÉÚÕ¾
-	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;         //"z"ÎÞÒâÎ¶£º·ÉÆÂ¹ýÀ´µÄ²½±ø 4ºÅ
-	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;         //"a"ÒâÎ¶×Å×ó±ß£º·ÉÆÂ¹ýÀ´µÄ²½±ø 3ºÅ
-	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;         //"d"ÒâÎ¶×ÅÓÒ±ß£º´¦ÔÚµõÉäÎ»µÄÓ¢ÐÛ
-	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	        //"s"ÒâÎ¶×ÅºóÃæ£º´¦ÔÚÖÐÐÄ¶Ò»»Õ¾µÄ¹¤³Ì
+	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;         //"w"ï¿½ï¿½Î¶ï¿½ï¿½Ç°ï¿½æ£ºÇ°ï¿½ï¿½Õ¾
+	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;         //"z"ï¿½ï¿½ï¿½ï¿½Î¶ï¿½ï¿½ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ 4ï¿½ï¿½
+	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;         //"a"ï¿½ï¿½Î¶ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ 3ï¿½ï¿½
+	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;         //"d"ï¿½ï¿½Î¶ï¿½ï¿½ï¿½Ò±ß£ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Î»ï¿½ï¿½Ó¢ï¿½ï¿½
+	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	        //"s"ï¿½ï¿½Î¶ï¿½Åºï¿½ï¿½æ£ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶Ò»ï¿½Õ¾ï¿½Ä¹ï¿½ï¿½ï¿½
 }
 
 /**
-* @brief  ÊÓ¾õÊý¾Ý´ò°ü  Vision data packaging
+* @brief  ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½  Vision data packaging
 * @param  None
 * @retval None
 */
 void vision_output_data(void)
 {
-    /* 1. Ö¡Í·/Î²¹Ì¶¨ */
+    /* 1. Ö¡Í·/Î²ï¿½Ì¶ï¿½ */
     vision_tx.data.SOF  = 0x11;
     vision_tx.data.eof1 = 0x22;
     vision_tx.data.eof2 = 0x33;
 
-    /* 2. ¸¡µã¡úÐ¡¶Ë 4 ×Ö½Ú£¨Óë¾É´úÂë·ûºÅÒ»ÖÂ£© */
+    /* 2. ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ 4 ï¿½Ö½Ú£ï¿½ï¿½ï¿½É´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Â£ï¿½ */
     float tmp = -imu_data.pitch;           memcpy(vision_tx.data.imu_pit,     &tmp, 4);
     tmp = -imu_data.yaw;                   memcpy(vision_tx.data.imu_yaw,     &tmp, 4);
     tmp = -imu_data.wy;                    memcpy(vision_tx.data.imu_pit_spd, &tmp, 4);
     tmp = -imu_data.wz;                    memcpy(vision_tx.data.imu_yaw_spd, &tmp, 4);
     tmp = Shoot_Data.bullet_speed;         memcpy(vision_tx.data.shoot_speed, &tmp, 4);
 
-    /* 3. Î»Óò+µ¥×Ö½Ú */
+    /* 3. Î»ï¿½ï¿½+ï¿½ï¿½ï¿½Ö½ï¿½ */
     vision_tx.data.camp = 0;
-    vision_tx.data.aiming_mode   = vision_mode;             // 0:×ÔÃé 1:´óÄÜÁ¿ 2:Ð¡ÄÜÁ¿ 4:·´ÍÓÂÝ  ÕâÊÇ³­²½±øµÄ£¬·É»ú¼ÇµÃºóÃæ¸ÄÒ»ÏÂ
-    vision_tx.data.shooter_speed = 3;                       // ¹Ì¶¨ 3 µµ
-//    vision_tx.data.vacancy       = 0;                       // Ô¤Áô£¬Ìî 0
+    vision_tx.data.aiming_mode   = vision_mode;             // 0:ï¿½ï¿½ï¿½ï¿½ 1:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2:Ð¡ï¿½ï¿½ï¿½ï¿½ 4:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½É»ï¿½ï¿½ÇµÃºï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+    vision_tx.data.shooter_speed = 3;                       // ï¿½Ì¶ï¿½ 3 ï¿½ï¿½
+//    vision_tx.data.vacancy       = 0;                       // Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0
     
 
 	Trace_ID_Select_OLD(&rc);
-//    vision_tx.data.trace_id      = vision.trace_id;         // À´×ÔÊÓ¾õ°ü
+//    vision_tx.data.trace_id      = vision.trace_id;         // ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½ï¿½
 
-    /* 4. ´®¿ÚDMA ·¢³ö */
+    /* 4. ï¿½ï¿½ï¿½ï¿½DMA ï¿½ï¿½ï¿½ï¿½ */
 //  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
 
-    /* 4. Ê¹ÓÃusb ·¢³ö */
+    /* 4. Ê¹ï¿½ï¿½usb ï¿½ï¿½ï¿½ï¿½ */
     if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 
     {
         vision.tx_cnt++;
     }
     else
     {
-            // ¶ÓÁÐÂú£¬´íÎó´¦Àí£º¶ªÆúÕâÖ¡ÐÂÊý¾Ý£¬¼ÌÐøÏÂÒ»Ö¡
-    // ¿ÉÑ¡£ºÍ³¼Æ¶ª°ü´ÎÊý£¬ÓÃÓÚµ÷ÊÔ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡
+    // ï¿½ï¿½Ñ¡ï¿½ï¿½Í³ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½
     // static uint32_t drop_count = 0;
     // drop_count++;
     }
 
 
 	
-	cnt_time=osKernelSysTick()/1000;//µ¥Î»£ºÃë
+	cnt_time=osKernelSysTick()/1000;//ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
     vision.tx_freq=vision.tx_cnt/cnt_time;
 	vision.rx_freq=vision.rx_cnt/cnt_time;
 
