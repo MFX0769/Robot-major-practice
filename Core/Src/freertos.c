@@ -161,14 +161,29 @@ void MX_FREERTOS_Init(void) {
   CAN2_Tx_queue     = xQueueCreate(5, sizeof(CanFrame_t));          
   CAN3_Tx_queue     = xQueueCreate(5, sizeof(CanFrame_t));  
 
-//  if (VISION_send_queue|CAN1_Tx_queue|CAN2_Tx_queue|CAN3_Tx_queue == NULL) 
-//  {        
+//if (VISION_send_queue == NULL ||
+//    CAN1_Tx_queue == NULL ||
+//    CAN2_Tx_queue == NULL ||
+//    CAN3_Tx_queue == NULL)  {        
 //    /* Queue was not created and must not be used. */
 //		while (1)
 //		{
+//			osDelay(1);
 //				// 2026.1调试阶段使用，用完就删掉这个while
 //		}
 //  }
+		
+	
+	if (CAN2_Tx_queue == NULL)  {        
+    /* Queue was not created and must not be used. */
+		while (1)
+		{
+			osDelay(1);
+				// 2026.1调试阶段使用，用完就删掉这个while
+		}
+  }
+		
+	
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -235,9 +250,16 @@ void StartDefaultTask(void const * argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
+	
+		dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
+	  dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+	
+	
   /* Infinite loop */
   for(;;)
   {
+		
+
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */

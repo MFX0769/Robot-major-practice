@@ -77,8 +77,8 @@ void comm_can_init(void)
     dji_motor_init(&trigger_motor, DJI_2006_MOTOR,CAN_CHANNEL_1, 0x207, 82.8);
 
     dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_2, 0x206, 1.0f);
-	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+//	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
+//	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 }
     
 
@@ -255,6 +255,9 @@ void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
     {
         // ѡ֡
     }
+		
+		
+		
 }
 
 /**
@@ -302,6 +305,7 @@ void Task_CAN1Transmit(void const *arg)
   /* Infinite loop */
     for (;;)
     {
+			osDelay(1);
         if (xQueueReceive(CAN1_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
             uint32_t timeout = 100;  // 最大等待 100ms（可调）
