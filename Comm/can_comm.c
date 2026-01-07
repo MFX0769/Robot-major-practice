@@ -22,7 +22,8 @@
 #include "can_comm.h"
 
 /* Private define ------------------------------------------------------------*/
-
+#define TX_RETRY_MAX       5      // CAN等邮箱：总等待 ≈5ms
+#define TX_RETRY_DELAY_MS  1      // CAN等邮箱：每次检查间隔 1ms
 /* Private variables ---------------------------------------------------------*/
 //moto_measure_t moto_test;
 uint32_t trigger_can_receive_cnt=0;
@@ -237,7 +238,8 @@ void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
 * @brief  
 * @param  None.
 * @return None.
-*/void Prot_CAN2_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
+*/
+void Prot_CAN2_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
 {
     CanFrame_t msg = {0};
 
@@ -307,22 +309,31 @@ void Task_CAN1Transmit(void const *arg)
     {
         if (xQueueReceive(CAN1_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1) == 0 && timeout > 0)
-            {
-                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-                timeout--;
-            }
+            uint32_t retry = 0;
+//          HAL_StatusTypeDef hal_ret = HAL_ERROR;  // 初始错误
+            do {
+                // 直接调用 BSP 非阻塞接口（你上面那个版本已去掉 while）
+                bsp_can_state_e status = bsp_can_std_transmit(CAN_CHANNEL_1, msg.ID, msg.Data);
 
-            if (timeout > 0)
-            {
-                // 有空闲邮箱，发送
-                bsp_can_std_transmit(CAN_CHANNEL_1, msg.ID, msg.Data);
-            }
-            else
-            {
-                // 超时：丢帧或日志
-                // can_tx_timeout_cnt++;
+                if (status == BSP_CAN_OK) {
+                    break;  // 成功发送
+                }
+
+                if (status == BSP_CAN_LINE_BUSY) {
+                    // 邮箱满，等一小会儿再试
+                    vTaskDelay(pdMS_TO_TICKS(TX_RETRY_DELAY_MS));
+                    retry++;
+                } else {
+                    // 其他错误（ERROR/INVALID_PARAM 等），直接丢或日志
+                    // can_tx_error_cnt++;
+                    break;
+                }
+            } while (retry < TX_RETRY_MAX);
+
+        /*------------如果实在是太忙了就不等了------------*/
+            if (retry >= TX_RETRY_MAX) {
+                // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
+                // can_tx_drop_cnt++;
             }
 
         }
@@ -338,27 +349,37 @@ void Task_CAN2Transmit(void const *arg)
   /* Pre-Load for task */
   uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
-    for (;;)
+   for (;;)
     {
         if (xQueueReceive(CAN2_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2) == 0 && timeout > 0)
-            {
-                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-                timeout--;
+            uint32_t retry = 0;
+//          HAL_StatusTypeDef hal_ret = HAL_ERROR;  // 初始错误
+            do {
+                // 直接调用 BSP 非阻塞接口（你上面那个版本已去掉 while）
+                bsp_can_state_e status = bsp_can_std_transmit(CAN_CHANNEL_2, msg.ID, msg.Data);
+
+                if (status == BSP_CAN_OK) {
+                    break;  // 成功发送
+                }
+
+                if (status == BSP_CAN_LINE_BUSY) {
+                    // 邮箱满，等一小会儿再试
+                    vTaskDelay(pdMS_TO_TICKS(TX_RETRY_DELAY_MS));
+                    retry++;
+                } else {
+                    // 其他错误（ERROR/INVALID_PARAM 等），直接丢或日志
+                    // can_tx_error_cnt++;
+                    break;
+                }
+            } while (retry < TX_RETRY_MAX);
+
+        /*------------如果实在是太忙了就不等了------------*/
+            if (retry >= TX_RETRY_MAX) {
+                // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
+                // can_tx_drop_cnt++;
             }
 
-            if (timeout > 0)
-            {
-                // 有空闲邮箱，发送
-                bsp_can_std_transmit(CAN_CHANNEL_2, msg.ID, msg.Data);
-            }
-            else
-            {
-                // 超时：丢帧或日志
-                // can_tx_timeout_cnt++;
-            }
         }
     }
 }
@@ -373,27 +394,36 @@ void Task_CAN3Transmit(void const *arg)
   uint32_t wake_time = osKernelSysTick();
   /* Infinite loop */
     for (;;)
-    
     {
         if (xQueueReceive(CAN3_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-            uint32_t timeout = 100;  // 最大等待 100ms（可调）
-            while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan3) == 0 && timeout > 0)
-            {
-                vTaskDelay(pdMS_TO_TICKS(1));  // 每1ms检查一次，让出CPU
-                timeout--;
+            uint32_t retry = 0;
+//          HAL_StatusTypeDef hal_ret = HAL_ERROR;  // 初始错误
+            do {
+                // 直接调用 BSP 非阻塞接口（你上面那个版本已去掉 while）
+                bsp_can_state_e status = bsp_can_std_transmit(CAN_CHANNEL_3, msg.ID, msg.Data);
+
+                if (status == BSP_CAN_OK) {
+                    break;  // 成功发送
+                }
+
+                if (status == BSP_CAN_LINE_BUSY) {
+                    // 邮箱满，等一小会儿再试
+                    vTaskDelay(pdMS_TO_TICKS(TX_RETRY_DELAY_MS));
+                    retry++;
+                } else {
+                    // 其他错误（ERROR/INVALID_PARAM 等），直接丢或日志
+                    // can_tx_error_cnt++;
+                    break;
+                }
+            } while (retry < TX_RETRY_MAX);
+
+        /*------------如果实在是太忙了就不等了------------*/
+            if (retry >= TX_RETRY_MAX) {
+                // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
+                // can_tx_drop_cnt++;
             }
 
-            if (timeout > 0)
-            {
-                // 有空闲邮箱，发送
-                bsp_can_std_transmit(CAN_CHANNEL_3, msg.ID, msg.Data);
-            }
-            else
-            {
-                // 超时：丢帧或日志
-                // can_tx_timeout_cnt++;
-            }
         }
     }
 }

@@ -83,7 +83,7 @@ typedef struct BSP_CanTypeDef_t {
     FDCAN_HandleTypeDef *hfdcan; 
 
     CAN_TxBuffer_t CAN_TxBuffer;
-
+    
     CAN_RxBuffer_t CAN_RxBuffer;
     
 } bsp_user_can_t;

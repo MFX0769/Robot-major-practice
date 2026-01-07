@@ -216,45 +216,22 @@ bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint
     FDCAN_TxHeaderTypeDef tx_header = default_tx_header;  // 结构体拷贝（浅拷贝，很快）
     tx_header.Identifier = id;
 
-    uint32_t timeout = 100;  // 最大等待 100ms（可调）
-
-/*--------------------------区分can Distinguish can channel ----------------------------------*/
     switch (can_periph) {
         case CAN_CHANNEL_1: hfdcan = &hfdcan1; break;
         case CAN_CHANNEL_2: hfdcan = &hfdcan2; break;
         case CAN_CHANNEL_3: hfdcan = &hfdcan3; break;
-        default: return BSP_CAN_INVALID_PARAM;
+        default: return BSP_CAN_ERROR;  // 未知返回码也当错误
     }
 
-/*--------------------------开始尝试发送 Try to send can message----------------------------------*/
+    HAL_StatusTypeDef hal_ret = HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan, &tx_header, data);
 
-        while (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan) == 0 && timeout > 0)
-        {
-            timeout--;
-        }
-        if (timeout > 0)
-        {
-            // 有空闲邮箱，发送
-            HAL_StatusTypeDef hal_ret = HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan, &tx_header, data);
-
-            switch (hal_ret)
-            {
-                case HAL_OK: return BSP_CAN_OK;
-                case HAL_ERROR: return BSP_CAN_ERROR;
-                case HAL_BUSY: return BSP_CAN_LINE_BUSY;//其实这个if不会触发忙，因为上面已经等空闲邮箱了。保守起见写上。
-                default: break;
-            }
-        }
-        else if(timeout == 0)
-        {
-            // 超时：丢帧或日志
-            // can_tx_timeout_cnt++;
-            return BSP_CAN_LINE_BUSY;   
-        }
-        else
-        {
-            return BSP_CAN_UNKNOWN_ERROR;
-        }
+    switch (hal_ret)
+    {
+        case HAL_OK: return BSP_CAN_OK;
+        case HAL_ERROR: return BSP_CAN_ERROR;
+        case HAL_BUSY: return BSP_CAN_LINE_BUSY;
+        default: break;
+    }
   
 }
 
