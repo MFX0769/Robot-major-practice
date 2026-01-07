@@ -95,11 +95,14 @@ typedef struct BSP_CanTypeDef_t {
 
 //BSP层的CAN状态封装，留给中间层用
 typedef enum{
-	 CAN_OK = 0,
-	 CAN_ERROR = 1,
-	 CAN_LINE_BUSY = 2,
-	 CAN_TIMEOUT = 3
-}bsp_can_state_t;//具体数字和HAL_StatusTypeDef一样，但还是想封装一下方便移植
+    BSP_CAN_OK               = 0,     // 成功
+    BSP_CAN_ERROR            = 1,     // 资源忙（e.g., FIFO/缓冲满）
+    BSP_CAN_LINE_BUSY        = 2,     // 超时
+    BSP_CAN_TIMEOUT          = 3,     // 通用错误（硬件故障、参数错等）
+    BSP_CAN_INVALID_PARAM    = 4,     // 参数无效
+    BSP_CAN_NOT_SUPPORTED    = 5,     // 不支持的操作
+    BSP_CAN_UNKNOWN_ERROR    = 6,
+}bsp_can_state_e;//具体数字和HAL_StatusTypeDef一样，但还是想封装一下方便移植
 
 
 
@@ -119,7 +122,7 @@ extern bsp_can_filt_tbl_t bsp_can3_filt_tbl;
 /* Exported function declarations --------------------------------------------*/
 void bsp_can_init(bsp_user_can_t *canx, void (*pFunc)(CAN_RxBuffer_t*));       //BSP层封装的CAN通讯总的初始化，应在协议初始化文件中调用此函数（调用前填写过滤规则表
 // HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
-HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
+bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
 
 
 #endif
