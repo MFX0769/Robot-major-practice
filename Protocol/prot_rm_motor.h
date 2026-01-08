@@ -5,35 +5,35 @@
 #include "can_comm.h"
 
 /*-----------------------------------------
-µç»ú¿ØÖÆÊý¾Ý
-ÐÍºÅÒÔ¼°¶ÔÓ¦µçµ÷    ·¢ËÍ¿ØÖÆÊý¾Ý·¶Î§    ¶ÔÓ¦ÎïÀíÁ¿   ×ª¾Ø³£Êý    Á¦¾Ø·¶Î§
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½Íºï¿½ï¿½Ô¼ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½Î§    ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   ×ªï¿½Ø³ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½Ø·ï¿½Î§
 2006(C610)          -10000~10000        +-10A       0.18N*m/A   +-1.8N*m
 3508(C620)          -16384~16384        +-20A       0.3N*m/A    +-6N*m
-6020(µçÁ÷)          -16384~16384        +-3A        0.741N*m/A  +-2.223N*m
-6020(µçÑ¹)          -25000~25000 
+6020(ï¿½ï¿½ï¿½ï¿½)          -16384~16384        +-3A        0.741N*m/A  +-2.223N*m
+6020(ï¿½ï¿½Ñ¹)          -25000~25000 
 -----------------------------------------*/
 
-//µç»úÀàÐÍ¶¨Òå
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¶ï¿½ï¿½ï¿½
 #define DJI_2006_MOTOR 0x00
 #define DJI_3508_MOTOR 0x01
 #define DJI_6020_MOTOR 0x02
 
-//·¢ËÍÊý¾Ý·¶Î§
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½Î§
 #define DJI_2006_MOTOR_DATA_RANGE 10000
 #define DJI_3508_MOTOR_DATA_RANGE 16384
 #define DJI_6020_MOTOR_DATA_RANGE 25000
 
-//·¢ËÍÊý¾ÝËù´ú±íµÄÎïÀíÁ¿·¶Î§
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
 #define DJI_2006_MOTOR_CURRENT_RANGE 10
 #define DJI_3508_MOTOR_CURRENT_RANGE 20
 #define DJI_6020_MOTOR_CURRENT_RANGE 1
 
-//Á¦¾Ø³£Êý
+//ï¿½ï¿½ï¿½Ø³ï¿½ï¿½ï¿½
 #define DJI_2006_MOTOR_TORQUE_CONSTANT 0.18f
 #define DJI_3508_MOTOR_TORQUE_CONSTANT 0.246f//0.3f
 #define DJI_6020_MOTOR_TORQUE_CONSTANT 1.0f
 
-//µç»úÄ¬ÈÏ¼õËÙ±È
+//ï¿½ï¿½ï¿½Ä¬ï¿½Ï¼ï¿½ï¿½Ù±ï¿½
 #define DJI_2006_ORIGINAL_REDUCTION_RATIO 36
 #define DJI_3508_ORIGINAL_REDUCTION_RATIO 19.2f
 #define DJI_6020_ORIGINAL_REDUCTION_RATIO 1
@@ -46,31 +46,33 @@ typedef struct
 
 typedef struct
 {
-    //µç»ú²ÎÊý
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     uint8_t motor_type;
+    // can_channel_e can_channel;
+    prot_can_channel_e prot_can_channel;
     can_channel_e can_channel;
     uint32_t can_id;
-    float reduction_ratio;              //µ±Ç°¼õËÙ±È
+    float reduction_ratio;              //ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ù±ï¿½
     uint32_t send_cnt, receive_cnt;
     float err_percent;
     uint8_t online;
-    //¿ØÖÆÊý¾Ý
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     int16_t tx_current;
 	float p_ref;
 	float v_ref;
 	int16_t ecd_ref;
-    //·´À¡Êý¾Ý
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     float p, v, t;   //rad rad/s rad/s/s N*m
 	float real_p;
-    //ÖÐ¼äÊý¾Ý
-    uint16_t ecd;                       //µ±Ç°±àÂëÖµ         µ¥Î»£ºecd 0~8191
-    int16_t  speed_rpm;                 //×ªËÙ               µ¥Î»£ºrpm
-    int16_t  rx_current;    //Êµ¼Ê×ª¾ØµçÁ÷Öµ     µ¥Î»£º
-    uint8_t	 temperature;               //µç»úÎÂ¶È           µ¥Î»£ºÉãÊÏ¶È
-    uint16_t offset_ecd;                //¸ÕÉÏµçÊ±µÄ±àÂëÖµ
-    uint16_t last_ecd;                  //ÉÏ´Î½ÓÊÕµÄ±àÂëÖµ
-    int32_t  total_ecd;                 //ÉÏµçµ½ÏÖÔÚ×ª¶¯µÄ×Ü±àÂëÖµ
-    int32_t	 round_cnt;                 //ÒÑ×ªÈ¦Êý
+    //ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½
+    uint16_t ecd;                       //ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Öµ         ï¿½ï¿½Î»ï¿½ï¿½ecd 0~8191
+    int16_t  speed_rpm;                 //×ªï¿½ï¿½               ï¿½ï¿½Î»ï¿½ï¿½rpm
+    int16_t  rx_current;    //Êµï¿½ï¿½×ªï¿½Øµï¿½ï¿½ï¿½Öµ     ï¿½ï¿½Î»ï¿½ï¿½
+    uint8_t	 temperature;               //ï¿½ï¿½ï¿½ï¿½Â¶ï¿½           ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½
+    uint16_t offset_ecd;                //ï¿½ï¿½ï¿½Ïµï¿½Ê±ï¿½Ä±ï¿½ï¿½ï¿½Öµ
+    uint16_t last_ecd;                  //ï¿½Ï´Î½ï¿½ï¿½ÕµÄ±ï¿½ï¿½ï¿½Öµ
+    int32_t  total_ecd;                 //ï¿½Ïµçµ½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½Öµ
+    int32_t	 round_cnt;                 //ï¿½ï¿½×ªÈ¦ï¿½ï¿½
 }dji_motor_t;
 
 extern dji_motor_t fric_motor[2];

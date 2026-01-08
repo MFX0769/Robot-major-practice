@@ -25,6 +25,39 @@ static const float motor_para_table[3][4] =
     {DJI_6020_MOTOR_DATA_RANGE, DJI_6020_MOTOR_CURRENT_RANGE, DJI_6020_MOTOR_TORQUE_CONSTANT, DJI_6020_ORIGINAL_REDUCTION_RATIO},
 };
 
+static void rm_motor_can_interface_send(dji_motor_t *motor, uint32_t id, const uint8_t *data);
+
+/**
+ * @brief     RM电机协议层对CAN发送接口的封装   Encapsulation of the CAN sending interface at the protocol layer of RM motor
+ * @param[in] *motor   : RM电机结构体指针   Pointer to RM motor structure
+ * @param[in] id      : CAN帧ID  CAN frame ID
+ * @param[in] data    : CAN帧数据  CAN frame data
+ * @param[in] dlc     : CAN帧长度  CAN frame length	
+ * @retval    void
+ * @note	  该函数调用prot_can_send_interface.h中声明的CAN发送接口函数,如果要修改CAN发送接口,只需修改电机结构体里面的can_channel即可自动实现切换
+ *            This function calls the CAN sending interface function declared in prot_can_send_interface.h. If you want to modify the CAN sending interface, you only need to modify the can_channel in the motor structure to automatically switch.
+ */
+static void rm_motor_can_interface_send(dji_motor_t *motor, uint32_t id, const uint8_t *data)
+{
+	switch (motor->prot_can_channel)
+	{
+		case PROT_CAN_CHANNEL_1:
+			Prot_CAN1_Send_Frame(id, data, 8);
+			break;
+		case PROT_CAN_CHANNEL_2:
+			Prot_CAN2_Send_Frame(id, data, 8);
+			break;
+		case PROT_CAN_CHANNEL_3:
+			Prot_CAN3_Send_Frame(id, data, 8);
+			break;
+		default:
+			// 错误处理：无效的 CAN 通道
+			break;
+	}	
+}
+
+
+
 /*
  * @brief     �󽮵����ʼ������
  * @param[in] motor          : ������ݽṹ��
@@ -205,12 +238,13 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *mot
     // ��������
     if(motor2 != NULL && motor2->can_id < 0x205)
     {
-        bsp_can_std_transmit(motor2->can_channel, motor_msg[motor2->can_channel][0].id,
-                        motor_msg[motor2->can_channel][0].data);
+        // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
+        rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
     }
     else if(motor2 != NULL && motor2->can_id < 0x209)
     {
-        bsp_can_std_transmit(motor2->can_channel, motor_msg[motor2->can_channel][4].id,
-                        motor_msg[motor2->can_channel][4].data);
+        // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][4].data);
+        rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][0].data);
+
     }
 }
