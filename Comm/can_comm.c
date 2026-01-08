@@ -95,14 +95,6 @@ void comm_can_init(void)
 */
 void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 {
-//    switch (CAN_RxBuffer_t->rxHeader->Identifier)
-//    {
-//    case constant expression:{
-
-//    }break;
-//    
-//    default:{break;}
-//    }
 	
 	switch(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier)
 			{

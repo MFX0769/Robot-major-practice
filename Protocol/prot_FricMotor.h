@@ -2,7 +2,8 @@
 #define __DRIVER_FRICMOTOR
 
 #include "stm32h7xx.h"
-#include "shoot_task.h"
+// #include "shoot_task.h"
+#include "prot_can_send_interface.h"
 
 typedef enum
 {

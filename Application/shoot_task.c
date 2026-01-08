@@ -27,9 +27,9 @@ void shoot_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     for(;;)
     {
-        shoot_mode_sw();  //Éä»÷Ä£Ê½ÇÐ»»
-        FricMotor_Control();	//Ä¦²ÁÂÖµç»ú¿ØÖÆ
-        TriggerMotor_control();	//²¦µ¯µç»ú¿ØÖÆ
+        shoot_mode_sw();  //ï¿½ï¿½ï¿½Ä£Ê½ï¿½Ð»ï¿½
+        FricMotor_Control();	//Ä¦ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        TriggerMotor_control();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	    wdg_user_set_bit(WDG_BIT_TASK_SHOOT);
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
     }
@@ -37,16 +37,16 @@ void shoot_task(void const *argu)
 
 void shoot_init(void)
 {
-    FricMotor_init();   //Ä¦²ÁÂÖ³õÊ¼»¯
-    TriggerMotor_init();//²¦ÅÌ³õÊ¼»¯
-    /* ·¢ÉäÆ÷Ä£Ê½³õÊ¼»¯ */
+    FricMotor_init();   //Ä¦ï¿½ï¿½ï¿½Ö³ï¿½Ê¼ï¿½ï¿½
+    TriggerMotor_init();//ï¿½ï¿½ï¿½Ì³ï¿½Ê¼ï¿½ï¿½
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ê¼ï¿½ï¿½ */
     shoot.firc_mode     = FIRC_MODE_STOP;
     shoot.stir_mode     = STIR_MODE_PROTECT;
-    /* Ç¹¹Ü²ÎÊý³õÊ¼»¯ */
+    /* Ç¹ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ */
     shoot.trigger_period = TRIGGER_PERIOD;
-	/*ÐÂÒ£¿ØÏà¹Ø¿ªÊ¼*/
+	/*ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½Ê¼*/
 	shoot.shoot_mode_CNT=0;
-	/*ÐÂÒ£¿ØÏà¹Ø½áÊø*/
+	/*ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½*/
 }
 
 
@@ -56,11 +56,11 @@ static void shoot_mode_sw(void)
 ////		#if NEW_RC
 //		if(remote_online.NEW_OLD_RC_FLAG == 1)
 //			{
-//    /* Ä£Ê½ÇÐ»» */
+//    /* Ä£Ê½ï¿½Ð»ï¿½ */
 
 //		 switch( new_rc.mode_sw )
 //    {
-//        case RC_MODE_C://±£»¤
+//        case RC_MODE_C://ï¿½ï¿½ï¿½ï¿½
 //        {
 //            shoot.firc_mode = FIRC_MODE_STOP;
 //            shoot.stir_mode = STIR_MODE_PROTECT;
@@ -68,10 +68,10 @@ static void shoot_mode_sw(void)
 //        }
 //        break;
 //				
-//        case RC_MODE_N://Ò£¿Ø
+//        case RC_MODE_N://Ò£ï¿½ï¿½
 //        {
 //					shoot.FN2=new_rc.fn_2;
-//						if(shoot.FN2==1 && shoot.last_FN2==0)//ÉÏÉýÑØ
+//						if(shoot.FN2==1 && shoot.last_FN2==0)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //						{
 //								 shoot.shoot_mode_CNT++;
 //						}
@@ -93,7 +93,7 @@ static void shoot_mode_sw(void)
 //        }
 //        break;
 //       
-//        case RC_MODE_S://¼üÊó
+//        case RC_MODE_S://ï¿½ï¿½ï¿½ï¿½
 //        {
 //					 shoot.firc_mode = FIRC_MODE_RUN;
 //					 shoot.stir_mode = STIR_MODE_SERIES;
@@ -110,7 +110,7 @@ static void shoot_mode_sw(void)
 //		else if(remote_online.NEW_OLD_RC_FLAG == 0)
 //		{
 		
-		    /* Ä£Ê½ÇÐ»» */
+		    /* Ä£Ê½ï¿½Ð»ï¿½ */
     switch( rc.sw1 )
     {
         case RC_MI:
@@ -122,7 +122,7 @@ static void shoot_mode_sw(void)
 				
         case RC_UP:
         {
-            /* Ä¦²ÁÂÖºÍ²¦ÅÌÄ£Ê½ÇÐ»» */
+            /* Ä¦ï¿½ï¿½ï¿½ÖºÍ²ï¿½ï¿½ï¿½Ä£Ê½ï¿½Ð»ï¿½ */
             switch( rc.sw2 )
             {
                 case RC_UP:
@@ -133,13 +133,13 @@ static void shoot_mode_sw(void)
                 break;
                 case RC_MI:
                 {
-                    shoot.firc_mode = FIRC_MODE_RUN;  //¿ªÆôÄ¦²ÁÂÖ
+                    shoot.firc_mode = FIRC_MODE_RUN;  //ï¿½ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½ï¿½
                     shoot.stir_mode = STIR_MODE_SINGLE;
                 }
                 break;
                 case RC_DN:
                 {
-                    shoot.firc_mode = FIRC_MODE_RUN;  //±£³Ö¿ªÆôÄ¦²ÁÂÖ
+                    shoot.firc_mode = FIRC_MODE_RUN;  //ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½ï¿½
 					          shoot.stir_mode = STIR_MODE_SERIES;
                 }
                 break;

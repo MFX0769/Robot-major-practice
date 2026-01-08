@@ -236,12 +236,12 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *mot
     dji_motor_fill_data(motor4);
     
     // ��������
-    if(motor2 != NULL && motor2->can_id < 0x205)
+    if(motor1 != NULL && motor1->can_id < 0x205)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
         rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
     }
-    else if(motor2 != NULL && motor2->can_id < 0x209)
+    else if(motor1 != NULL && motor1->can_id < 0x209)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][4].data);
         rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][0].data);

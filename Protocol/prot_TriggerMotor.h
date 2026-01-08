@@ -1,12 +1,13 @@
 #include "stdint.h"
 
 #include "prot_vision.h"
+#include "prot_can_send_interface.h"
 
 
 #ifndef __BSP_TRIIGERMOTOR_H
 #define __BSP_TRIIGERMOTOR_H
 
-#define TRIGGER_MOTOR_ECD   36859.5f  //拨盘一颗子弹转过的编码值 8191 * 36 / 8 = 36859.5f
+#define TRIGGER_MOTOR_ECD   36859.5f  //锟斤拷锟斤拷一锟斤拷锟接碉拷转锟斤拷锟侥憋拷锟斤拷值 8191 * 36 / 8 = 36859.5f
 
 #define MIN_HEAT		    40
 
@@ -16,7 +17,7 @@ typedef enum
 	T_DISABLE = 0
 }trigger_enable_e;
 
-//2025年4月21日 先把enable加进来，只是用在单发复位功能上，后续再慢慢统一
+//2025锟斤拷4锟斤拷21锟斤拷 锟饺帮拷enable锟接斤拷锟斤拷锟斤拷只锟斤拷锟斤拷锟节碉拷锟斤拷锟斤拷位锟斤拷锟斤拷锟较ｏ拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷统一
 typedef struct
 {
 //	trigger_pid_t 		trigger_pid;

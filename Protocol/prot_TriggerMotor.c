@@ -3,11 +3,11 @@
   * @version 1.2
   * @date  2023..14
 	*
-  * @brief 1.0£ºÆ½Æ½ÎÞÆæµÄ²¦ÅÌ´úÂë
-	*        1.1£º¼ÓÁËÍËµ¯ºÍÒ»¼üreload
-	*				 1.2£º¸ÄÁËµ¥·¢µÄÂß¼­£¬ÏÖÔÚÊÇµÍÆµµ¥·¢
+  * @brief 1.0ï¿½ï¿½Æ½Æ½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½Ì´ï¿½ï¿½ï¿½
+	*        1.1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ò»ï¿½ï¿½reload
+	*				 1.2ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Æµï¿½ï¿½ï¿½ï¿½
 	*
-  *	@author  ¿ÕÖÐ×éÓ²¼þÐ´µÄ
+  *	@author  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó²ï¿½ï¿½Ð´ï¿½ï¿½
   *
   */
 #include "prot_TriggerMotor.h"
@@ -33,11 +33,11 @@ extern TaskHandle_t can_msg_send_task_t;
 
 
 /*********************************************************************/
-//PID½á¹¹Ìå
+//PIDï¿½á¹¹ï¿½ï¿½
 pid_t pid_trigger_ecd;
 pid_t pid_trigger_spd;
 
-//ÒÔÏÂÊÇ¿¨µ¯ÍËµ¯Ïà¹Ø
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½
 uint8_t back_flag_tri = 0;
 uint16_t back_flag;
 uint16_t back_flag_cnt;
@@ -46,7 +46,7 @@ uint16_t err_flag;
 uint16_t err_time;
 uint32_t last_tri_ecd;
 
-//2025Äê5ÔÂ15ÈÕ µ¯Æµ±ä»»Ïà¹Ø±äÁ¿
+//2025ï¿½ï¿½5ï¿½ï¿½15ï¿½ï¿½ ï¿½ï¿½Æµï¿½ä»»ï¿½ï¿½Ø±ï¿½ï¿½ï¿½
 uint8_t SHOOT_PERIOD_CHANGE_CNT;
 uint8_t SHOOT_PERIOD_CHANGE_FLAG;
 /*********************************************************************/
@@ -54,23 +54,23 @@ uint8_t SHOOT_PERIOD_CHANGE_FLAG;
 trigger_t trigger;
 
 
-uint8_t AMMO_STUCK_FLAG= 0;                 //¿¨µ¯±êÖ¾Î» 1Îª¿¨µ¯ 0Îª²»¿¨
-uint8_t SINGLE_AMMO_STUCK_BACK_FLAG= 0;          //ÓÃÓÚµ¥·¢¿¨µ¯ÍËµ¯Ö»ÍËÒ»´ÎµÄÂß¼­ÅÐ¶Ï
+uint8_t AMMO_STUCK_FLAG= 0;                 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î» 1Îªï¿½ï¿½ï¿½ï¿½ 0Îªï¿½ï¿½ï¿½ï¿½
+uint8_t SINGLE_AMMO_STUCK_BACK_FLAG= 0;          //ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ö»ï¿½ï¿½Ò»ï¿½Îµï¿½ï¿½ß¼ï¿½ï¿½Ð¶ï¿½
 uint8_t STIR_SINGLE_SHOT_FLAG;
 uint8_t STIR_SERIES_SHOT_FLAG;
-uint16_t reload_ammo_cnt=0;	//×°×Óµ¯ÊýÁ¿
-//static uint8_t  shoot_enable = 1;    //µ¥·¢Ê¹ÄÜ±êÖ¾
-uint16_t test_Trigger=6800;//Íâ°Ë½âËøµÄÊ±ºò¸ÄËÙ¶È
-uint32_t SINGLE_STUCK_CNT		= 0;                   //µ¥·¢¿¨µ¯¼ÆÊý
-uint32_t SERIES_STUCK_CNT		= 0;                   //Á¬·¢¿¨µ¯¼ÆÊý
+uint16_t reload_ammo_cnt=0;	//×°ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½
+//static uint8_t  shoot_enable = 1;    //ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü±ï¿½Ö¾
+uint16_t test_Trigger=6800;//ï¿½ï¿½Ë½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
+uint32_t SINGLE_STUCK_CNT		= 0;                   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+uint32_t SERIES_STUCK_CNT		= 0;                   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  
  
 /**
   * @name     TriggerMotor_init
-  * @brief    2006³õÊ¼»¯
+  * @brief    2006ï¿½ï¿½Ê¼ï¿½ï¿½
   * @param    None
   * @retval   None
-  * @note     ËÙ¶È»· 2  0.003  20 µ¥·¢ºÜºÃ
+  * @note     ï¿½Ù¶È»ï¿½ 2  0.003  20 ï¿½ï¿½ï¿½ï¿½ï¿½Üºï¿½
 						
   */
 
@@ -88,34 +88,34 @@ static void TriggerMotor_pidcal(void)
 {
     shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;
     pid_calc(&pid_trigger_ecd, shoot.pid.trigger_ecd_fdb, shoot.pid.trigger_ecd_ref);
-    shoot.pid.trigger_spd_ref = pid_trigger_ecd.pos_out;  //Î»ÖÃ»·
+    shoot.pid.trigger_spd_ref = pid_trigger_ecd.pos_out;  //Î»ï¿½Ã»ï¿½
 
     shoot.pid.trigger_spd_fdb = trigger_motor.speed_rpm;
     pid_calc(&pid_trigger_spd, shoot.pid.trigger_spd_fdb, shoot.pid.trigger_spd_ref);
-    shoot.current = pid_trigger_spd.pos_out;  //ËÙ¶È»·
+    shoot.current = pid_trigger_spd.pos_out;  //ï¿½Ù¶È»ï¿½
 
     trigger_motor.tx_current = shoot.current;
 }
 
 
-///*µ¥·¢¿¨µ¯ÅÐ¶Ïº¯Êý£ºsingle_shoot_enableÍ¨¹ýÔò½øÈëÅÐ¶Ï¡£µ¥·¢Ä£Ê½ÏÂ£¬Èôecd_err´óÓÚ4·¢µÄÎ»ÖÃ£¬ÔòÊÓÎª¿¨µ¯¡£ ¼´4´Îµ¥·¢ÇëÇóÍ¨¹ý£¬²¦µ¯ÅÌ¶¼Ã»×ª³¬¹ý0.5·¢.×¢Òâ£¬¸Ãº¯ÊýÔÚµ¥·¢ecd+=ºó±»Ö´ÐÐ£¬ËùÒÔ¸Ãº¯ÊýÄÚµÄecd_err±ØÐëÖÁÉÙ´óÓÚ1·¢µÄÎ»ÖÃ£¬·ñÔò±Ø¶¨ÎóÅÐ*/
+///*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ïºï¿½ï¿½ï¿½ï¿½ï¿½single_shoot_enableÍ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½Â£ï¿½ï¿½ï¿½ecd_errï¿½ï¿½ï¿½ï¿½4ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½4ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¶ï¿½Ã»×ªï¿½ï¿½ï¿½ï¿½0.5ï¿½ï¿½.×¢ï¿½â£¬ï¿½Ãºï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ecd+=ï¿½ï¿½Ö´ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ô¸Ãºï¿½ï¿½ï¿½ï¿½Úµï¿½ecd_errï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù´ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½*/
 //static void single_ammo_stuck_judge(void) 
 //{
 ////					if(ABS(shoot.pid.trigger_ecd_error) > 0.5f * TRIGGER_MOTOR_ECD)
 ////					{
 ////							SINGLE_STUCK_CNT ++ ;
-////							if(SINGLE_STUCK_CNT >=4)//3´Î²¦µ¯ÅÌ²»µ½Î»£¬ÔòÊÓÎª¿¨µ¯
+////							if(SINGLE_STUCK_CNT >=4)//3ï¿½Î²ï¿½ï¿½ï¿½ï¿½Ì²ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 ////							{
-////								AMMO_STUCK_FLAG = 1;//ÖÃÎ»µ¥·¢¿¨µ¯ÍËµ¯±êÖ¾Î»£¬ÓÃÓÚºóÃæÍËÒ»·¢
+////								AMMO_STUCK_FLAG = 1;//ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î»ï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 ////								SINGLE_AMMO_STUCK_BACK_FLAG=1;
 ////							}
 ////					}
 //	          if(ABS(shoot.pid.trigger_ecd_error) > 4.0f * TRIGGER_MOTOR_ECD)
 //					{
 ////							SINGLE_STUCK_CNT ++ ;
-////							if(SINGLE_STUCK_CNT >=4)//3´Î²¦µ¯ÅÌ²»µ½Î»£¬ÔòÊÓÎª¿¨µ¯
+////							if(SINGLE_STUCK_CNT >=4)//3ï¿½Î²ï¿½ï¿½ï¿½ï¿½Ì²ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 ////							{
-//								AMMO_STUCK_FLAG = 1;//ÖÃÎ»µ¥·¢¿¨µ¯ÍËµ¯±êÖ¾Î»£¬ÓÃÓÚºóÃæÍËÒ»·¢
+//								AMMO_STUCK_FLAG = 1;//ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î»ï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 //								SINGLE_AMMO_STUCK_BACK_FLAG=1;
 ////							}
 //					}
@@ -125,19 +125,19 @@ static void TriggerMotor_pidcal(void)
 //					}	
 //}
 
-///*µ¥·¢¸´Î»º¯Êý 2025Äê4ÔÂ21ÈÕ¼ÇµÃ½ñÌì¼ÓÍ¼´«Á´Â·ºóÍêÉÆ´Ë´úÂë*/
+///*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ 2025ï¿½ï¿½4ï¿½ï¿½21ï¿½Õ¼ÇµÃ½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Æ´Ë´ï¿½ï¿½ï¿½*/
 //static uint8_t single_shoot_reset(void) 
 //{
 ////    return (
-////							(   (rc.mouse.l)==0  &&  ctrl_mode==VISION_MODE  &&  vsn_drive.shoot_enable )    //ÊÓ¾õÄ£Ê½ÏÂ£ºËÉ¿ªÊó±ê×ó¼ü&ÊÓ¾õÔÊÐí·¢Éä£¬²Å¸´Î»
-////							|| (ABS(rc.ch5) < 10 && ctrl_mode == REMOTER_MODE)                             //Ò£¿ØÄ£Ê½ÏÂ£º²¦ÂÖËÉ¿ª£¬»Øµ½£¨½Ó½ü£©Ô­Î»£¬²Å¸´Î»
-////							|| ((rc.mouse.l) == 0 && ctrl_mode == KEYBOARD_MODE)                       //¼üÅÌÄ£Ê½ÏÂ£ºËÉ¿ªÊó±ê×ó¼ü£¬²Å¸´Î»
+////							(   (rc.mouse.l)==0  &&  ctrl_mode==VISION_MODE  &&  vsn_drive.shoot_enable )    //ï¿½Ó¾ï¿½Ä£Ê½ï¿½Â£ï¿½ï¿½É¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½&ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä£¬ï¿½Å¸ï¿½Î»
+////							|| (ABS(rc.ch5) < 10 && ctrl_mode == REMOTER_MODE)                             //Ò£ï¿½ï¿½Ä£Ê½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¿ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½Ô­Î»ï¿½ï¿½ï¿½Å¸ï¿½Î»
+////							|| ((rc.mouse.l) == 0 && ctrl_mode == KEYBOARD_MODE)                       //ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½Â£ï¿½ï¿½É¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Î»
 ////           );
 //}
 
-//µ¥·¢¸´Î»enable£¬ÇÒÒ£¿Ø·¢ËÍµ¥·¢ÇëÇó
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»enableï¿½ï¿½ï¿½ï¿½Ò£ï¿½Ø·ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 uint8_t single_shoot_enable(void) {
-	 #if NEW_RC//2025Äê7ÔÂ3ÈÕ ÐÂÒ£¿ØÓÉÓÚÃ»ÓÐµÚ¶þ¸ö²¦¸Ë£¬ËùÒÔ²»ÔÙÐ´Ò£¿Ø´¥·¢µÄµ¥·¢ÁË¡£ºóÐøÈç¹ûÊÓ¾õÒª´ò·û£¬ÔÙÏëÔõÃ´Ð´
+	 #if NEW_RC//2025ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½ ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ÐµÚ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ð´Ò£ï¿½Ø´ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´Ð´
 //		return(
 //        trigger.trigger_enable
 //        && (new_rc.mouse_left || new_rc.trigger >= 1)
@@ -163,7 +163,7 @@ uint8_t series_shoot_enable(void) {
 //            || (ctrl_mode == KEYBOARD_MODE && new_rc.mouse_left) 
 //            || (ctrl_mode == VISION_MODE && vsn_drive.shoot_enable)
 //        )
-//        && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* ÉäÆµ¿ØÖÆ */
+//        && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ */
 //		&& ABS(shoot.pid.trigger_ecd_error) < 0.9f * TRIGGER_MOTOR_ECD
 //    );
 //	}
@@ -176,7 +176,7 @@ uint8_t series_shoot_enable(void) {
             || (ctrl_mode == KEYBOARD_MODE && rc.mouse.l) 
             || (ctrl_mode == VISION_MODE && vision.shoot_enable)
         )
-        && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* ÉäÆµ¿ØÖÆ */
+        && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ */
     );
 //	}
 //    #endif
@@ -186,10 +186,10 @@ uint8_t series_shoot_enable(void) {
 
 /**
   * @name     TriggerMotor_control
-  * @brief    ÉäÆµ¿ØÖÆ
+  * @brief    ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½
   * @param    None
   * @retval   None
-  * @note     2025Äê3ÔÂ31ÈÕ³­²½±ø
+  * @note     2025ï¿½ï¿½3ï¿½ï¿½31ï¿½Õ³ï¿½ï¿½ï¿½ï¿½ï¿½
 						
   */
 void TriggerMotor_control(void)
@@ -201,10 +201,10 @@ void TriggerMotor_control(void)
 	
       switch (shoot.stir_mode) {
         case STIR_MODE_PROTECT: 
-				{ //²¦ÅÌ±£»¤Ä£Ê½£¬±£³Ö¹ßÐÔ£¬ÎÞÁ¦
-            shoot.frequency_cnt = 0; //¼ÆÊ±±äÁ¿ÖÃ0£¬´ò³öµ±Ç°Ò»·¢£¬½ûÖ¹
+				{ //ï¿½ï¿½ï¿½Ì±ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½
+            shoot.frequency_cnt = 0; //ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹
             shoot.trigger_period = 0;
-						shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ÈÃÆäÔ­µØÍ£ÏÂ£¬·À¸ÉËé²¦ÅÌ
+						shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½Í£ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é²¦ï¿½ï¿½
 						shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;            
 					  pid_trigger_spd.iout  = 0;
 				trigger_motor.tx_current = 0;
@@ -214,35 +214,35 @@ void TriggerMotor_control(void)
         case STIR_MODE_SINGLE: 
 					{ 
 					 shoot.pid.trigger_ecd_error = shoot.pid.trigger_ecd_ref - shoot.pid.trigger_ecd_fdb;
-//           if(!AMMO_STUCK_FLAG)//·Ç¿¨µ¯±êÖ¾Î» ¼´²»¿¨
+//           if(!AMMO_STUCK_FLAG)//ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //				   { 					
-//							/*Ö´ÐÐµ¥·¢Âß¼­*/
+//							/*Ö´ï¿½Ðµï¿½ï¿½ï¿½ï¿½ß¼ï¿½*/
 //							if (single_shoot_reset())
-//							{//µ¥´Î·¢ÉäºóµÈ´ý¸´Î»
+//							{//ï¿½ï¿½ï¿½Î·ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½Î»
 //									trigger.trigger_enable = T_ENABLE;
 //							}
 //							if (single_shoot_enable())
-//							{ //ÒÑ¸´Î»²¢ÇÒµ¥·¢Ìõ¼þÅÐ¶ÏÍ¨¹ý£¬Ôòecd+=£¬Í¬Ê±ÅÐ¶ÏÊÇ·ñ¿¨µ¯
-//									trigger.trigger_enable = T_DISABLE;//ÒÑ¾­Ö´ÐÐecd+=£¬ÐèÒªÔÙ´Î¸´Î»²ÅÔÊÐíÔÙ´Îecd+=
+//							{ //ï¿½Ñ¸ï¿½Î»ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ecd+=ï¿½ï¿½Í¬Ê±ï¿½Ð¶ï¿½ï¿½Ç·ñ¿¨µï¿½
+//									trigger.trigger_enable = T_DISABLE;//ï¿½Ñ¾ï¿½Ö´ï¿½ï¿½ecd+=ï¿½ï¿½ï¿½ï¿½Òªï¿½Ù´Î¸ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù´ï¿½ecd+=
 //								  shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
-//								  single_ammo_stuck_judge();//Ö´ÐÐ¿¨µ¯ÅÐ¶Ï
+//								  single_ammo_stuck_judge();//Ö´ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 //							}
 //				   }
-//					else//ÈôAMMO_STUCK_FLAGÎª1£¬ÊÓÎª¿¨µ¯£¬Ö´ÐÐÍËµ¯²Ù×÷
+//					else//ï¿½ï¿½AMMO_STUCK_FLAGÎª1ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½
 //					{
-//						if(SINGLE_AMMO_STUCK_BACK_FLAG==1)//ÒòÎªÕâ¸öelseÀïÃæÒªµÈ´ýÍËÒ»·¢ºóµç»úµ½Î»£¬ËùÒÔÕâ¸öecd-=Òªµ¥¶À³öÀ´±£Ö¤Ö»Ö´ÐÐÒ»´Î
+//						if(SINGLE_AMMO_STUCK_BACK_FLAG==1)//ï¿½ï¿½Îªï¿½ï¿½ï¿½elseï¿½ï¿½ï¿½ï¿½Òªï¿½È´ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ecd-=Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤Ö»Ö´ï¿½ï¿½Ò»ï¿½ï¿½
 //						{
-//							shoot.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD; //ÍËÒ»·¢
-//							SINGLE_AMMO_STUCK_BACK_FLAG=0;//ecd-=Ò»·¢ºó£¬ÖÃÁãµ¥·¢¿¨µ¯ÍËµ¯±êÖ¾Î»£¬·ÀÖ¹¶à´Îecd-=	
+//							shoot.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD; //ï¿½ï¿½Ò»ï¿½ï¿½
+//							SINGLE_AMMO_STUCK_BACK_FLAG=0;//ecd-=Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ãµ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î»ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ecd-=	
 //						}
 //						
 //						
-//						if(rc.mouse.l || rc.ch5 > 500)//ecd-=ºó£¬AMMO_STUCK_FLAGÒÀÈ»Îª1£¬ÒÀÈ»½øÕâ¸öelse£¬´ËÊ±Èç¹û¼ÌÐøÇëÇóµ¥·¢£¬ÔòµÈ´ýPID¿ØÖÆÆ÷Íê³Éecd-=£¬ÓÃCNTÀ´Ä£Äâ¼ÆÊ±Æ÷
+//						if(rc.mouse.l || rc.ch5 > 500)//ecd-=ï¿½ï¿½AMMO_STUCK_FLAGï¿½ï¿½È»Îª1ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½elseï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½óµ¥·ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ecd-=ï¿½ï¿½ï¿½ï¿½CNTï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 //						{
 //							SINGLE_STUCK_CNT++;
-//							if(SINGLE_STUCK_CNT>=1000)//ecd_refÍËÒ»·¢Ö®ºó£¬±¾À´ÊÇ»¹ÐèÒªÅÐ¶ÏÄÜ²»ÄÜÍËµ½Î»µÄ£¬µ«Ã»²â¹ý£¬²»ÖªµÀÍË1·¢£¿»¹ÊÇÍË0.5·¢£¿»¹ÊÇÍË0.1·¢µÄÎ»ÖÃ¾Í¹»ÁË£¿ ËùÒÔÒ»·¢ÍË²»µ½Î»Ò²ÊÇÕý³£µÄ£¬¹Ê²»ÅÐ¶Ï£¬Ö»¸ãÒ»¸öCNT£¬ÓÃÀ´¼ÆÊ±£¬¼Æ¼¸´Î¹»ÄØ£¿ ²»ÖªµÀ£¬Ëæ±ãÌî¸ö1000£¬¼´´ó¸Å1Ãë
+//							if(SINGLE_STUCK_CNT>=1000)//ecd_refï¿½ï¿½Ò»ï¿½ï¿½Ö®ï¿½ó£¬±ï¿½ï¿½ï¿½ï¿½Ç»ï¿½ï¿½ï¿½Òªï¿½Ð¶ï¿½ï¿½Ü²ï¿½ï¿½ï¿½ï¿½Ëµï¿½Î»ï¿½Ä£ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0.5ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0.1ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¾Í¹ï¿½ï¿½Ë£ï¿½ ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½Î»Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ê²ï¿½ï¿½Ð¶Ï£ï¿½Ö»ï¿½ï¿½Ò»ï¿½ï¿½CNTï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½Î¹ï¿½ï¿½Ø£ï¿½ ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1000ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½
 //							{
-//								SINGLE_STUCK_CNT = 0;//ÇåÁã£¬ÏÂÒ»´Î¿¨µ¯ÔÙÓÃ
+//								SINGLE_STUCK_CNT = 0;//ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½Ò»ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //								AMMO_STUCK_FLAG=0;
 //							}
 //						}
@@ -252,17 +252,17 @@ void TriggerMotor_control(void)
         }
 				
         case STIR_MODE_SERIES: 
-					{ //²¦ÅÌÁ¬·¢Ä£Ê½£¬Á¬Ðø¿ªÇ¹ÇëÇó£¬Á¬ÐøÏìÓ¦
+					{ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦
             shoot.pid.trigger_ecd_error = shoot.pid.trigger_ecd_ref - shoot.pid.trigger_ecd_fdb;
 						
-					if(!back_flag_tri)//Èç¹û¿¨µ¯ÁË£¬¾Í²»ÔÙ½ÓÊÕ·¢ÉäÖ¸Áî£¬×¨ÐÄÍê³ÉÍËµ¯²Ù×÷ÏÈ
+					if(!back_flag_tri)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½Í²ï¿½ï¿½Ù½ï¿½ï¿½Õ·ï¿½ï¿½ï¿½Ö¸ï¿½î£¬×¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				  {
 //						if(remote_online.NEW_OLD_RC_FLAG == 1)
 //						{
 ////						#if NEW_RC
 //						if( (new_rc.mouse_left || new_rc.trigger == 1) )
 //						{					
-//							  /*2025Äê5ÔÂ15ÈÕ ¼Ó¸öÉäÆµ±ä»¯¿ØÖÆ ÔÆÌ¨ÊÖ¿ÉÒÔÍ¨¹ýÞô×¡shiftÀ´Ìá¸ßÉäÆµ*/
+//							  /*2025ï¿½ï¿½5ï¿½ï¿½15ï¿½ï¿½ ï¿½Ó¸ï¿½ï¿½ï¿½Æµï¿½ä»¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ì¨ï¿½Ö¿ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½×¡shiftï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ*/
 //							  if(new_rc.key_SHIFT==1 || rc.ch3 <=364)
 //								{
 //									SHOOT_PERIOD_CHANGE_CNT+=2;
@@ -281,19 +281,19 @@ void TriggerMotor_control(void)
 //									SHOOT_PERIOD_CHANGE_FLAG=1;
 //								}
 //						
-//						/*ÒÔÉÏ´úÂë£¬²»ÓÃÊ±£¬Ö±½Ó×¢ÊÍ*/			
+//						/*ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ö±ï¿½ï¿½×¢ï¿½ï¿½*/			
 //									shoot.frequency_cnt++;
-//							  /*ÉäÆµ±ä»»´úÂë½áÊø£¬Ïà¹Ø´úÂë»¹ÓÐ£º×îÉÏÃæCNT¶¨Òå£¬initº¯ÊýCNTÇåÁã*/
+//							  /*ï¿½ï¿½Æµï¿½ä»»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ë»¹ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CNTï¿½ï¿½ï¿½å£¬initï¿½ï¿½ï¿½ï¿½CNTï¿½ï¿½ï¿½ï¿½*/
 //									if (series_shoot_enable() && back_flag_tri ==0) 
 //									{ 
 //										STIR_SERIES_SHOT_FLAG++;
 //										shoot.frequency_cnt = 0;
-//										shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;/* ²¦Ò»¿Å×Óµ¯ */							
+//										shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;/* ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Óµï¿½ */							
 //									}
 //						}
 //						else
 //						{
-//							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ÈÃÆäÔ­µØÍ£ÏÂ£¬·À¸ÉËé²¦ÅÌ
+//							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½Í£ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é²¦ï¿½ï¿½
 //							shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;   
 //						}
 ////						
@@ -303,7 +303,7 @@ void TriggerMotor_control(void)
 //						{
 							if( (rc.mouse.l || rc.ch5 >= 500) )
 						{					
-							  /*2025Äê5ÔÂ15ÈÕ ¼Ó¸öÉäÆµ±ä»¯¿ØÖÆ ÔÆÌ¨ÊÖ¿ÉÒÔÍ¨¹ýÞô×¡shiftÀ´Ìá¸ßÉäÆµ*/
+							  /*2025ï¿½ï¿½5ï¿½ï¿½15ï¿½ï¿½ ï¿½Ó¸ï¿½ï¿½ï¿½Æµï¿½ä»¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ì¨ï¿½Ö¿ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½×¡shiftï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ*/
 							  if(rc.kb.bit.SHIFT==1 || rc.ch3 <=-600)
 								{
 									SHOOT_PERIOD_CHANGE_CNT+=2;
@@ -322,64 +322,64 @@ void TriggerMotor_control(void)
 									SHOOT_PERIOD_CHANGE_FLAG=1;
 								}
 						
-						/*ÒÔÉÏ´úÂë£¬²»ÓÃÊ±£¬Ö±½Ó×¢ÊÍ*/			
+						/*ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ö±ï¿½ï¿½×¢ï¿½ï¿½*/			
 									shoot.frequency_cnt++;
-							  /*ÉäÆµ±ä»»´úÂë½áÊø£¬Ïà¹Ø´úÂë»¹ÓÐ£º×îÉÏÃæCNT¶¨Òå£¬initº¯ÊýCNTÇåÁã*/
+							  /*ï¿½ï¿½Æµï¿½ä»»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ë»¹ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CNTï¿½ï¿½ï¿½å£¬initï¿½ï¿½ï¿½ï¿½CNTï¿½ï¿½ï¿½ï¿½*/
 									if (series_shoot_enable() && back_flag_tri ==0) 
 									{ 
 										STIR_SERIES_SHOT_FLAG++;
 										shoot.frequency_cnt = 0;
-										shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;/* ²¦Ò»¿Å×Óµ¯ */							
+										shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;/* ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Óµï¿½ */							
 									}
 						}
 						else
 						{
-							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ÈÃÆäÔ­µØÍ£ÏÂ£¬·À¸ÉËé²¦ÅÌ
+							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½Í£ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é²¦ï¿½ï¿½
 							shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;   
 						}
 						
 //						#endif
-//					}//else if µÄÀ¨ºÅ
+//					}//else if ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				 }
 
-            /* ÏÈ¿¨µ¯ÅÐ¶Ï£ºÈôµç»ú¶Â×ª£¬µçÁ÷»áÔö´ó + ×ªËÙ»á½µµÍ*/
+            /* ï¿½È¿ï¿½ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + ×ªï¿½Ù»á½µï¿½ï¿½*/
 						if(ABS((int)trigger_motor.rx_current)>10000 && ABS(trigger_motor.speed_rpm)<500)//
 							{
 								back_flag_cnt++;
 								trigger_motor.tx_current = 0;
 							}
 							
-						/*Èô³ÖÐø¿¨µ¯£¬Ôò½øÈëÍËµ¯*/
+						/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½*/
              if(back_flag_cnt > 200)
             {          
-                shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//¶ÔÆëµ±Ç°²¦ÅÌÎ»ÖÃ£¨²¦ÅÌµÄÎ»ÖÃ»·Ò»°ã¶¼¸ú²»ÉÏ£¬»áÀ­ºÜÔ¶£¬ËùÒÔÒªÖØÐÂ¶ÔÆë£©
-                last_tri_ecd = trigger_motor.total_ecd;//¼ÇÂ¼µ±Ç°²¦ÅÌÎ»ÖÃ£¬ºóÐøÓÃÓÚÍË³öÍËµ¯µÄÅÐ¶Ï
-                back_flag_tri = 1;//ÖÃÎ»ÍËµ¯±êÖ¾Î» ±íÃæ²¦ÅÌÍËµ¯ÖÐ
-							  back_flag = 1;//ÖÃÎ»Ò»´Îback_flag£¬ºóÐøÖ»-=Ò»´Î
-								back_flag_cnt = 0;//Çå³ý¿¨µ¯¼ÆÊý£¬·ÀÖ¹ÖØ¸´½øÈë¸Ãif
+                shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//ï¿½ï¿½ï¿½ëµ±Ç°ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½Ìµï¿½Î»ï¿½Ã»ï¿½Ò»ï¿½ã¶¼ï¿½ï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Â¶ï¿½ï¿½ë£©
+                last_tri_ecd = trigger_motor.total_ecd;//ï¿½ï¿½Â¼ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
+                back_flag_tri = 1;//ï¿½ï¿½Î»ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î» ï¿½ï¿½ï¿½æ²¦ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½
+							  back_flag = 1;//ï¿½ï¿½Î»Ò»ï¿½ï¿½back_flagï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»-=Ò»ï¿½ï¿½
+								back_flag_cnt = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½if
             }   
 						
-						//Ã¿´Î¿¨µ¯£¬Ö»-=Ò»´Îref
+						//Ã¿ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö»-=Ò»ï¿½ï¿½ref
 						if(back_flag==1)
 						{
-							  shoot.pid.trigger_ecd_ref -= 2.0f * TRIGGER_MOTOR_ECD;//ÍËÁ½·¢µÄÎ»ÖÃ
-							  back_flag = 0;//Çå³ý£¬·ÀÖ¹ÖØ¸´-=ref
+							  shoot.pid.trigger_ecd_ref -= 2.0f * TRIGGER_MOTOR_ECD;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+							  back_flag = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½Ø¸ï¿½-=ref
 						}
 						
-						/*µÈ´ýÍËµ¯Ö´ÐÐ½áÊø*/
-						if( back_flag_tri == 1 )//ÍËµ¯±êÖ¾Î» ±íÃ÷ÕýÔÚÖ´ÐÐÍËµ¯
+						/*ï¿½È´ï¿½ï¿½Ëµï¿½Ö´ï¿½Ð½ï¿½ï¿½ï¿½*/
+						if( back_flag_tri == 1 )//ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½Ëµï¿½
 						{
-							 err_time += SHOOT_PERIOD;//ÍËµ¯Ö´ÐÐ¼ÆÊ± »ò³¬Ê±£¬ÔòÖ±½ÓÍË³öÍËµ¯¶ø²»ÔÙµÈ²¦ÅÌµ½Î»£¨ÍËµ¯Ê±×èÁ¦ÒÀÈ»ºÜ´ó£¬²¦ÅÌ²»µ½Î»Ò²Õý³££©
+							 err_time += SHOOT_PERIOD;//ï¿½Ëµï¿½Ö´ï¿½Ð¼ï¿½Ê± ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÙµÈ²ï¿½ï¿½Ìµï¿½Î»ï¿½ï¿½ï¿½Ëµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½Ü´ó£¬²ï¿½ï¿½Ì²ï¿½ï¿½ï¿½Î»Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 							
-							//ÍËµ¯½áÊøµÄÒÀ¾Ý£º·´×ªµ½Î»£¨2.0·¢£©»ò³¬Ê±£¨Ö´ÐÐ200´Î·¢ÉäÈÎÎñ£©
+							//ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½×ªï¿½ï¿½Î»ï¿½ï¿½2.0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ö´ï¿½ï¿½200ï¿½Î·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 							if((err_time >= 200) || (trigger_motor.total_ecd == (last_tri_ecd - 2.0*TRIGGER_MOTOR_ECD)) )
 							{
-								  err_time = 0;//Çå³ýÍËµ¯Ö´ÐÐÊ±¼ä ·ÀÖ¹Ó°ÏìÏÂÒ»´ÎÍËµ¯
-								  back_flag_tri=0;//Çå³ýÍËµ¯±êÖ¾Î» 
+								  err_time = 0;//ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ö´ï¿½ï¿½Ê±ï¿½ï¿½ ï¿½ï¿½Ö¹Ó°ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ëµï¿½
+								  back_flag_tri=0;//ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ö¾Î» 
 							}
 					  }
 						
-						/*¿¨µ¯ÍËµ¯´úÂë½áÊø*/
+						/*ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 						
 						TriggerMotor_pidcal();						
             break;
@@ -387,6 +387,7 @@ void TriggerMotor_control(void)
 				
         default: {break;}
     }
+	dji_send_current(NULL, NULL, &trigger_motor, NULL);
 //    osSignalSet(can_msg_send_task_t, TRIGGER_MOTOR_MSG_SEND);
 }
 
