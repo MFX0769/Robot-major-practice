@@ -27,9 +27,9 @@ void shoot_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     for(;;)
     {
-        shoot_mode_sw();  //���ģʽ�л�
-        FricMotor_Control();	//Ħ���ֵ������
-        TriggerMotor_control();	//�����������
+        shoot_mode_sw();  //射击模式切换
+        FricMotor_Control();	//摩擦轮电机控制
+        TriggerMotor_control();	//拨弹电机控制
 //	    wdg_user_set_bit(WDG_BIT_TASK_SHOOT);
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
     }
@@ -37,16 +37,16 @@ void shoot_task(void const *argu)
 
 void shoot_init(void)
 {
-    FricMotor_init();   //Ħ���ֳ�ʼ��
-    TriggerMotor_init();//���̳�ʼ��
-    /* ������ģʽ��ʼ�� */
+    FricMotor_init();   //摩擦轮初始化
+    TriggerMotor_init();//拨盘初始化
+    /* 发射器模式初始化 */
     shoot.firc_mode     = FIRC_MODE_STOP;
     shoot.stir_mode     = STIR_MODE_PROTECT;
-    /* ǹ�ܲ�����ʼ�� */
+    /* 枪管参数初始化 */
     shoot.trigger_period = TRIGGER_PERIOD;
-	/*��ң����ؿ�ʼ*/
+	/*新遥控相关开始*/
 	shoot.shoot_mode_CNT=0;
-	/*��ң����ؽ���*/
+	/*新遥控相关结束*/
 }
 
 
@@ -56,11 +56,11 @@ static void shoot_mode_sw(void)
 ////		#if NEW_RC
 //		if(remote_online.NEW_OLD_RC_FLAG == 1)
 //			{
-//    /* ģʽ�л� */
+//    /* 模式切换 */
 
 //		 switch( new_rc.mode_sw )
 //    {
-//        case RC_MODE_C://����
+//        case RC_MODE_C://保护
 //        {
 //            shoot.firc_mode = FIRC_MODE_STOP;
 //            shoot.stir_mode = STIR_MODE_PROTECT;
@@ -68,10 +68,10 @@ static void shoot_mode_sw(void)
 //        }
 //        break;
 //				
-//        case RC_MODE_N://ң��
+//        case RC_MODE_N://遥控
 //        {
 //					shoot.FN2=new_rc.fn_2;
-//						if(shoot.FN2==1 && shoot.last_FN2==0)//������
+//						if(shoot.FN2==1 && shoot.last_FN2==0)//上升沿
 //						{
 //								 shoot.shoot_mode_CNT++;
 //						}
@@ -93,7 +93,7 @@ static void shoot_mode_sw(void)
 //        }
 //        break;
 //       
-//        case RC_MODE_S://����
+//        case RC_MODE_S://键鼠
 //        {
 //					 shoot.firc_mode = FIRC_MODE_RUN;
 //					 shoot.stir_mode = STIR_MODE_SERIES;
@@ -110,7 +110,7 @@ static void shoot_mode_sw(void)
 //		else if(remote_online.NEW_OLD_RC_FLAG == 0)
 //		{
 		
-		    /* ģʽ�л� */
+		    /* 模式切换 */
     switch( rc.sw1 )
     {
         case RC_MI:
@@ -122,7 +122,7 @@ static void shoot_mode_sw(void)
 				
         case RC_UP:
         {
-            /* Ħ���ֺͲ���ģʽ�л� */
+            /* 摩擦轮和拨盘模式切换 */
             switch( rc.sw2 )
             {
                 case RC_UP:
@@ -133,13 +133,13 @@ static void shoot_mode_sw(void)
                 break;
                 case RC_MI:
                 {
-                    shoot.firc_mode = FIRC_MODE_RUN;  //����Ħ����
+                    shoot.firc_mode = FIRC_MODE_RUN;  //开启摩擦轮
                     shoot.stir_mode = STIR_MODE_SINGLE;
                 }
                 break;
                 case RC_DN:
                 {
-                    shoot.firc_mode = FIRC_MODE_RUN;  //���ֿ���Ħ����
+                    shoot.firc_mode = FIRC_MODE_RUN;  //保持开启摩擦轮
 					          shoot.stir_mode = STIR_MODE_SERIES;
                 }
                 break;

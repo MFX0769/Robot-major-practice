@@ -7,7 +7,7 @@
 #ifndef __BSP_TRIIGERMOTOR_H
 #define __BSP_TRIIGERMOTOR_H
 
-#define TRIGGER_MOTOR_ECD   36859.5f  //����һ���ӵ�ת���ı���ֵ 8191 * 36 / 8 = 36859.5f
+#define TRIGGER_MOTOR_ECD   36859.5f  //拨盘一颗子弹转过的编码值 8191 * 36 / 8 = 36859.5f
 
 #define MIN_HEAT		    40
 
@@ -17,7 +17,7 @@ typedef enum
 	T_DISABLE = 0
 }trigger_enable_e;
 
-//2025��4��21�� �Ȱ�enable�ӽ�����ֻ�����ڵ�����λ�����ϣ�����������ͳһ
+//2025年4月21日 先把enable加进来，只是用在单发复位功能上，后续再慢慢统一
 typedef struct
 {
 //	trigger_pid_t 		trigger_pid;

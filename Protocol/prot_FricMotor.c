@@ -3,9 +3,9 @@
   * @version 1.0
   * @date  2022.3.14
 	*
-  * @brief 3508ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  * @brief 3508·¢ÉäÆ÷´úÂë
 	*
-  *	@author  22ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  *	@author  22¿ÕÖÐ×é
   *
   */
 
@@ -26,12 +26,12 @@ ramp_function_source_t Fric_speed;
 pid_t fric_spd_pid[2];
 fric_pid_t fric[2];
 /*********************************************************************/
-//Kalman1_param_t err_Kalman[2];                  //Ò»Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½á¹¹ï¿½ï¿½
+//Kalman1_param_t err_Kalman[2];                  //Ò»Î¬¿¨¶ûÂüÂË²¨½á¹¹Ìå
 /**
   * @name    	  FricMotor_init
-	* @brief 			Ä¦ï¿½ï¿½ï¿½ï¿½PIDï¿½ï¿½Ê¼ï¿½ï¿½
+	* @brief 			Ä¦²ÁÂÖPID³õÊ¼»¯
   * @param 			None
-	* @note   		ï¿½ï¿½ï¿½ï¿½20 2 20  ï¿½ï¿½ï¿½ï¿½12 0.05 20.0
+	* @note   		Á¬·¢20 2 20  µ¥·¢12 0.05 20.0
 	* @imporvement[now] None
   */
 	
@@ -52,7 +52,7 @@ void FricMotor_init(void)
     Fric_speed.out  = 0;
     Fric_speed.frame_period = 0.01;
 
-    /* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    /* ³õÊ¼»¯ÉäËÙ */
     shoot.shoot_speed = 28;  
 	
 
@@ -60,15 +60,15 @@ void FricMotor_init(void)
 
 /**
   * @name     FricMotor_Control
-  * @brief    Ä¦ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½
+  * @brief    Ä¦²ÁÂÖ¿ØÖÆ
   * @param    None
   * @retval   None
-  * @note     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð²ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ÙµÄ£ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð²ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ÔµÄ²ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½Ù»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1m/s 
+  * @note     ÏÂÃæÊÇÊý¾ÝÊÇÃ»ÓÐ²¦ÅÌ¸ø³õËÙµÄ£¬Ö»ÊÇÔÚÃ»ÓÐ²ÃÅÐÏµÍ³µÄÊ±ºò´ÖÂÔµÄ²âµÄ£¬ËùÒÔ£¬¼ÓÉÏ²¦ÅÌÖ®ºóÊµ¼ÊÉäËÙ»á±ÈÕâ¸ö¸ß1m/s 
 								//4900  17.3-18.4
 								//4800  16.7-17.5
 								//4500 14.5-15.3
 								//7400  27.8-29.4
-								//7600 28.5-29.5 //ï¿½Ô¹ï¿½ï¿½ï¿½ï¿½ï¿½26
+								//7600 28.5-29.5 //ÊÔ¹ýµôµ½26
   */
 
 
@@ -81,32 +81,32 @@ void FricMotor_Control(void)
         case FIRC_MODE_STOP:
         {
 					
-					/*Ð±ï¿½Âºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ç¶¯ï¿½Æ¹ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+					/*Ð±ÆÂº¯Êý ÂýÂýÍ££¬·ÀÖ¹·´µç¶¯ÊÆ¹ý´óÉÕ»µÆäËûÆ÷¼þ*/
 		       if(lock_flag==1)
            {
 						ramp_calc(&Fric_speed,-2.0f,1.0f,HIGH_SPEED,0);
 
 					 }
-					 else if(lock_flag==2)//ï¿½ï¿½Ë½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
+					 else if(lock_flag==2)//Íâ°Ë½âËøµÄ»°£¬¾ÍÄ¦²ÁÂÖÂýÂý×ª
             {
 						ramp_calc(&Fric_speed,-2.0f,1.0f,3000,0);
 
 					  }
 						
-//						/*ï¿½ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½Öµï¿½Ø¸Ä·ï¿½ï¿½ï¿½*/
+//						/*×óÓÒÄ¦²ÁÂÖµç¿Ø¸Ä·½Ïò*/
 //					fric[0].spd_ref = -Fric_speed.out;
 //					fric[1].spd_ref = Fric_speed.out;	
 					  
 					  fric[0].spd_ref = Fric_speed.out;
 					  fric[1].spd_ref = -Fric_speed.out;
 							
-						/*ï¿½Ù¶È¸ï¿½Öµï¿½ï¿½PIDï¿½ï¿½ï¿½ï¿½*/
+						/*ËÙ¶È¸³ÖµÓëPID¼ÆËã*/
 						for(b=0;b<2;b++)
 						{
 							fric[b].spd_fdb = fric_motor[b].speed_rpm;
 							fric[b].current = pid_calc(&fric_spd_pid[b],fric[b].spd_fdb ,fric[b].spd_ref );
 							fric_motor[b].tx_current = fric[b].current;
-							if( ABS(fric[b].spd_fdb) < 500)//Í£ï¿½Âµï¿½Ê±ï¿½ò²»¸ï¿½ï¿½ï¿½
+							if( ABS(fric[b].spd_fdb) < 500)//Í£ÏÂµÄÊ±ºò²»¸øµç
 								fric_motor[b].tx_current = 0 ;
 						}
         }break;
@@ -127,6 +127,6 @@ void FricMotor_Control(void)
         }break;
         default: break;
     }
-    dji_send_current(&fric_motor[0], &fric_motor[1], NULL, NULL);
+	    dji_send_current(&fric_motor[0], &fric_motor[1], NULL, NULL);
 //    osSignalSet(can_msg_send_task_t, FRIC_MOTOR_MSG_SEND);
 }

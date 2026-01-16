@@ -67,10 +67,10 @@ static void rm_motor_can_interface_send(dji_motor_t *motor, uint32_t id, const u
  * @param[in] reduction_ratio: ���ʵ�ʼ��ٱ�
  * @retval    void
  */
-void dji_motor_init(dji_motor_t *motor, uint8_t motor_type, can_channel_e can_channel, uint32_t id, float reduction_ratio)
+void dji_motor_init(dji_motor_t *motor, uint8_t motor_type, prot_can_channel_e prot_can_channel, uint32_t id, float reduction_ratio)
 {
     motor->motor_type = motor_type;
-    motor->can_channel = can_channel;
+    motor->prot_can_channel = prot_can_channel;
     motor->can_id = id;
     motor->reduction_ratio = reduction_ratio;
 }
@@ -239,12 +239,12 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *mot
     if(motor1 != NULL && motor1->can_id < 0x205)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
-        rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
+        rm_motor_can_interface_send(motor1, motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
     }
     else if(motor1 != NULL && motor1->can_id < 0x209)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][4].data);
-        rm_motor_can_interface_send(motor1->prot_can_channel, motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][0].data);
+        rm_motor_can_interface_send(motor1, motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][0].data);
 
     }
 }
