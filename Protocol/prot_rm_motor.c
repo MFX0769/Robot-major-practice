@@ -202,21 +202,25 @@ static void dji_motor_fill_data(dji_motor_t *motor)
     if(motor->can_id < 0x205)
     {
         // 0x201-0x204 �����
-        motor_msg[motor->can_channel][0].id = 0x200;
-        motor_msg[motor->can_channel][0].data[(motor->can_id - 0x201) * 2] = motor->tx_current >> 8;
-        motor_msg[motor->can_channel][0].data[(motor->can_id - 0x201) * 2 + 1] = motor->tx_current;
+        motor_msg[motor->prot_can_channel][0].id = 0x200;
+        motor_msg[motor->prot_can_channel][0].data[(motor->can_id - 0x201) * 2] = motor->tx_current >> 8;
+        motor_msg[motor->prot_can_channel][0].data[(motor->can_id - 0x201) * 2 + 1] = motor->tx_current;
     }
     else if(motor->can_id < 0x209)
     {
         // 0x205-0x208 �����
-        if(motor->can_channel == CAN_CHANNEL_1)
-            motor_msg[motor->can_channel][4].id = 0x1fe;
+        if(motor->prot_can_channel == PROT_CAN_CHANNEL_1)
+            motor_msg[motor->prot_can_channel][4].id = 0x1fe;
         else 
-            motor_msg[motor->can_channel][4].id = 0x1fe;
+            motor_msg[motor->prot_can_channel][4].id = 0x1ff;
         
-        motor_msg[motor->can_channel][4].data[(motor->can_id - 0x205) * 2] = motor->tx_current >> 8;
-        motor_msg[motor->can_channel][4].data[(motor->can_id - 0x205) * 2 + 1] = motor->tx_current;
+		if(motor->tx_current != 0)
+		{
+        motor_msg[motor->prot_can_channel][4].data[(motor->can_id - 0x205) * 2] = motor->tx_current >> 8;
+        motor_msg[motor->prot_can_channel][4].data[(motor->can_id - 0x205) * 2 + 1] = motor->tx_current;
     }
+		
+}
     
     motor->send_cnt++;
 }
@@ -233,18 +237,18 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2, dji_motor_t *mot
     dji_motor_fill_data(motor1);
     dji_motor_fill_data(motor2);
     dji_motor_fill_data(motor3);
-    dji_motor_fill_data(motor4);
+    dji_motor_fill_data(motor4);	
     
     // ��������
     if(motor1 != NULL && motor1->can_id < 0x205)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
-        rm_motor_can_interface_send(motor1, motor_msg[motor1->can_channel][0].id, motor_msg[motor1->can_channel][0].data);
+        rm_motor_can_interface_send(motor1, motor_msg[motor1->prot_can_channel][0].id, motor_msg[motor1->prot_can_channel][0].data);
     }
     else if(motor1 != NULL && motor1->can_id < 0x209)
     {
         // bsp_can_std_transmit(       motor1->can_channel,      motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][4].data);
-        rm_motor_can_interface_send(motor1, motor_msg[motor1->can_channel][4].id, motor_msg[motor1->can_channel][0].data);
+        rm_motor_can_interface_send(motor1, motor_msg[motor1->prot_can_channel][4].id, motor_msg[motor1->prot_can_channel][4].data);
 
     }
 }

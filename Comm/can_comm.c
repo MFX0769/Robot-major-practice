@@ -347,6 +347,8 @@ void Task_CAN2Transmit(void const *arg)
     {
         if (xQueueReceive(CAN2_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
+			if(msg.Data[2]!=0)
+			{
             uint32_t retry = 0;
 //          HAL_StatusTypeDef hal_ret = HAL_ERROR;  // 初始错误
             do {
@@ -373,6 +375,7 @@ void Task_CAN2Transmit(void const *arg)
                 // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
                 // can_tx_drop_cnt++;
             }
+		}
 
         }
     }

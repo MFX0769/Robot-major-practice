@@ -32,6 +32,7 @@
 /* USER CODE BEGIN Includes */
 #include "can_comm.h"
 #include "usart_comm.h"
+#include "shoot_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -116,6 +117,7 @@ int main(void)
 
 	comm_can_init();
 	comm_usart_init();
+	shoot_init();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
