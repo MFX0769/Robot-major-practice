@@ -21,7 +21,7 @@ extern game_status_t game_status;
 shoot_t shoot;
 
 static void shoot_mode_sw(void);
-
+static void shoot_param_update(void);
 void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
@@ -52,7 +52,7 @@ void shoot_init(void)
 
 static void shoot_mode_sw(void)
 { 
-	
+	shoot_param_update();
 ////		#if NEW_RC
 //		if(remote_online.NEW_OLD_RC_FLAG == 1)
 //			{
@@ -158,7 +158,18 @@ static void shoot_mode_sw(void)
     }
 		
 //	}
-
-
 }
 
+static void shoot_param_update(void)
+{
+    //更新裁判系统数据
+    if (robot_status.shooter_barrel_heat_limit != 0) {
+        shoot.barrel.heat_max = robot_status.shooter_barrel_heat_limit;//枪管热量上限
+        shoot.barrel.cooling_rate = robot_status.shooter_barrel_cooling_value;//枪管冷却速率
+    }
+    //更新模拟裁判系统数据
+    shoot.barrel.heat -= shoot.barrel.cooling_rate * SHOOT_PERIOD * 0.001f;  //当前枪管(理论)热量
+    if (shoot.barrel.heat < 0) shoot.barrel.heat = 0;
+    shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat;  //当前枪管(理论)剩余热量
+    shoot.barrel.heat_remain = 50;
+}

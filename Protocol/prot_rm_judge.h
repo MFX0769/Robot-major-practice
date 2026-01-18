@@ -368,7 +368,7 @@ typedef struct
 
 int Judge_Read_Data(uint8_t *ReadFromUsart);
 
-
+extern robot_status_t robot_status;
 extern shoot_data_t Shoot_Data;
 extern game_status_t Game_status;
 extern remote_control_t Remote_Control;

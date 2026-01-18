@@ -87,7 +87,7 @@ static void send_data(void) {
 
 // 1. 基础点亮：设置灯珠颜色并立即显示
 void led_show(uint8_t led_num, Indicator_color_e color) {
-	 update_all_leds(OFF);//先把所有都写逻辑0
+	update_all_leds(OFF);//先把所有都写逻辑0
     update_leds(led_num, color);//再写入想要亮灯的逻辑
     send_data();
 }

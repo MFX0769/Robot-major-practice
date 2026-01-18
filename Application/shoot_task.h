@@ -9,7 +9,7 @@
 
 #include "stm32h7xx.h"
 #include "prot_FricMotor.h"
-
+#include "prot_TriggerMotor.h"
 /* 拨盘闭环控制变量结构 */
 typedef struct
 {
@@ -57,16 +57,16 @@ typedef enum
 //////} shoot_house_mode_e;
 
 /* 枪管数据结构  关我飞机什么事*/
-//////typedef struct
-//////{
-//////    trigger_pid_t pid;
-//////    int16_t     current;            //发射器电流值
-//////    float       heat;               //当前热量
-//////    int32_t     heat_remain;        //剩余热量
-//////    uint16_t    heat_max;			//最大热量	裁判系统读出
-//////    uint16_t    cooling_rate;	    //冷却速率  裁判系统读出
-//////    uint32_t    shoot_period;       //射击周期
-//////} barrel_param_t;
+typedef struct
+{
+    trigger_pid_t pid;
+    int16_t     current;            //发射器电流值
+    float       heat;               //当前热量
+    int32_t     heat_remain;        //剩余热量
+    uint16_t    heat_max;			//最大热量	裁判系统读出
+    uint16_t    cooling_rate;	    //冷却速率  裁判系统读出
+    uint32_t    shoot_period;       //射击周期
+} barrel_param_t;
 
 /* 发射器控制中心结构 */
 typedef struct
@@ -75,7 +75,7 @@ typedef struct
     shoot_stir_mode_e   stir_mode;
 	  uint8_t             SHOT_FLAG;//2025年4月3日 用于观测当前是否控制发射  0否 1射
 //    shoot_house_mode_e  house_mode;
-//    barrel_param_t      barrel;
+    barrel_param_t      barrel;
 		trigger_pid_t       pid;
 		int16_t             current;
     uint16_t            shoot_speed;		//射速

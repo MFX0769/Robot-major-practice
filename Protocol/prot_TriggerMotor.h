@@ -39,6 +39,7 @@ uint8_t single_shoot_reset(void);
 uint8_t single_shoot_enable(void);
 
 uint8_t series_shoot_enable(void);
+static void shoot_param_update(void);
 void single_ammo_stuck_judge(void);
 extern 	uint8_t 	SHOOT_PERIOD_CHANGE_FLAG;
 extern 	uint8_t 	SHOOT_PERIOD_CHANGE_CNT;
