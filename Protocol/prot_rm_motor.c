@@ -212,7 +212,7 @@ static void dji_motor_fill_data(dji_motor_t *motor)
         if(motor->can_channel == CAN_CHANNEL_1)
             motor_msg[motor->can_channel][4].id = 0x1fe;
         else 
-            motor_msg[motor->can_channel][4].id = 0x1ff;
+            motor_msg[motor->can_channel][4].id = 0x1fe;
         
         motor_msg[motor->can_channel][4].data[(motor->can_id - 0x205) * 2] = motor->tx_current >> 8;
         motor_msg[motor->can_channel][4].data[(motor->can_id - 0x205) * 2 + 1] = motor->tx_current;

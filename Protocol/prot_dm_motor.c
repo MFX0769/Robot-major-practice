@@ -16,21 +16,21 @@ dm_motor_t dm3507_motor;
  */
 static void dm_motor_can_interface_send(dm_motor_t *motor, uint32_t id, const uint8_t *data)
 {
-	switch (motor->prot_can_channel)
-	{
-		case PROT_CAN_CHANNEL_1:
-			Prot_CAN1_Send_Frame(id, data, 8);
-			break;
-		case PROT_CAN_CHANNEL_2:
-			Prot_CAN2_Send_Frame(id, data, 8);
-			break;
-		case PROT_CAN_CHANNEL_3:
-			Prot_CAN3_Send_Frame(id, data, 8);
-			break;
-		default:
-			// 错误处理：无效的 CAN 通道
-			break;
-	}	
+//	switch (motor->prot_can_channel)
+//	{
+//		case PROT_CAN_CHANNEL_1:
+//			Prot_CAN1_Send_Frame(id, data, 8);
+//			break;
+//		case PROT_CAN_CHANNEL_2:
+//			Prot_CAN2_Send_Frame(id, data, 8);
+//			break;
+//		case PROT_CAN_CHANNEL_3:
+//			Prot_CAN3_Send_Frame(id, data, 8);
+//			break;
+//		default:
+//			// 错误处理：无效的 CAN 通道
+//			break;
+//	}	
 }
 
 
@@ -90,7 +90,7 @@ void dm_set_cmd(dm_motor_t *motor,uint8_t cmd)
 		}break;
 		default:return;
 	}
-	// bsp_can_std_transmit(motor->can_channel,motor->can_send_id,buf);
+//	 bsp_can_std_transmit(motor->prot_can_channel,motor->can_send_id,buf);
 	dm_motor_can_interface_send(motor, motor->can_send_id, buf);
 }
 /*

@@ -223,7 +223,7 @@ bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint
         default: return BSP_CAN_ERROR;  // 未知返回码也当错误
     }
 
-    HAL_StatusTypeDef hal_ret = HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan, &tx_header, data);
+    HAL_StatusTypeDef hal_ret = HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, &tx_header, data);
 
     switch (hal_ret)
     {

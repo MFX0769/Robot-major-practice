@@ -1,4 +1,4 @@
-/**
+/*
   * @file gimbal_task.c
   * @version 1.0
   * @date  2025.11.19
@@ -60,8 +60,8 @@ static void gimbal_pid_calc(void)
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
 /*pitch电机实际控制输出名*/
 	pitch_motor.t_ref = gimbal.pit_output;
-//	dm3507_motor.t_ref = gimbal.pit_output;
-	dm3507_motor.t_ref = 0;
+	dm3507_motor.t_ref = gimbal.pit_output;
+//	dm3507_motor.t_ref = 0;
 	dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
 
 //--------------------yaw_pid_calu----------------------------------//

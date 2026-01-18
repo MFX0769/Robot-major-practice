@@ -1037,11 +1037,6 @@
               <FileType>5</FileType>
               <FilePath>..\Protocol\prot_ws2812.h</FilePath>
             </File>
-            <File>
-              <FileName>prot_can_send_interface.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Protocol\prot_can_send_interface.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1081,11 +1076,6 @@
               <FileName>judge_comm.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Comm\judge_comm.h</FilePath>
-            </File>
-            <File>
-              <FileName>can_message.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Comm\can_message.h</FilePath>
             </File>
           </Files>
         </Group>
