@@ -124,18 +124,6 @@ void led_flow(uint8_t led_num,Indicator_color_e color, uint8_t direction, uint16
 
 // 3. 闪烁：调用一次就完成指定次数的闪烁
 void led_flash(uint8_t led_num, Indicator_color_e color, uint8_t times, uint16_t interval_ms) {
-    for (uint8_t i = 0; i < times; i++) {
-        // 亮
-        update_leds(led_num, color);
-        send_data();
-//        delay_ms(interval_ms);
-        
-        // 灭（最后一次不灭）
-        if (i < times - 1) {
-            update_leds(led_num, OFF);
-            send_data();
-//            delay_ms(interval_ms);
-        }
-    }
+
 }
 

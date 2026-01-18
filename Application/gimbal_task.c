@@ -49,7 +49,7 @@ static void gimbal_init(void)
 float yaw_err;
 static void gimbal_pid_calc(void)
 {
-	if(ctrl_mode == PROTECT_MODE){return;}
+//	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     data_limit(gimbal.pit_angle.ref, 50, -12);
@@ -75,7 +75,7 @@ static void gimbal_pid_calc(void)
 	gimbal.yaw_output = -pid_calc(&gimbal.yaw_spd.pid, gimbal.yaw_spd.fdb, gimbal.yaw_spd.ref);
 /*----------------------yaw电机实际控制输出--------------*/
 	yaw_motor.tx_current = gimbal.yaw_output;
-	dji_send_current(NULL, &yaw_motor, NULL, NULL);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	dji_send_current(&yaw_motor, NULL, NULL, NULL);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
 /*--------------------------------------------------------*/
 //下面可写当imu意外为0时靠编码器控制的计算
 }

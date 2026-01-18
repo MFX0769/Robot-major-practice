@@ -232,7 +232,7 @@ bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint
         case HAL_BUSY: return BSP_CAN_LINE_BUSY;
         default: break;
     }
-  
+  return BSP_CAN_ERROR;
 }
 
 

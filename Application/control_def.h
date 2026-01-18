@@ -93,9 +93,6 @@
 
 #define IMU_feedback 1  //2025赛季没有维护编码器feedback的代码，请勿直接使用，IMU_feedback应该保持为1 
 
-//#define PITCH_DOUBLE_PID 1 //MG4005 PITCH轴位置速度串级有点调不明白，所以随时切换单位置环或串级PID。 若置1，则单位置环
-
-
 #endif
 
 
