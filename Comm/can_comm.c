@@ -50,17 +50,17 @@ void comm_can_init(void)
 	  /*-----------�û��ڴ��޸Ĺ��������ݣ����?10�����򣬵�������bsp�ļ���ģ�?--------*/
     bsp_can1_filt_tbl.count = 2;//CAN1һ�����˶��������˹���
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can1_filt_tbl.data[1]=0x206&0x7ff;
-	  bsp_can1_filt_tbl.data[2]=0x207&0x7ff;
+	  bsp_can1_filt_tbl.data[1]=0x007&0x7ff;
+	  bsp_can1_filt_tbl.data[2]=0x206&0x7ff;
 		bsp_can1_filt_tbl.data[3]=FLT_DUAL;
 		bsp_can1_filt_tbl.data[4]=0x017&0x7ff;
 		bsp_can1_filt_tbl.data[5]=0x018&0x7ff;
 	bsp_can2_filt_tbl.count = 2;//CAN2һ�����˶��������˹���
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can2_filt_tbl.data[1]=0x206&0x7ff;
-	  bsp_can2_filt_tbl.data[2]=0x007&0x7ff;
+	  bsp_can2_filt_tbl.data[1]=0x201&0x7ff;
+	  bsp_can2_filt_tbl.data[2]=0x202&0x7ff;
 		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can2_filt_tbl.data[4]=0x001&0x7ff;
+		bsp_can2_filt_tbl.data[4]=0x206&0x7ff;
 		bsp_can2_filt_tbl.data[5]=0x007&0x7ff;
     bsp_can3_filt_tbl.count = 1;//CAN3һ�����˶��������˹���
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
@@ -137,6 +137,11 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 					dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);   
 					break;
 				}
+				case DM_3507_RECEIVE_ID:
+				{
+					dm_get_single_data(&dm3507_motor,bsp_user_can1.CAN_RxBuffer.rx_data);
+					break;
+				}
 				default:break;
 			}
 }
@@ -153,6 +158,21 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 //    }
 	switch(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier)
 			{
+				case CAN_3508_FRIC_L_ID :
+				case CAN_3508_FRIC_R_ID :
+				{
+					fric_can_recive_cnt++;
+					static uint8_t i;
+					i = bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier - CAN_3508_FRIC_L_ID ;
+					dji_motor_get_single_data(&fric_motor[i],bsp_user_can2.CAN_RxBuffer.rx_data);
+					switch (i)
+					{
+//						case 0: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO1); break;
+//						case 1: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO2); break;
+						default: break;
+					}
+					break;
+				}
 				case DM_3507_RECEIVE_ID:
 				{
 					dm_get_single_data(&dm3507_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
@@ -165,12 +185,12 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 //					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
 					break;
 				}
-				case CAN_J4310_MOTOR_ID:
-				{
-					dm_get_single_data(&pitch_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
-//					encoder_J4310_get(&motor_dm4310_pitch,rx_fifo0_data);
-					break;
-				}
+//				case CAN_J4310_MOTOR_ID:
+//				{
+//					dm_get_single_data(&pitch_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
+////					encoder_J4310_get(&motor_dm4310_pitch,rx_fifo0_data);
+//					break;
+//				}
 				case TIMU_PALSTANCE_ID:
 				{
 					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can2.CAN_RxBuffer.rx_data);
@@ -347,8 +367,7 @@ void Task_CAN2Transmit(void const *arg)
     {
         if (xQueueReceive(CAN2_Tx_queue, &msg, portMAX_DELAY) == pdPASS)
         {
-			if(msg.Data[2]!=0)
-			{
+			
             uint32_t retry = 0;
 //          HAL_StatusTypeDef hal_ret = HAL_ERROR;  // 初始错误
             do {
@@ -375,7 +394,7 @@ void Task_CAN2Transmit(void const *arg)
                 // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
                 // can_tx_drop_cnt++;
             }
-		}
+		
 
         }
     }

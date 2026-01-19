@@ -251,13 +251,13 @@ void StartDefaultTask(void const * argument)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
   /*电机初始化，从comm_can挪到这里了。因为这些属于“设备初始化”而不是can外设初始化  Motor init,moved from comm_can_init() to here,because "motor" != can Peripherals */
-	  dji_motor_init(&fric_motor[0], DJI_3508_MOTOR,PROT_CAN_CHANNEL_1, 0x201, 1.0f);
-    dji_motor_init(&fric_motor[1], DJI_3508_MOTOR,PROT_CAN_CHANNEL_1, 0x202, 1.0f);
+	dji_motor_init(&fric_motor[0], DJI_3508_MOTOR,PROT_CAN_CHANNEL_2, 0x201, 1.0f);
+    dji_motor_init(&fric_motor[1], DJI_3508_MOTOR,PROT_CAN_CHANNEL_2, 0x202, 1.0f);
     dji_motor_init(&trigger_motor, DJI_2006_MOTOR,PROT_CAN_CHANNEL_1, 0x207, 82.8);
     dji_motor_init(&yaw_motor,     DJI_6020_MOTOR,PROT_CAN_CHANNEL_2, 0x206, 1.0f);
     
-		dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-	  dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_1,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 	
 	
   /* Infinite loop */
