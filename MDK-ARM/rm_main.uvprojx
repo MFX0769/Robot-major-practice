@@ -1192,6 +1192,16 @@
               <FileType>4</FileType>
               <FilePath>..\Math\DSP\arm_cortexM7lfdp_math.lib</FilePath>
             </File>
+            <File>
+              <FileName>data_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Math\data_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_log.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Math\data_log.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

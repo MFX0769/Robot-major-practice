@@ -57,7 +57,7 @@ void comm_usart_init(void)
     bsp_user_usart_Init(&huart2, (uint8_t *)Uart2_Rx_Buff, USART2_RX_BUFFER_SIZE, User_USART2_RxCpltCallback);
     bsp_user_usart_Init(&huart6, (uint8_t *)Uart6_Rx_Buff, USART6_RX_BUFFER_SIZE, User_USART6_RxCpltCallback);
     bsp_user_usart_Init(&huart10,(uint8_t *)Uart10_Rx_Buff,USART10_RX_BUFFER_SIZE,User_USART10_RxCpltCallback);
-
+	log_init(&DEBUG_HUART);
 
 }
 

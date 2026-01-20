@@ -25,6 +25,7 @@ extern "C" {
 #include "prot_new_rc.h"
 #include "prot_rm_judge.h"
 #include "prot_vision.h"
+#include "data_log.h"
 /* Private macros ------------------------------------------------------------*/
 #define USART1_RX_BUFFER_SIZE 18  //dt7遥控数据长度
 #define USART2_RX_BUFFER_SIZE 100
@@ -34,7 +35,7 @@ extern "C" {
 #define USART6_RX_BUFFER_SIZE 18
 
 #define   JUDGE_HUART   huart2
-
+#define DEBUG_HUART	huart6
 /* Private type --------------------------------------------------------------*/
 
 /* Exported macros -----------------------------------------------------------*/

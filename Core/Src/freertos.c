@@ -194,18 +194,18 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
 
 /***************************High priority task***************************/
-		osThreadDef(can1Task, Task_CAN1Transmit, osPriorityAboveNormal, 0, 512);
+	osThreadDef(can1Task, Task_CAN1Transmit, osPriorityHigh, 0, 512);
    can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
 
 	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 512);
     can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
 	
-	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 512);
+	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 256);
    can3_transmit_task_t = osThreadCreate(osThread(can3Task), NULL);
 
 
 
-	osThreadDef(usbTask, Task_USB_Transmit, osPriorityHigh, 0, 512);
+	osThreadDef(usbTask, Task_USB_Transmit, osPriorityHigh, 0, 128);
     usb_task_t = osThreadCreate(osThread(usbTask), NULL);
 
 
@@ -218,7 +218,7 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
     shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
 
-  osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 512);
+  osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 256);
     vision_send_task_t = osThreadCreate(osThread(visionsendTask), NULL);
 /**************************Normal priority task**************************/
 	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
@@ -226,9 +226,9 @@ void MX_FREERTOS_Init(void) {
 	
 	osThreadDef(debugTask, debug_task, osPriorityNormal, 0, 128);
     debug_task_t = osThreadCreate(osThread(debugTask), NULL);
-////	
-//	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
-//    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
+//	
+	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
+    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
 /**************************Low priority task**************************/
 	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
 	status_task_t = osThreadCreate(osThread(statusTask),NULL);

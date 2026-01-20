@@ -93,6 +93,7 @@
 "rm_main\ubf.o"
 "rm_main\us_tim.o"
 "..\Math\DSP\arm_cortexM7lfdp_math.lib"
+"rm_main\data_log.o"
 --library_type=microlib --strict --scatter "rm_main\rm_main.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
