@@ -49,7 +49,7 @@ static void gimbal_init(void)
 float yaw_err;
 static void gimbal_pid_calc(void)
 {
-//	if(ctrl_mode == PROTECT_MODE){return;}
+	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     data_limit(gimbal.pit_angle.ref, 50, -12);
@@ -103,43 +103,42 @@ void gimbal_PID_clear(gimbal_t *g)
 
 void gimbal_task(void const *argu)
 {
-	uint32_t mode_wake_time = osKernelSysTick();
-    gimbal_init();
-	for(;;)
-	{
-		mode_wake_time = osKernelSysTick();
-        taskENTER_CRITICAL();
-		switch( ctrl_mode )
-		{
-			case PROTECT_MODE:
-			{
-				gimbal_PID_clear(&gimbal);
-				/*针对dji电机，清空将要发送的电流数据*/			
-				yaw_motor.tx_current = 0;
-				pit_motor.tx_current = 0;
-			}break;
-			
-			case REMOTER_MODE:
-			{
-				gimbal.yaw_angle.ref += rc.ch1 * (-1)*scale.ch1;
-				gimbal.pit_angle.ref += rc.ch2 * scale.ch2*(-1);
-			}break;
-			
-			case KEYBOARD_MODE:
-			{
-				gimbal.pit_angle.ref   += (-rc.mouse.y) *  KEYBOARD_SCALE_PIT;
-				gimbal.yaw_angle.ref   += (-rc.mouse.x) *  KEYBOARD_SCALE_YAW;
-			}break;
-			
-			case VISION_MODE: /* 视觉模式 */
-			{
-				vsn_gimbal_ref_calc();
-			}break;
-			default:break;
-		}
-		gimbal_pid_calc();
-//    	wdg_user_set_bit(WDG_BIT_TASK_GIMBAL);		
-        taskEXIT_CRITICAL();
-        osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
-	}
+//	uint32_t mode_wake_time = osKernelSysTick();
+//    gimbal_init();
+//	for(;;)
+//	{
+//        taskENTER_CRITICAL();
+//		switch( ctrl_mode )
+//		{
+//			case PROTECT_MODE:
+//			{
+//				gimbal_PID_clear(&gimbal);
+//				/*针对dji电机，清空将要发送的电流数据*/			
+//				yaw_motor.tx_current = 0;
+//				pit_motor.tx_current = 0;
+//			}break;
+//			
+//			case REMOTER_MODE:
+//			{
+//				gimbal.yaw_angle.ref += rc.ch1 * (-1)*scale.ch1;
+//				gimbal.pit_angle.ref += rc.ch2 * scale.ch2*(-1);
+//			}break;
+//			
+//			case KEYBOARD_MODE:
+//			{
+//				gimbal.pit_angle.ref   += (-rc.mouse.y) *  KEYBOARD_SCALE_PIT;
+//				gimbal.yaw_angle.ref   += (-rc.mouse.x) *  KEYBOARD_SCALE_YAW;
+//			}break;
+//			
+//			case VISION_MODE: /* 视觉模式 */
+//			{
+//				vsn_gimbal_ref_calc();
+//			}break;
+//			default:break;
+//		}
+//		gimbal_pid_calc();
+////    	wdg_user_set_bit(WDG_BIT_TASK_GIMBAL);		
+//        taskEXIT_CRITICAL();
+//        osDelayUntil(&mode_wake_time,5 );//GIMBAL_PERIOD
+//	}
 }

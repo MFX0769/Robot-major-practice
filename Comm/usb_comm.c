@@ -57,7 +57,7 @@ void Task_USB_Transmit(void const *arg)
   
   for(;;)
   {
-
+   osDelay(1);
    if(xQueueReceive(VISION_send_queue,vision_usb_buf,portMAX_DELAY) == pdPASS)
    {
      CDC_Transmit_HS(vision_usb_buf, 30);
