@@ -225,20 +225,20 @@ void vision_output_data(void)
 //    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
     /* 4. 串口DMA 发出 */
-//  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
+  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
 
-    /* 4. 使用usb 发出 */
-    if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 
-    {
-        vision.tx_cnt++;
-    }
-    else
-    {
-            // 队列满，错误处理：丢弃这帧新数据，继续下一帧
-    // 可选：统计丢包次数，用于调试
-    // static uint32_t drop_count = 0;
-    // drop_count++;
-    }
+//    /* 4. 使用usb 发出 */
+//    if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 
+//    {
+//        vision.tx_cnt++;
+//    }
+//    else
+//    {
+//            // 队列满，错误处理：丢弃这帧新数据，继续下一帧
+//    // 可选：统计丢包次数，用于调试
+//    // static uint32_t drop_count = 0;
+//    // drop_count++;
+//    }
 
 
 	

@@ -114,9 +114,9 @@ int main(void)
   MX_USART10_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+	USER_UART_Init();
 	comm_can_init();
-	comm_usart_init();
+//	comm_usart_init();
 	shoot_init();
   /* USER CODE END 2 */
 

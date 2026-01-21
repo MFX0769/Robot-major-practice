@@ -372,7 +372,8 @@ void USART1_IRQHandler(void)
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
-  bsp_user_usart_Receive_Handler(&usart1_rx_user_handle);
+//  bsp_user_usart_Receive_Handler(&usart1_rx_user_handle);
+	  USER_UART_IRQHandler(&huart1);
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -428,7 +429,8 @@ void USART6_IRQHandler(void)
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */
- 
+//   bsp_user_usart_Receive_Handler(&usart6_rx_user_handle);
+
   /* USER CODE END USART6_IRQn 1 */
 }
 
@@ -484,7 +486,9 @@ void USART10_IRQHandler(void)
   /* USER CODE END USART10_IRQn 0 */
   HAL_UART_IRQHandler(&huart10);
   /* USER CODE BEGIN USART10_IRQn 1 */
-//  bsp_user_usart_Receive_Handler(&usart10_rx_user_handle);
+  USER_UART_IRQHandler(&huart10);
+//	  bsp_user_usart_Receive_Handler(&usart10_rx_user_handle);
+
   /* USER CODE END USART10_IRQn 1 */
 }
 

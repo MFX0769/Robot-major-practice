@@ -42,7 +42,6 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
 
-
 //extern uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE];
 //extern uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE];
 //extern uint8_t Uart2_Rx_Buff[USART2_RX_BUFFER_SIZE];
@@ -61,5 +60,23 @@ extern volatile uint8_t Uart10_Rx_Buff[USART10_RX_BUFFER_SIZE] __attribute__((se
 
 /* Exported function declarations --------------------------------------------*/
 void comm_usart_init(void);
+
+
+/*---------------------------------------------分界线------------------------*/
+#define 	DBUS_HUART    huart1
+#define   JUDGE_HUART   huart2
+#define   NEW_RC_HUART  huart3
+#define 	TUCHUAN_HUART		huart5		//因最新陀螺仪使用CAN，暂时无用
+#define   VISION_HUART	huart10
+
+#define  DMA_DBUS_LEN			18
+#define  DMA_NEW_RC_LEN		21     //放在遥控器解算的头文件里
+#define DMA_TUCHUAN_LEN  30
+#define  DMA_JUDGE_LEN		100
+#define  DMA_VISION_LEN		28     //原23  2025年4月1
+void USER_UART_Init(void);
+void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
+void USER_UART_IDLECallback(UART_HandleTypeDef *huart);
+
 
 #endif

@@ -104,7 +104,7 @@ void bsp_user_usart_Init(UART_HandleTypeDef *huart, uint8_t *Rxbuffer, uint32_t 
 		HAL_UART_Receive_DMA(huart, Rxbuffer, length);
 	}
    
-	else if (huart->Instance == UART5)
+	else if (huart->Instance == USART10)
 	{
 		usart10_rx_user_handle.rx_buffer = Rxbuffer;
 		usart10_rx_user_handle.rx_buffer_size = length;
@@ -157,6 +157,7 @@ void bsp_user_usart_Receive_Handler(usart_user_rx_handle_t  *p)
 {
 	if(__HAL_UART_GET_FLAG(p->husart,UART_FLAG_IDLE)!=RESET)
 	{
+		HAL_UART_AbortReceive(p->husart);
 		bsp_user_usart_Rx_Idle_Callback(p);
 	}
 }
