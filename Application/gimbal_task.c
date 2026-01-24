@@ -34,11 +34,17 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 13.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.006f,0.0004f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 7.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.005f,0.0001f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//    
+//    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,1.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	
+	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,1.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -52,30 +58,50 @@ static void gimbal_pid_calc(void)
 //	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
-    data_limit(gimbal.pit_angle.ref, 50, -12);
+    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 50, -12);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;
     gimbal.pit_spd.fdb = imu_data.wy;
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
 /*pitch电机实际控制输出名*/
-	pitch_motor.t_ref = gimbal.pit_output;
-	dm3507_motor.t_ref = gimbal.pit_output;
-//	dm3507_motor.t_ref = 0;
-	dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
-
+	if(ctrl_mode==PROTECT_MODE)
+	{
+		dm3507_motor.t_ref = 0;
+		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	}
+	else{
+		pitch_motor.t_ref = gimbal.pit_output;
+		dm3507_motor.t_ref = gimbal.pit_output;
+	//	dm3507_motor.t_ref = 0;
+		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	}
 //--------------------yaw_pid_calu----------------------------------//
+	/*yaw限位*/
+	gimbal.gimbal_limit.yaw_angle_max = imu_data.yaw + yaw_motor.ecd*MOTOR_ECD_TO_DEG  -0.0f;//
+	gimbal.gimbal_limit.yaw_angle_min = imu_data.yaw + yaw_motor.ecd*MOTOR_ECD_TO_DEG  -0.0f;//
 	
+	
+	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,gimbal.gimbal_limit.yaw_angle_max,gimbal.gimbal_limit.yaw_angle_min);	//目标值限幅	
     gimbal.yaw_angle.fdb = imu_data.yaw;
+	
+	
     //此yaw_err用于云台yaw环形控制
     yaw_err = circle_error(gimbal.yaw_angle.ref, gimbal.yaw_angle.fdb, 360);
-    gimbal.yaw_angle.ref = gimbal.yaw_angle.fdb + yaw_err;
-    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.ref);    
+	
+    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);    
 	gimbal.yaw_spd.fdb = imu_data.wz;
 	gimbal.yaw_output = -pid_calc(&gimbal.yaw_spd.pid, gimbal.yaw_spd.fdb, gimbal.yaw_spd.ref);
 /*----------------------yaw电机实际控制输出--------------*/
-	yaw_motor.tx_current = gimbal.yaw_output;
-	dji_send_current(&yaw_motor, NULL, NULL, NULL);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	if(ctrl_mode==PROTECT_MODE)
+	{
+		yaw_motor.tx_current = 0;
+		dji_send_current(&yaw_motor, NULL, NULL, NULL);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	}
+	else{
+		yaw_motor.tx_current = gimbal.yaw_output;
+		dji_send_current(&yaw_motor, NULL, NULL, NULL);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+	}
 /*--------------------------------------------------------*/
 //下面可写当imu意外为0时靠编码器控制的计算
 }

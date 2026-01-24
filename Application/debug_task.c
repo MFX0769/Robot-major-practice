@@ -78,12 +78,12 @@ void log_scope_data_pkg(void)
 					  log_scope_get_data(gimbal.pit_angle.ref);
             log_scope_get_data(gimbal.pit_angle.fdb);
 				 
-            log_scope_get_data(gimbal.pit_spd.ref);
-            log_scope_get_data(gimbal.pit_spd.fdb);
-//////					
-					
-            log_scope_get_data(dm3507_motor.t_ref);
-            log_scope_get_data(dm3507_motor.t_set);
+//            log_scope_get_data(gimbal.pit_spd.ref);
+//            log_scope_get_data(gimbal.pit_spd.fdb);
+////////					
+//					
+//            log_scope_get_data(dm3507_motor.t_ref);
+//            log_scope_get_data(dm3507_motor.t_set);
 								  
 //            log_scope_get_data(dm3507_motor.send_cnt);
 //            log_scope_get_data(dm3507_motor.receive_cnt);
@@ -95,8 +95,10 @@ void log_scope_data_pkg(void)
 //					 	log_scope_get_data(vision.target_yaw_angle);
 //					 	log_scope_get_data(yaw_err);
 //            log_scope_get_data(imu_data.yaw);
-//					  log_scope_get_data(gimbal.gimbal_limit.yaw_angle_max);
-//            log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
+			
+			
+			log_scope_get_data(gimbal.gimbal_limit.yaw_angle_max);
+            log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
 					
             log_scope_get_data(gimbal.yaw_angle.ref);
             log_scope_get_data(gimbal.yaw_angle.fdb);
@@ -112,10 +114,10 @@ void log_scope_data_pkg(void)
 //			log_scope_get_data(D_AGL_FeedForward_yaw.Out);
 
 //            log_scope_get_data(imucnt);
+////					
+//			log_scope_get_data(yaw_motor.send_cnt);
+//			log_scope_get_data(yaw_can_receive_cnt);
 //					
-			log_scope_get_data(yaw_motor.send_cnt);
-			log_scope_get_data(yaw_can_receive_cnt);
-					
 //					log_scope_get_data(gimbal.pit_angle.ref);
 //					log_scope_get_data(gimbal.pit_angle.fdb);
 //						
@@ -234,21 +236,24 @@ void log_scope_data_pkg(void)
             break;
         }
 							 
-//		case 10: { /*imu*/
+		case 10: { /*imu*/
 //		  log_scope_get_data(rc.ch1);
 //		  log_scope_get_data(rc.ch2);
 //		  log_scope_get_data(rc.ch3);
 //		  log_scope_get_data(rc.ch4);
-
-
+			log_scope_get_data(imu_data.pitch);
+			log_scope_get_data(imu_data.yaw);
+		  log_scope_get_data(yaw_err);
+		  log_scope_get_data(gimbal.yaw_angle.ref);
+		  log_scope_get_data(gimbal.yaw_angle.fdb);
 //			 log_scope_get_data(remote_online.DT7_online_cnt);
 //			 log_scope_get_data(remote_online.DT7_last_online_cnt);
 //												 
 //				log_scope_get_data(lock_flag);
 //								log_scope_get_data(fric_can_receive_cnt);
 //								log_scope_get_data(triger_can_receive_cnt);
-//            break;
-//        }
+            break;
+        }
 							 
 				
         default: {
@@ -264,9 +269,8 @@ void debug_task(void const* argu)
     for(;;)
     {
         thread_wake_time = osKernelSysTick();
-        
-        log_scope_data_output();
-
+//		log_printf("%.2f",imu_data.pitch);
+//      log_scope_data_output();		
             
         osDelayUntil(&thread_wake_time, 5);
     }

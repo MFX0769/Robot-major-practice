@@ -4,6 +4,8 @@
 #include "pid.h"
 #include "stdint.h"
 
+#define MOTOR_ECD_TO_DEG 0.04395067757294591624954f //     360 /8192
+
 typedef struct
 {
     pid_t pid;

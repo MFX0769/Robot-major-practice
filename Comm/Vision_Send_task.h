@@ -5,7 +5,8 @@
 #include "usb_comm.h"
 
 #include "prot_vision.h"
-
+#include "debug_task.h"
+#include "data_log.h"
 
 void Task_Vision_Send(void const *argu);
 #endif

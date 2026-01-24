@@ -64,7 +64,8 @@ int log_printf_to_buffer(char *buff, int size, char *format, ...)
 
 /*********************************** DataScope *********************************/
 /* 示波器数据结构体 */
-static struct _data_scope_t
+//static struct _data_scope_t
+struct _data_scope_t
 {
     unsigned char output_buffer[4 * DATA_MAX_NUM + 4]; //串口发送缓冲区
     unsigned char send_count;                          //串口需要发送的数据个数

@@ -64,7 +64,7 @@ void comm_can_init(void)
 		bsp_can2_filt_tbl.data[5]=0x007&0x7ff;
     bsp_can3_filt_tbl.count = 1;//CAN3һ�����˶��������˹���
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can3_filt_tbl.data[1]=0x206&0x7ff;
+	  bsp_can3_filt_tbl.data[1]=0x007&0x7ff;
 	  bsp_can3_filt_tbl.data[2]=0x207&0x7ff;
 	
 
@@ -209,14 +209,15 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 
 void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 {
-//    switch (CAN_RxBuffer_t->rxHeader->Identifier)
-//    {
-//    case constant expression:{
-
-//    }break;
-//    
-//    default:{break;}
-//    }
+		switch(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier)
+			{
+			case DM_3507_RECEIVE_ID:
+				{
+					dm_get_single_data(&dm3507_motor,bsp_user_can3.CAN_RxBuffer.rx_data);
+					break;
+				}  
+			default:{break;}
+			}
 }
 
 

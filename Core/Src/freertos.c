@@ -174,14 +174,14 @@ void MX_FREERTOS_Init(void) {
 //  }
 		
 	
-	if (CAN2_Tx_queue == NULL)  {        
-    /* Queue was not created and must not be used. */
-		while (1)
-		{
-			osDelay(1);
-				// 2026.1调试阶段使用，用完就删掉这个while
-		}
-  }
+//	if (CAN2_Tx_queue == NULL)  {        
+//    /* Queue was not created and must not be used. */
+//		while (1)
+//		{
+//			osDelay(1);
+//				// 2026.1调试阶段使用，用完就删掉这个while
+//		}
+//  }
 		
 	
   /* USER CODE END RTOS_QUEUES */
@@ -257,7 +257,7 @@ void StartDefaultTask(void const * argument)
     dji_motor_init(&yaw_motor,     DJI_6020_MOTOR,PROT_CAN_CHANNEL_2, 0x206, 1.0f);
     
 	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_1,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 	
 	
   /* Infinite loop */
