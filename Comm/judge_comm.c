@@ -120,7 +120,7 @@ void judge_send_task(void const *argu)
 {
     uint32_t thread_wake_time = osKernelSysTick();
 	//判断自身ID，选择客户端ID及阵营
-		ui_init_data_packed();
+//		ui_init_data_packed();
 //	
 //		/*初始化ui*/
 //		for(uint8_t i=0;i<10;i++)
@@ -130,38 +130,38 @@ void judge_send_task(void const *argu)
 		
   for(;;)
   {				
-		ui_init_data_packed();
-		/*手动刷新初始化ui*/
-//    if(remote_online.NEW_OLD_RC_FLAG	==	1)
-//		{
-//		if(new_rc.key_R == 1)
+//		ui_init_data_packed();
+//		/*手动刷新初始化ui*/
+////    if(remote_online.NEW_OLD_RC_FLAG	==	1)
+////		{
+////		if(new_rc.key_R == 1)
+////		{
+////			ui_init_flag++;
+////			for(uint8_t i=0;i<10;i++)
+////			{
+////			ui_init_data_send();
+////				
+////				 
+////			}
+////		}
+////	}
+////		else if(remote_online.NEW_OLD_RC_FLAG	==	0)
+//		if(rc.kb.bit.R == 1)
 //		{
 //			ui_init_flag++;
 //			for(uint8_t i=0;i<10;i++)
 //			{
-//			ui_init_data_send();
+////		ui_init_data_send();
 //				
 //				 
 //			}
 //		}
-//	}
-//		else if(remote_online.NEW_OLD_RC_FLAG	==	0)
-		if(rc.kb.bit.R == 1)
-		{
-			ui_init_flag++;
-			for(uint8_t i=0;i<10;i++)
-			{
-//		ui_init_data_send();
-				
-				 
-			}
-		}
-		if(ui_CNT % 2 ==1)
-		{
-			ui_dynamic_data_pack();
-			ui_sendgraph(DRAW_IMAGINE7,(uint8_t *) gimbal_status, CLIENT_DRAW_7_GRAPHS_CMD_ID);
-		}
-		ui_CNT++;
+//		if(ui_CNT % 2 ==1)
+//		{
+////			ui_dynamic_data_pack();
+////			ui_sendgraph(DRAW_IMAGINE7,(uint8_t *) gimbal_status, CLIENT_DRAW_7_GRAPHS_CMD_ID);
+//		}
+//		ui_CNT++;
 //			
 //		osDelay(30); 
 		osDelayUntil(&thread_wake_time, 30);

@@ -223,10 +223,10 @@ void MX_FREERTOS_Init(void) {
 /**************************Normal priority task**************************/
 	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
     mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);
-	
+//	
 	osThreadDef(debugTask, debug_task, osPriorityNormal, 0, 128);
     debug_task_t = osThreadCreate(osThread(debugTask), NULL);
-//	
+////	
 	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
     judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
 /**************************Low priority task**************************/
