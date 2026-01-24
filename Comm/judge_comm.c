@@ -121,12 +121,12 @@ void judge_send_task(void const *argu)
     uint32_t thread_wake_time = osKernelSysTick();
 	//判断自身ID，选择客户端ID及阵营
 		ui_init_data_packed();
-	
-		/*初始化ui*/
-		for(uint8_t i=0;i<10;i++)
-		{
-			ui_init_data_send();		 
-		}
+//	
+//		/*初始化ui*/
+//		for(uint8_t i=0;i<10;i++)
+//		{
+//			ui_init_data_send();		 
+//		}
 		
   for(;;)
   {				
@@ -151,7 +151,7 @@ void judge_send_task(void const *argu)
 			ui_init_flag++;
 			for(uint8_t i=0;i<10;i++)
 			{
-			ui_init_data_send();
+//		ui_init_data_send();
 				
 				 
 			}
@@ -162,8 +162,9 @@ void judge_send_task(void const *argu)
 			ui_sendgraph(DRAW_IMAGINE7,(uint8_t *) gimbal_status, CLIENT_DRAW_7_GRAPHS_CMD_ID);
 		}
 		ui_CNT++;
-			
-		osDelay(30); 
+//			
+//		osDelay(30); 
+		osDelayUntil(&thread_wake_time, 30);
   }
 }
 

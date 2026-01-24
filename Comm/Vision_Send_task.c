@@ -32,7 +32,7 @@ void Task_Vision_Send(void const *argu)
     {
         taskENTER_CRITICAL();
 
-//        vision_output_data();
+        vision_output_data();
 //		usb_buf[1]++;
 //		HAL_UART_Transmit_DMA(&huart10,abc_buf,30);
 

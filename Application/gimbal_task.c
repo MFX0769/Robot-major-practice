@@ -40,8 +40,8 @@ static void gimbal_init(void)
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,1.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
     PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
     PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -78,8 +78,8 @@ static void gimbal_pid_calc(void)
 	}
 //--------------------yaw_pid_calu----------------------------------//
 	/*yaw限位*/
-	gimbal.gimbal_limit.yaw_angle_max = imu_data.yaw + yaw_motor.ecd*MOTOR_ECD_TO_DEG  -0.0f;//
-	gimbal.gimbal_limit.yaw_angle_min = imu_data.yaw + yaw_motor.ecd*MOTOR_ECD_TO_DEG  -0.0f;//
+	gimbal.gimbal_limit.yaw_angle_max = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +310.0f;//
+	gimbal.gimbal_limit.yaw_angle_min = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +520.0f;//
 	
 	
 	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,gimbal.gimbal_limit.yaw_angle_max,gimbal.gimbal_limit.yaw_angle_min);	//目标值限幅	

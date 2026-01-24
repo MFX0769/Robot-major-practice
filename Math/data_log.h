@@ -106,8 +106,6 @@ extern "C"
 
 extern char log_str[DATA_LOG_LEN];
 extern char *LOG_LEVEL_TAGS[];
-extern struct _data_scope_t data_scope;
-
 
 int fputc(int ch, FILE *f);
 
@@ -120,8 +118,6 @@ void log_scope_data_pkg(void);          //重写此弱函数
 void log_scope_get_data(float Data);    //按顺序注册待打印数据
 void log_scope_data_output(void);       //一次性按顺序将注册数据打印到上位机
 
-	
-	
 #ifdef __cplusplus
 }
 #endif

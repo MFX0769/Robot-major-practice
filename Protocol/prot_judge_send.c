@@ -147,7 +147,7 @@ void ui_sendcode(
   * @retval void
   * @attention  数据打包,打包完成后通过串口发送到裁判系统
   */
-uint8_t CliendTxBuffer_graph[128];
+uint8_t CliendTxBuffer_graph[200];
 
 void ui_sendgraph(Judgesend_length_e data_length, uint8_t* data_locate, client_data_cmd_e date_type)
 {
@@ -165,12 +165,12 @@ void ui_sendgraph(Judgesend_length_e data_length, uint8_t* data_locate, client_d
 
 
 	//打包写入数据段
-	memcpy(CliendTxBuffer_graph, &graph_frame.txFrameHeader, sizeof(frame_header));//写入帧头数据
-	Append_CRC8_Check_Sum((uint8_t *)CliendTxBuffer_graph, sizeof(frame_header));//写入帧头CRC8校验码
-	memcpy(CliendTxBuffer_graph + 5, (uint8_t*)&graph_frame.CmdID, 8);
-	memcpy(CliendTxBuffer_graph + 13, (uint8_t*)data_locate, data_length - 15);
-	Append_CRC16_Check_Sum(CliendTxBuffer_graph, data_length); //写入数据段CRC16校验码
-	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_graph, data_length);
+//	memcpy(CliendTxBuffer_graph, &graph_frame.txFrameHeader, sizeof(frame_header));//写入帧头数据
+//	Append_CRC8_Check_Sum((uint8_t *)CliendTxBuffer_graph, sizeof(frame_header));//写入帧头CRC8校验码
+//	memcpy(CliendTxBuffer_graph + 5, (uint8_t*)&graph_frame.CmdID, 8);
+//	memcpy(CliendTxBuffer_graph + 13, (uint8_t*)data_locate, data_length - 15);
+//	Append_CRC16_Check_Sum(CliendTxBuffer_graph, data_length); //写入数据段CRC16校验码
+//	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_graph, data_length);
 }
 
 /**

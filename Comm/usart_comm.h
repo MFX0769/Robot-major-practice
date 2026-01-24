@@ -35,7 +35,7 @@ extern "C" {
 #define USART6_RX_BUFFER_SIZE 18
 
 #define   JUDGE_HUART   huart2
-#define DEBUG_HUART	huart6
+#define DEBUG_HUART	huart6 
 /* Private type --------------------------------------------------------------*/
 
 /* Exported macros -----------------------------------------------------------*/
