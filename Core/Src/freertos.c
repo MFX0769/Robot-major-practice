@@ -194,10 +194,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
 
 /***************************High priority task***************************/
-	osThreadDef(can1Task, Task_CAN1Transmit, osPriorityHigh, 0, 512);
+	osThreadDef(can1Task, Task_CAN1Transmit, osPriorityHigh, 0, 256);
    can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
 
-	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 512);
+	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 256);
     can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
 	
 	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 256);
@@ -218,7 +218,7 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
     shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
 
-  osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 256);
+  osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 128);
     vision_send_task_t = osThreadCreate(osThread(visionsendTask), NULL);
 /**************************Normal priority task**************************/
 	osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
