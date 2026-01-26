@@ -210,7 +210,7 @@ static void dji_motor_fill_data(dji_motor_t *motor)
     {
         // 0x205-0x208 �����
         if(motor->prot_can_channel == PROT_CAN_CHANNEL_1)
-            motor_msg[motor->prot_can_channel][4].id = 0x1fe;
+            motor_msg[motor->prot_can_channel][4].id = 0x1ff;
         else 
             motor_msg[motor->prot_can_channel][4].id = 0x1ff;
         
