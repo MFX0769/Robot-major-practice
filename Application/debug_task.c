@@ -42,7 +42,7 @@ extern float std;
 float float_test;
 uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 3; 
+uint8_t debug_wave = 2; 
 
 void log_scope_data_pkg(void)
 {
@@ -78,8 +78,8 @@ void log_scope_data_pkg(void)
 					  log_scope_get_data(gimbal.pit_angle.ref);
             log_scope_get_data(gimbal.pit_angle.fdb);
 				 
-//            log_scope_get_data(gimbal.pit_spd.ref);
-//            log_scope_get_data(gimbal.pit_spd.fdb);
+            log_scope_get_data(gimbal.pit_spd.ref);
+            log_scope_get_data(gimbal.pit_spd.fdb);
 ////////					
 //					
 //            log_scope_get_data(dm3507_motor.t_ref);

@@ -37,14 +37,14 @@ static void gimbal_init(void)
 //	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 7.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.005f,0.0001f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 //    
-//    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 15.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,1.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 20.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 2.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  400,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_angle.pid, 150,40.0f, 30.0f, 0.15f, 5.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 75.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -84,12 +84,14 @@ static void gimbal_pid_calc(void)
 	
 //	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,gimbal.gimbal_limit.yaw_angle_max,gimbal.gimbal_limit.yaw_angle_min);	//目标值限幅	
     gimbal.yaw_angle.fdb = imu_data.yaw;
-	
+//	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,360,0);	//目标值限幅	
+
 	
     //此yaw_err用于云台yaw环形控制
     yaw_err = circle_error(gimbal.yaw_angle.ref, gimbal.yaw_angle.fdb, 360);
 	
-    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);    
+    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);  
+//	gimbal.yaw_spd.ref = 18;	
 	gimbal.yaw_spd.fdb = imu_data.wz;
 	gimbal.yaw_output = -pid_calc(&gimbal.yaw_spd.pid, gimbal.yaw_spd.fdb, gimbal.yaw_spd.ref);
 /*----------------------yaw电机实际控制输出--------------*/

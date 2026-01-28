@@ -197,7 +197,7 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(can1Task, Task_CAN1Transmit, osPriorityHigh, 0, 256);
    can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
 
-	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 256);
+	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 512);
     can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
 	
 	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 256);
@@ -226,7 +226,7 @@ void MX_FREERTOS_Init(void) {
 //	
 	osThreadDef(debugTask, debug_task, osPriorityNormal, 0, 128);
     debug_task_t = osThreadCreate(osThread(debugTask), NULL);
-////	
+//////	
 	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
     judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
 /**************************Low priority task**************************/
@@ -253,11 +253,11 @@ void StartDefaultTask(void const * argument)
   /*电机初始化，从comm_can挪到这里了。因为这些属于“设备初始化”而不是can外设初始化  Motor init,moved from comm_can_init() to here,because "motor" != can Peripherals */
 	dji_motor_init(&fric_motor[0], DJI_3508_MOTOR,PROT_CAN_CHANNEL_1, 0x201, 1.0f);
     dji_motor_init(&fric_motor[1], DJI_3508_MOTOR,PROT_CAN_CHANNEL_1, 0x202, 1.0f);
-    dji_motor_init(&trigger_motor, DJI_2006_MOTOR,PROT_CAN_CHANNEL_1, 0x207, 82.8);
-    dji_motor_init(&yaw_motor,     DJI_6020_MOTOR,PROT_CAN_CHANNEL_1, 0x206, 1.0f);
+    dji_motor_init(&trigger_motor, DJI_2006_MOTOR,PROT_CAN_CHANNEL_1, 0x203, 82.8);
+    dji_motor_init(&yaw_motor,     DJI_6020_MOTOR,PROT_CAN_CHANNEL_2, 0x206, 1.0f);
     
-	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
-	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+	dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_1,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 	
 	
   /* Infinite loop */

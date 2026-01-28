@@ -193,7 +193,7 @@
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dm3507_motor</ItemText>
+          <ItemText>dm3507_motor,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
@@ -209,6 +209,16 @@
           <count>10</count>
           <WinNumber>1</WinNumber>
           <ItemText>yaw_motor,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gimbal.yaw_angle.ref</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>imu_data</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
