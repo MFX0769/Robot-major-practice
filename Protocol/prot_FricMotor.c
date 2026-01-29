@@ -127,6 +127,5 @@ void FricMotor_Control(void)
         }break;
         default: break;
     }
-	    dji_send_current(&fric_motor[0], &fric_motor[1], NULL, NULL);
 //    osSignalSet(can_msg_send_task_t, FRIC_MOTOR_MSG_SEND);
 }

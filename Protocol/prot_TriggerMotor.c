@@ -389,7 +389,7 @@ void TriggerMotor_control(void)
 				
         default: {break;}
     }
-	  dji_send_current(&trigger_motor,NULL,NULL,NULL);
+	  
 //    osSignalSet(can_msg_send_task_t, TRIGGER_MOTOR_MSG_SEND);
 }
 

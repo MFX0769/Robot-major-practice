@@ -81,8 +81,8 @@ void log_scope_data_pkg(void)
             log_scope_get_data(gimbal.pit_spd.ref);
             log_scope_get_data(gimbal.pit_spd.fdb);
 ////////					
-//					
-//            log_scope_get_data(dm3507_motor.t_ref);
+			log_scope_get_data(gimbal.pit_spd.pid.pout);		
+            log_scope_get_data(dm3507_motor.t_ref);
 //            log_scope_get_data(dm3507_motor.t_set);
 								  
 //            log_scope_get_data(dm3507_motor.send_cnt);
@@ -104,13 +104,13 @@ void log_scope_data_pkg(void)
             log_scope_get_data(gimbal.yaw_angle.fdb);
 ////            log_scope_get_data(moto_yaw.ecd);
 //					
-////            log_scope_get_data(gimbal.yaw_angle.pid.pout);
+            
 ////            log_scope_get_data(gimbal.yaw_angle.pid.dout);
 ////		
 			log_scope_get_data(yaw_motor.tx_current);
             log_scope_get_data(gimbal.yaw_spd.ref);
             log_scope_get_data(gimbal.yaw_spd.fdb);
-//			
+			log_scope_get_data(gimbal.yaw_spd.pid.pout);
 //			
 //            log_scope_get_data(yaw_motor.ecd);
 ////            log_scope_get_data(gimbal.yaw_spd.pid.pos_out);

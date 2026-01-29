@@ -40,11 +40,11 @@ static void gimbal_init(void)
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 20.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 2.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  400,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 25.0f, 0.0f, 2.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.008,0.0, 0.0015, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 150,40.0f, 30.0f, 0.15f, 5.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 75.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_angle.pid, 600,40.0f, 30.0f, 0.0f, 8.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -91,7 +91,6 @@ static void gimbal_pid_calc(void)
     yaw_err = circle_error(gimbal.yaw_angle.ref, gimbal.yaw_angle.fdb, 360);
 	
     gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);  
-//	gimbal.yaw_spd.ref = 18;	
 	gimbal.yaw_spd.fdb = imu_data.wz;
 	gimbal.yaw_output = -pid_calc(&gimbal.yaw_spd.pid, gimbal.yaw_spd.fdb, gimbal.yaw_spd.ref);
 /*----------------------yaw电机实际控制输出--------------*/

@@ -9,7 +9,7 @@
 #include "prot_rm_judge.h"
 #include "prot_vision.h"
 #include "remote_msg.h"
-
+#include "prot_rm_motor.h"
 //#include "status_task.h"
 #include "mode_switch_task.h"
 #include "pid.h"
@@ -30,6 +30,7 @@ void shoot_task(void const *argu)
         shoot_mode_sw();  //射击模式切换
         FricMotor_Control();	//摩擦轮电机控制
         TriggerMotor_control();	//拨弹电机控制
+		dji_send_current(&fric_motor[0], &fric_motor[1],&trigger_motor, NULL);
 //	    wdg_user_set_bit(WDG_BIT_TASK_SHOOT);
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
     }
