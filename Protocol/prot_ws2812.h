@@ -4,8 +4,8 @@
 #include "spi.h"
 #include "string.h"
 
-#define WS_BIT_1   0xE0    // 1110 0000 (高电平873ns)
-#define WS_BIT_0   0x80    // 1000 0000 (高电平291ns)  //此处为spi频率为3.4Mhz 1/3.4=291ns（一位）
+#define WS_BIT_1   0xF8    // 1110 0000 (高电平873ns)
+#define WS_BIT_0   0xC0    // 1000 0000 (高电平291ns)  //此处为spi频率为6
 
 #define LED_NUM 6
 #define COLOR_LENGTH 24

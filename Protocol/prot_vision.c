@@ -218,14 +218,14 @@ void vision_output_data(void)
     vision_tx.data.camp = 0;
     vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺  这是抄步兵的，飞机记得后面改一下
     vision_tx.data.shooter_speed = 3;                       // 固定 3 档
-//    vision_tx.data.vacancy       = 0;                       // 预留，填 0
+    vision_tx.data.vacancy       = 0;                       // 预留，填 0
     
 
 	Trace_ID_Select_OLD(&rc);
-//    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
+    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
     /* 4. 串口DMA 发出 */
-  HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
+    HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
 
 //    /* 4. 使用usb 发出 */
 //    if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 

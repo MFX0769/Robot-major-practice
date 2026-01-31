@@ -82,16 +82,17 @@ void FricMotor_Control(void)
         {
 					
 					/*斜坡函数 慢慢停，防止反电动势过大烧坏其他器件*/
-		       if(lock_flag==1)
-           {
-						ramp_calc(&Fric_speed,-2.0f,1.0f,HIGH_SPEED,0);
+			ramp_calc(&Fric_speed,-2.0f,1.0f,HIGH_SPEED,0);
+//		   if(lock_flag==1)
+//           {
+//				ramp_calc(&Fric_speed,-2.0f,1.0f,HIGH_SPEED,0);
 
-					 }
-					 else if(lock_flag==2)//外八解锁的话，就摩擦轮慢慢转
-            {
-						ramp_calc(&Fric_speed,-2.0f,1.0f,3000,0);
+//		   }
+//			else if(lock_flag==2)//外八解锁的话，就摩擦轮慢慢转
+//            {
+//				ramp_calc(&Fric_speed,-2.0f,1.0f,3000,0);
 
-					  }
+//			}
 						
 //						/*左右摩擦轮电控改方向*/
 //					fric[0].spd_ref = -Fric_speed.out;

@@ -50,11 +50,11 @@ void comm_can_init(void)
 	  /*-----------�û��ڴ��޸Ĺ��������ݣ����?10�����򣬵�������bsp�ļ���ģ�?--------*/
     bsp_can1_filt_tbl.count = 2;//CAN1һ�����˶��������˹���
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can1_filt_tbl.data[1]=0X017&0x7ff;
-	  bsp_can1_filt_tbl.data[2]=0X018&0x7ff;
+	  bsp_can1_filt_tbl.data[1]=0x201&0x7ff;
+	  bsp_can1_filt_tbl.data[2]=0x202&0x7ff;
 		bsp_can1_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can1_filt_tbl.data[4]=0x201&0x7ff;
-		bsp_can1_filt_tbl.data[5]=0x202&0x7ff;
+		bsp_can1_filt_tbl.data[4]=0x203&0x7ff;
+		bsp_can1_filt_tbl.data[5]=0x203&0x7ff;
 	bsp_can2_filt_tbl.count = 2;//CAN2һ�����˶��������˹���
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can2_filt_tbl.data[1]=0x017&0x7ff;
@@ -221,12 +221,12 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 				} 
 			case TIMU_PALSTANCE_ID:
 				{
-					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can2.CAN_RxBuffer.rx_data);
+					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can3.CAN_RxBuffer.rx_data);
 					break;
 				}
 			case TIMU_ANGLE_ID:
 				{
-					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can2.CAN_RxBuffer.rx_data);
+					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can3.CAN_RxBuffer.rx_data);
 			//		wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
 					break;
 				}				

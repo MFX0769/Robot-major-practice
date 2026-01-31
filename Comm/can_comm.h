@@ -51,7 +51,7 @@ typedef enum
 {
     CAN_3508_FRIC_L_ID       = 0x201,
     CAN_3508_FRIC_R_ID       = 0x202,
-    CAN_TRIGGER_MOTOR1_ID = 0x207,
+    CAN_TRIGGER_MOTOR1_ID = 0x203,
 	
     CAN_YAW_MOTOR_ID      = 0x206,//2025��1��17�� �۲췢��Ŀǰ
     CAN_J4310_MOTOR_ID      = 0x016,

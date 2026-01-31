@@ -7,7 +7,7 @@
 	*        1.1：加了退弹和一键reload
 	*				 1.2：改了单发的逻辑，现在是低频单发
 	*
-  *	@author  空中组硬件写的
+  *	@author  空中组
   *
   */
 #include "prot_TriggerMotor.h"
@@ -153,23 +153,12 @@ uint8_t series_shoot_enable(void) {
 /*单发卡弹判断函数：single_shoot_enable通过则进入判断。单发模式下，若ecd_err大于4发的位置，则视为卡弹。 即4次单发请求通过，拨弹盘都没转超过0.5发.注意，该函数在单发ecd+=后被执行，所以该函数内的ecd_err必须至少大于1发的位置，否则必定误判*/
 static void single_ammo_stuck_judge(void) 
 {
-//					if(ABS(shoot.pid.trigger_ecd_error) > 0.5f * TRIGGER_MOTOR_ECD)
-//					{
-//							SINGLE_STUCK_CNT ++ ;
-//							if(SINGLE_STUCK_CNT >=4)//3次拨弹盘不到位，则视为卡弹
-//							{
-//								AMMO_STUCK_FLAG = 1;//置位单发卡弹退弹标志位，用于后面退一发
-//								SINGLE_AMMO_STUCK_BACK_FLAG=1;
-//							}
-//					}
-	          if(ABS(shoot.pid.trigger_ecd_error) > 4.0f * TRIGGER_MOTOR_ECD)
+
+	          if(ABS(shoot.pid.trigger_ecd_error) > 2.0f * TRIGGER_MOTOR_ECD)
 					{
-//							SINGLE_STUCK_CNT ++ ;
-//							if(SINGLE_STUCK_CNT >=4)//3次拨弹盘不到位，则视为卡弹
-//							{
+						
 								AMMO_STUCK_FLAG = 1;//置位单发卡弹退弹标志位，用于后面退一发
 								SINGLE_AMMO_STUCK_BACK_FLAG=1;
-//							}
 					}
 					else
 					{
@@ -352,7 +341,7 @@ void TriggerMotor_control(void)
 				}
 							
 						/*若持续卡弹，则进入退弹*/
-				if(back_flag_cnt > 200)
+				if(back_flag_cnt > 150)
 				{          
 					shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
 					last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
@@ -370,7 +359,7 @@ void TriggerMotor_control(void)
 				
 				/*等待退弹执行结束*/
 				if( back_flag_tri == 1 )//退弹标志位 表明正在执行退弹
-				{
+				{  
 					 err_time += SHOOT_PERIOD;//退弹执行计时 或超时，则直接退出退弹而不再等拨盘到位（退弹时阻力依然很大，拨盘不到位也正常）
 					
 					//退弹结束的依据：反转到位（2.0发）或超时（执行200次发射任务）
