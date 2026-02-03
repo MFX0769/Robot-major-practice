@@ -34,22 +34,27 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-//	PID_struct_init(&gimbal.pit_angle.pid,  200,5.0f, 7.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.005f,0.0001f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 //    
-//    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 20.0f, 0.0f, 3.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 2.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 22.0f, 0.0f, 2.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.006,0.0, 0.0015, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 23.0f, 0.0f, 12.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.008,0.0, 0.006, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	
+	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 23.0f, 0.0f, 17.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.009,0.0, 0.0068, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 15.0f, 0.0f, 8.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 15.0f, 0.0f, 8.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	
+	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 24.0f, 0.0f, 15.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 135.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-
 }
 
 float yaw_err;
@@ -58,7 +63,7 @@ static void gimbal_pid_calc(void)
 //	if(ctrl_mode == PROTECT_MODE){return;}
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
-    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 50, -12);
+    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -20);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;
@@ -148,6 +153,7 @@ void gimbal_task(void const *argu)
 			
 			case REMOTER_MODE:
 			{
+//				gimbal.yaw_ecd.ref   -= rc.ch1 * scale.ecd_remote;
 				gimbal.yaw_angle.ref += rc.ch1 * (-1)*scale.ch1;
 				gimbal.pit_angle.ref += rc.ch2 * scale.ch2*(-1);
 			}break;

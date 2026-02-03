@@ -8,7 +8,7 @@
 
 /*----------------------------- the whole system ----------------------------- */
 // task period
-#define GIMBAL_PERIOD	    2
+#define GIMBAL_PERIOD	    1
 #define CHASSIS_PERIOD    2
 #define SHOOT_PERIOD      1
 #define USART_SEND_PERIOD 2

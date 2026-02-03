@@ -121,7 +121,7 @@ void status_task(void const *argu) {
 
 			
         /* 通信状态检测与输出 */
-        status.remote   = 1;//bit_check(WDG_BIT_BSP_REMOTE);
+        status.remote   = bit_check(WDG_BIT_BSP_REMOTE);;//bit_check(WDG_BIT_BSP_REMOTE);
         status.fric     = bit_check(WDG_BITS_BSP_FRIC);
         status.gimbal   = bit_check(WDG_BITS_BSP_GIMBAL);
         status.imu      = bit_check(WDG_BITS_BSP_IMU);
