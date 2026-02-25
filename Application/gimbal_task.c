@@ -43,13 +43,13 @@ static void gimbal_init(void)
 //	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 23.0f, 0.0f, 12.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.008,0.0, 0.006, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 23.0f, 0.0f, 17.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.009,0.0, 0.0068, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
 //    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 15.0f, 0.0f, 8.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 24.0f, 0.0f, 15.0f, 0,0,0,NONE_IMPROVE);
+	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
     PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 135.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);

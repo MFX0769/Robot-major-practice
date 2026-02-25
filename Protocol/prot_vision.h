@@ -43,6 +43,7 @@ typedef struct
 	
     vision_rx_status_e rx_status;
     vision_aim_status_e aim_status;
+	uint32_t rx_repeat_cnt;
     uint32_t new_frame_flag;
     float target_yaw_angle, target_pit_angle;
     float yaw_min_err;

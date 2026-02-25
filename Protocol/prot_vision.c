@@ -70,7 +70,7 @@ void vision_data_handler(uint8_t *pVision_Data)
         return;
     }
     if (vision.rx[0].data.cnt == vision.rx[1].data.cnt) {
-        if (++vision.rx_cnt > 10) {
+        if (++vision.rx_repeat_cnt > 10) {
             vision.rx_status = REPEAT_ERROR;
             return;
         }
@@ -78,7 +78,7 @@ void vision_data_handler(uint8_t *pVision_Data)
     vision.online           = 1;
     vision.rx_cnt++;
     vision.rx_status        = NORMAL;
-    vision.rx_cnt    = 0;
+    vision.rx_repeat_cnt    = 0;
     vision.rx[1].data.cnt   = vision.rx[0].data.cnt;
     vision.trace_id         = vision.rx[0].data.trace_id;
 

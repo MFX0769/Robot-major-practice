@@ -42,7 +42,7 @@ extern float std;
 float float_test;
 uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 2; 
+uint8_t debug_wave = 4; 
 
 void log_scope_data_pkg(void)
 {
@@ -71,9 +71,7 @@ void log_scope_data_pkg(void)
 					
 //						log_scope_get_data(vision.aim_status);
 //						log_scope_get_data(vision .rx_freq);
-//						log_scope_get_data(vision.rx_cnt);
-//						log_scope_get_data(vision.target_pit_angle);
-					
+						
 //			          log_scope_get_data(imu_data.pitch);
 					  log_scope_get_data(gimbal.pit_angle.ref);
             log_scope_get_data(gimbal.pit_angle.fdb);
@@ -81,8 +79,8 @@ void log_scope_data_pkg(void)
             log_scope_get_data(gimbal.pit_spd.ref);
             log_scope_get_data(gimbal.pit_spd.fdb);
 ////////					
-			log_scope_get_data(gimbal.pit_spd.pid.pout);		
-            log_scope_get_data(dm3507_motor.t_ref);
+//			log_scope_get_data(gimbal.pit_spd.pid.pout);		
+//            log_scope_get_data(dm3507_motor.t_ref);
 //            log_scope_get_data(dm3507_motor.t_set);
 								  
 //            log_scope_get_data(dm3507_motor.send_cnt);
@@ -131,11 +129,12 @@ void log_scope_data_pkg(void)
 ////			      log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
             break;
         }
-				case 4: { /* 云台ROLL roll IMU*/
-//            log_scope_get_data(gimbal.pid.roll_angle_ref);
-//            log_scope_get_data(gimbal.pid.roll_angle_fdb);
-//            log_scope_get_data(gimbal.pid.roll_spd_ref);
-//            log_scope_get_data(gimbal.pid.roll_spd_fdb);
+				case 4: { log_scope_get_data(vision.rx_cnt);
+						log_scope_get_data(vision.target_pit_angle);
+							log_scope_get_data(vision.target_yaw_angle);
+					log_scope_get_data(gimbal.pit_angle.fdb);
+										log_scope_get_data(gimbal.yaw_angle.fdb);
+
             break;
         }
 //        case 113: { /* 云台YAW PID ECD*/
