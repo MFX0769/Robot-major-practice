@@ -56,8 +56,8 @@
 
 
 ///* 拨盘频率 */
-#define TRIGGER_PERIOD   60  //TRIGGER_PERIOD越大，射频越慢，暂不支持直接计算，需要靠枪管测算
-
+#define TRIGGER_PERIOD   150  //TRIGGER_PERIOD越大，射频越慢，暂不支持直接计算，需要靠枪管测算
+								//60，25年国赛射频
 #define TRIGGER_SPEED    5//2025年4月10日 在此日期之后，拨弹盘速度不再由TRIGGER_SPEED决定，而是由TRIGGER_PERIOD决定
 //连发时旧拨盘速度6800，双层7600   std：7300   //2025年1月20日 7500
 /*-----------------------------chassis---------------------------*/

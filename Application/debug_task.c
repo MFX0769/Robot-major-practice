@@ -132,8 +132,9 @@ void log_scope_data_pkg(void)
 				case 4: { log_scope_get_data(vision.rx_cnt);
 						log_scope_get_data(vision.target_pit_angle);
 							log_scope_get_data(vision.target_yaw_angle);
-					log_scope_get_data(gimbal.pit_angle.fdb);
-										log_scope_get_data(gimbal.yaw_angle.fdb);
+					log_scope_get_data(back_flag_tri);
+										log_scope_get_data(shoot.pid.trigger_ecd_ref);
+						log_scope_get_data(back_flag_cnt);
 
             break;
         }

@@ -1,42 +1,42 @@
-#ifndef __PROT_WS2812__
-#define __PROT_WS2812__
+#ifndef __PROT_WS2812_H
+#define __PROT_WS2812_H
 
-#include "spi.h"
-#include "string.h"
+#include "stdint.h"
 
-#define WS_BIT_1   0xF8    // 1110 0000 (高电平873ns)
-#define WS_BIT_0   0xC0    // 1000 0000 (高电平291ns)  //此处为spi频率为6
+#define RGB_NUM 10
+#define ZERO_NUM 30
 
-#define LED_NUM 6
-#define COLOR_LENGTH 24
-
-typedef enum 
+typedef struct
 {
-	WHITE,
-	RED,
-	GREEN,
-	BLUE,
-	PURPLE,
-	PINK,
-	ORANGE,
-	YELLOW,
-	CYAN,
-OFF,
-} Indicator_color_e;
+    uint8_t r, g, b;
+} rgb_color_t;
 
-void Indicator_Init(void);
+typedef struct
+{
+    uint8_t rgb_status[RGB_NUM];
+    uint8_t rgb_buffer[24 * RGB_NUM + 2 * ZERO_NUM];
+    rgb_color_t rgb_data[RGB_NUM];
+} rgb_t;
 
-void led_show(uint8_t led_num, Indicator_color_e color);
-void led_flow(uint8_t led_num, Indicator_color_e color, uint8_t direction, uint16_t speed_ms);
-void led_flash(uint8_t led_num, Indicator_color_e color, uint8_t times, uint16_t interval_ms);
+typedef enum {
+    OFF = 0,      // 无色/关闭
+    RED,          // 红色
+    GREEN,        // 绿色
+    BLUE,         // 蓝色
+    YELLOW,       // 黄色
+    PURPLE,       // 紫色
+    CYAN,         // 靛色/青色
+    WHITE,        // 白色
+    MAX           // 颜色总数，用于边界检查
+}Color_t;
 
+extern rgb_t rgb;
 
-void turn_on_single_light(uint8_t num,Indicator_color_e color);
-void turn_on_all_light(uint16_t RED,uint16_t GREEN,uint16_t BLUE);
-void turn_on_single_RGB(uint8_t led_num,uint16_t R,uint16_t G,uint16_t B);
+void rgb_change(uint8_t i, uint8_t status);
+void rgb_set_bright(uint8_t i, uint8_t bright);
+void update_leds(uint8_t led_num,uint8_t status);
+void led_flow(uint8_t led_num, Color_t color, uint8_t direction, uint16_t speed_ms);
 
-
-
+void rgb_output_data(void);
 
 #endif
-

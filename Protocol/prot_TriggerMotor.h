@@ -46,5 +46,13 @@ extern 	uint8_t 	SHOOT_PERIOD_CHANGE_CNT;
 
 extern uint16_t test_Trigger;
 extern uint8_t  STIR_SERIES_SHOT_FLAG;
+
+extern uint8_t back_flag_tri;
+extern uint16_t back_flag;
+extern uint16_t back_flag_cnt;
+extern uint16_t last_back_flag;
+extern uint16_t err_flag;
+extern uint16_t err_time;
+extern uint32_t last_tri_ecd;
 #endif
 
