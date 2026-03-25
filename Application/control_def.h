@@ -66,8 +66,8 @@
 
 /*-----------------------------gimbal----------------------------*/
 //IMU_MODE_SCALE
-#define RC_CH1_SCALE_IMU                0.0002f    
-#define RC_CH2_SCALE_IMU                0.0002f // 0.00001f  电机作为角度反馈、力矩模式
+#define RC_CH1_SCALE_IMU                0.0002f    //云台任务频率2ms时 0.0002f
+#define RC_CH2_SCALE_IMU                0.0002f 	// 0.00001f  电机作为角度反馈、力矩模式	云台任务频率2ms时 0.0002f
 #define RC_CH3_SCALE_IMU                0.00000000000000000000000001f // 
 
 //ECD_MODE_SCALE
@@ -76,9 +76,9 @@
 
 
 //KEYBOARD_MODE_SCALE
-#define KEYBOARD_SCALE_PIT          ( 0.0004f )
-#define KEYBOARD_SCALE_YAW	        ( 0.0004f )
-#define KEYBOARD_SCALE_YAW_SUPPLY   ( -0.0006f )
+#define KEYBOARD_SCALE_PIT          ( 0.0002f )    //云台任务频率2ms时0.0004f
+#define KEYBOARD_SCALE_YAW	        ( 0.0002f )		//云台任务频率2ms时0.0004f
+#define KEYBOARD_SCALE_YAW_SUPPLY   ( -0.0003f )
 
 #define GIMBAL_PIT_CENTER_OFFSET    3400         //电机编码器值的限幅,会比实际小一点点，防止代码把机械带走
 #define GIMBAL_PIT_MAX              1.7f

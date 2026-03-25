@@ -339,9 +339,12 @@ void TriggerMotor_control(void)
 					back_flag_cnt++;
 					trigger_motor.tx_current = 0;
 				}
-							
+				else
+				{
+					back_flag_cnt = 0;  // 不卡弹时持续清零
+				}			
 						/*若持续卡弹，则进入退弹*/
-				if(back_flag_cnt > 150)
+				if(back_flag_cnt > 150 && !back_flag_tri)
 				{          
 					shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
 					last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
@@ -362,8 +365,8 @@ void TriggerMotor_control(void)
 				{  
 					 err_time += SHOOT_PERIOD;//退弹执行计时 或超时，则直接退出退弹而不再等拨盘到位（退弹时阻力依然很大，拨盘不到位也正常）
 					
-					//退弹结束的依据：反转到位（2.0发）或超时（执行200次发射任务）
-					if((err_time >= 200) || (trigger_motor.total_ecd == (last_tri_ecd - 2.0*TRIGGER_MOTOR_ECD)) )
+					//退弹结束的依据：反转到位（2.0发）或超时（执行150次发射任务）
+					if((err_time >= 150) || (ABS(trigger_motor.total_ecd - last_tri_ecd + 2.0f * TRIGGER_MOTOR_ECD) < 0.5f * TRIGGER_MOTOR_ECD) )
 					{
 						  err_time = 0;//清除退弹执行时间 防止影响下一次退弹
 						  back_flag_tri=0;//清除退弹标志位 

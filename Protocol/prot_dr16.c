@@ -75,19 +75,8 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
    rc->mouse.x = buff[6] | (buff[7] << 8); // x axis
    rc->mouse.y = buff[8] | (buff[9] << 8);
    rc->mouse.z = buff[10] | (buff[11] << 8);
-   if ((abs(rc->ch1) > 660) || \
-       (abs(rc->ch2) > 660) || \
-       (abs(rc->ch3) > 660) || \
-       (abs(rc->ch4) > 660)    )
-   {
-       memset(rc, 0, sizeof(rc_info_t));
-   }
-   rc->mouse.x = buff[6] | (buff[7] << 8); // x axis
-   rc->mouse.y = buff[8] | (buff[9] << 8);
-   rc->mouse.z = buff[10] | (buff[11] << 8);
-
-   rc->mouse.l = buff[12];
-   rc->mouse.r = buff[13];
+   
+   
    rc->mouse.l = buff[12];
    rc->mouse.r = buff[13];
 
