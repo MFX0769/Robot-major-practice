@@ -42,26 +42,30 @@ extern float std;
 float float_test;
 uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 4; 
+uint8_t debug_wave = 1; 
 
 void log_scope_data_pkg(void)
 {
     switch (debug_wave) {
         case 1: { /* 拨盘 */
-						log_scope_get_data(shoot.stir_mode);
+//					log_scope_get_data(shoot.stir_mode);
 
 
- 					  log_scope_get_data(shoot.pid.trigger_ecd_ref);
-            log_scope_get_data(shoot.pid.trigger_ecd_fdb);
+ 					log_scope_get_data(shoot.pid.trigger_ecd_ref);
+					log_scope_get_data(shoot.pid.trigger_ecd_fdb);
+//					log_scope_get_data(pid_trigger_ecd.pos_out);
+
+//					log_scope_get_data(shoot.frequency_cnt);
+//					log_scope_get_data(STIR_SERIES_SHOT_FLAG);
+					log_scope_get_data(shoot.pid.trigger_spd_ref);
+					log_scope_get_data(shoot.pid.trigger_spd_fdb);
+					log_scope_get_data(pid_trigger_spd.pos_out);
 					
-						log_scope_get_data(shoot.frequency_cnt);
-						log_scope_get_data(STIR_SERIES_SHOT_FLAG);
-					  log_scope_get_data(shoot.pid.trigger_spd_ref);
-            log_scope_get_data(shoot.pid.trigger_spd_fdb);
-            log_scope_get_data(pid_trigger_spd.pos_out);
-					
-					log_scope_get_data(trigger_can_receive_cnt);
-					
+					log_scope_get_data(trigger_motor.tx_current);
+					log_scope_get_data(back_flag_tri);
+					log_scope_get_data(back_flag_cnt);
+//					log_scope_get_data(back_flag);
+//				log_scope_get_data(err_time);
 
             break;
         }
@@ -129,12 +133,13 @@ void log_scope_data_pkg(void)
 ////			      log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
             break;
         }
-				case 4: { log_scope_get_data(vision.rx_cnt);
-						log_scope_get_data(vision.target_pit_angle);
-							log_scope_get_data(vision.target_yaw_angle);
-					log_scope_get_data(back_flag_tri);
-										log_scope_get_data(shoot.pid.trigger_ecd_ref);
-						log_scope_get_data(back_flag_cnt);
+				case 4: { 
+					log_scope_get_data(vision.rx_cnt);
+					log_scope_get_data(vision.target_pit_angle);
+					log_scope_get_data(vision.target_yaw_angle);
+					            log_scope_get_data(gimbal.pit_angle.fdb);
+            log_scope_get_data(gimbal.yaw_spd.fdb);
+
 
             break;
         }

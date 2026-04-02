@@ -1037,6 +1037,26 @@
               <FileType>5</FileType>
               <FilePath>..\Protocol\prot_ws2812.h</FilePath>
             </File>
+            <File>
+              <FileName>prot_vtm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_vtm.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_vtm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_vtm.h</FilePath>
+            </File>
+            <File>
+              <FileName>prot_remote_fusion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_remote_fusion.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_remote_fusion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_remote_fusion.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

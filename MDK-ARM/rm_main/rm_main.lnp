@@ -75,6 +75,8 @@
 "rm_main\prot_fricmotor.o"
 "rm_main\prot_judge_send.o"
 "rm_main\prot_ws2812.o"
+"rm_main\prot_vtm.o"
+"rm_main\prot_remote_fusion.o"
 "rm_main\can_comm.o"
 "rm_main\usart_comm.o"
 "rm_main\i2c_comm.o"

@@ -1,7 +1,7 @@
 /**
   * @file bsp_TriggerMotor.c
   * @version 1.2
-  * @date  2023..14
+  * @date  2026.3.14
 	*
   * @brief 1.0：平平无奇的拨盘代码
 	*        1.1：加了退弹和一键reload
@@ -54,7 +54,7 @@ uint8_t SHOOT_PERIOD_CHANGE_FLAG;
 
 trigger_t trigger;
 
-
+uint8_t trigger_test=0;
 uint8_t AMMO_STUCK_FLAG= 0;                 //卡弹标志位 1为卡弹 0为不卡
 uint8_t SINGLE_AMMO_STUCK_BACK_FLAG= 0;          //用于单发卡弹退弹只退一次的逻辑判断
 uint8_t STIR_SINGLE_SHOT_FLAG;
@@ -78,7 +78,7 @@ uint32_t SERIES_STUCK_CNT		= 0;                   //连发卡弹计数
 void TriggerMotor_init(void)
 {
     PID_struct_init(&pid_trigger_ecd, 18000, 8000,
-                    0.1, 0, 0,0,0,0,Integral_Limit);
+                    0.15, 0, 0,0,0,0,Integral_Limit);
     PID_struct_init(&pid_trigger_spd, 10000, 8000,
                     5.0, 0.005, 0,0,0,0,Integral_Limit);
 	  
@@ -166,11 +166,13 @@ static void single_ammo_stuck_judge(void)
 					}	
 }
 
-///*单发复位函数 2025年4月21日记得今天加图传链路后完善此代码*/
+///*单发复位函数 */
 static uint8_t single_shoot_reset(void) 
 {
     return (
-							(   (rc.mouse.l)==0  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable )    //视觉模式下：松开鼠标左键&视觉允许发射，才复位
+							((   (rc.mouse.l)==0  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable )	
+				&&(ABS(rc.ch5) < 10  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable ))    //视觉模式下：松开鼠标左键&视觉允许发射并且拨盘也是松开的，才复位
+							    //视觉模式下：拨轮松开&视觉允许发射，才复位
 							|| (ABS(rc.ch5) < 10 && ctrl_mode == REMOTER_MODE)                             //遥控模式下：拨轮松开，回到（接近）原位，才复位
 							|| ((rc.mouse.l) == 0 && ctrl_mode == KEYBOARD_MODE)                       //键盘模式下：松开鼠标左键，才复位
            );
@@ -339,12 +341,9 @@ void TriggerMotor_control(void)
 					back_flag_cnt++;
 					trigger_motor.tx_current = 0;
 				}
-				else
-				{
-					back_flag_cnt = 0;  // 不卡弹时持续清零
-				}			
+						
 						/*若持续卡弹，则进入退弹*/
-				if(back_flag_cnt > 150 && !back_flag_tri)
+				if(back_flag_cnt > 100)
 				{          
 					shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
 					last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
@@ -356,6 +355,7 @@ void TriggerMotor_control(void)
 						//每次卡弹，只-=一次ref
 				if(back_flag==1)
 				{
+					trigger_test++;
 					  shoot.pid.trigger_ecd_ref -= 2.0f * TRIGGER_MOTOR_ECD;//退两发的位置
 					  back_flag = 0;//清除，防止重复-=ref
 				}
@@ -366,10 +366,11 @@ void TriggerMotor_control(void)
 					 err_time += SHOOT_PERIOD;//退弹执行计时 或超时，则直接退出退弹而不再等拨盘到位（退弹时阻力依然很大，拨盘不到位也正常）
 					
 					//退弹结束的依据：反转到位（2.0发）或超时（执行150次发射任务）
-					if((err_time >= 150) || (ABS(trigger_motor.total_ecd - last_tri_ecd + 2.0f * TRIGGER_MOTOR_ECD) < 0.5f * TRIGGER_MOTOR_ECD) )
+					if((err_time >= 100) || (ABS(trigger_motor.total_ecd - last_tri_ecd + 2.0f * TRIGGER_MOTOR_ECD) < 0.5f * TRIGGER_MOTOR_ECD) )
 					{
 						  err_time = 0;//清除退弹执行时间 防止影响下一次退弹
 						  back_flag_tri=0;//清除退弹标志位 
+						shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;
 					}
 				 }
 						
