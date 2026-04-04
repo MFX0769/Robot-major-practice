@@ -113,13 +113,14 @@ typedef enum
 /* Exported variables --------------------------------------------*/
 extern rc_info_t rc;
 extern scale_t scale;
-
+extern uint16_t dr16_online_cnt;
 
 /* Exported function declarations --------------------------------------------*/
 void rc_callback_handler(rc_info_t *rc, uint8_t *buff);
  uint8_t keyboard_scan(key_index_e key_index);
  void key_status_clear(key_index_e key_index);
  uint8_t key_scan_clear(key_index_e key_index);
+void FuseFromDR16(void);
 
 
 #endif

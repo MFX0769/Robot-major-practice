@@ -141,7 +141,7 @@ static void shoot_mode_sw(void)
                 case RC_DN:
                 {
                     shoot.firc_mode = FIRC_MODE_RUN;  //保持开启摩擦轮
-					          shoot.stir_mode = STIR_MODE_SERIES;
+					shoot.stir_mode = STIR_MODE_SERIES;
                 }
                 break;
                 default: break;

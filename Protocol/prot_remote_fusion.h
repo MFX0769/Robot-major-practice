@@ -260,8 +260,8 @@ typedef struct {
  * ============================================================================== */
 
 /* 键盘按键状态数组 */
-extern int kb_status[13];
-extern int kb_last_status[13];
+//extern int kb_status[13];
+//extern int kb_last_status[13];
 
 /* VTM按键状态数组 */
 extern int vtm_btn_status[VTM_BTN_COUNT];

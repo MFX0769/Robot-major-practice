@@ -31,7 +31,7 @@ static uint32_t s_last_stat_tick = 0;           // 上次统计时的 tick
  *  键盘按键扫描
  * ============================================================================== */
 
-int kb_last_status[13] = { 0 };
+//int kb_last_status[13] = { 0 };
 //int kb_status[13] = { 0 };
 
 /* VTM 按键状态数组 */
@@ -177,8 +177,6 @@ uint8_t vtm_btn_scan_clear(vtm_btn_index_e btn_index)
 /* ==================== 私有函数声明 ==================== */
 
 static void FuseChannelData(void);
-static void FuseFromDR16(void);
-static void FuseFromVTM(void);
 static void CalcPacketLossRate(void);
 
 /* ==================== 通道状态设置接口 ==================== */
@@ -304,88 +302,88 @@ static void CalcPacketLossRate(void)
         remote_fusion.status.vtm_rx_cnt = 0;
     }
 }
-/**
- * @brief 从VTM原始数据融合（以 remote_fusion 通道定义为准）
- * @note  在此处完成方向转换和CNS映射
- * @note  统一定义：remote_fusion.ch3=左摇杆水平，remote_fusion.ch4=左摇杆垂直
- * @note  VTM文档通道命名与DR16不同（VTM左摇杆垂直对应其“ch3”，在本工程变量为 vtm_rc.ch2）
- */
-static void FuseFromVTM(void)
-{
-    // 鼠标
-    remote_fusion.mouse.x = vtm_rc.mouse.x;
-    remote_fusion.mouse.y = vtm_rc.mouse.y;
-    remote_fusion.mouse.z = vtm_rc.mouse.z;
-    remote_fusion.mouse.left = vtm_rc.mouse.l;
-    remote_fusion.mouse.right = vtm_rc.mouse.r;
-    
-    // 键盘
-    remote_fusion.keyboard.key_code = vtm_rc.kb.key_code;
-    
-    // 摇杆 - 从原始值转换为带符号值
-    // 方向约定：向上为正，向左为正
-    // 原始值范围: 364~1684, 中值1024
-    remote_fusion.channel.ch1 = (int16_t)(1024 - vtm_rc.ch0);   // 右摇杆水平 (向左为正)
-    remote_fusion.channel.ch2 = (int16_t)(vtm_rc.ch1 - 1024);   // 右摇杆垂直 (向上为正)
-    remote_fusion.channel.ch4 = (int16_t)(vtm_rc.ch2 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
-    remote_fusion.channel.ch3 = (int16_t)(1024 - vtm_rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
-    remote_fusion.channel.dial = (int16_t)(1024 - vtm_rc.dial); // 拨轮
-    
-    // 死区处理
-    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
-    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
-    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
-    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
-    
-    // 开关 - VTM CNS 原始值映射到DR16兼容值
-    // 原始值: C=0(上), N=1(中), S=2(下)
-    // 目标值: RC_UP=1(上), RC_DN=2(下), RC_MI=3(中)
-    switch (vtm_rc.cns) {
-        case 0: remote_fusion.sw.cns = RC_UP; break;  // C档(上) -> RC_UP
-        case 1: remote_fusion.sw.cns = RC_MI; break;  // N档(中) -> RC_MI
-        case 2: remote_fusion.sw.cns = RC_DN; break;  // S档(下) -> RC_DN
-        default: remote_fusion.sw.cns = RC_MI; break; // 默认中
-    }
-    remote_fusion.sw.sw1 = remote_fusion.sw.cns;
-    remote_fusion.sw.sw2 = RC_UP;  // 默认上
-}
+///**
+// * @brief 从VTM原始数据融合（以 remote_fusion 通道定义为准）
+// * @note  在此处完成方向转换和CNS映射
+// * @note  统一定义：remote_fusion.ch3=左摇杆水平，remote_fusion.ch4=左摇杆垂直
+// * @note  VTM文档通道命名与DR16不同（VTM左摇杆垂直对应其“ch3”，在本工程变量为 vtm_rc.ch2）
+// */
+//static void FuseFromVTM(void)
+//{
+//    // 鼠标
+//    remote_fusion.mouse.x = vtm_rc.mouse.x;
+//    remote_fusion.mouse.y = vtm_rc.mouse.y;
+//    remote_fusion.mouse.z = vtm_rc.mouse.z;
+//    remote_fusion.mouse.left = vtm_rc.mouse.l;
+//    remote_fusion.mouse.right = vtm_rc.mouse.r;
+//    
+//    // 键盘
+//    remote_fusion.keyboard.key_code = vtm_rc.kb.key_code;
+//    
+//    // 摇杆 - 从原始值转换为带符号值
+//    // 方向约定：向上为正，向左为正
+//    // 原始值范围: 364~1684, 中值1024
+//    remote_fusion.channel.ch1 = (int16_t)(1024 - vtm_rc.ch0);   // 右摇杆水平 (向左为正)
+//    remote_fusion.channel.ch2 = (int16_t)(vtm_rc.ch1 - 1024);   // 右摇杆垂直 (向上为正)
+//    remote_fusion.channel.ch4 = (int16_t)(vtm_rc.ch2 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+//    remote_fusion.channel.ch3 = (int16_t)(1024 - vtm_rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+//    remote_fusion.channel.dial = (int16_t)(1024 - vtm_rc.dial); // 拨轮
+//    
+//    // 死区处理
+//    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
+//    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
+//    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
+//    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
+//    
+//    // 开关 - VTM CNS 原始值映射到DR16兼容值
+//    // 原始值: C=0(上), N=1(中), S=2(下)
+//    // 目标值: RC_UP=1(上), RC_DN=2(下), RC_MI=3(中)
+//    switch (vtm_rc.cns) {
+//        case 0: remote_fusion.sw.cns = RC_UP; break;  // C档(上) -> RC_UP
+//        case 1: remote_fusion.sw.cns = RC_MI; break;  // N档(中) -> RC_MI
+//        case 2: remote_fusion.sw.cns = RC_DN; break;  // S档(下) -> RC_DN
+//        default: remote_fusion.sw.cns = RC_MI; break; // 默认中
+//    }
+//    remote_fusion.sw.sw1 = remote_fusion.sw.cns;
+//    remote_fusion.sw.sw2 = RC_UP;  // 默认上
+//}
 
-/**
- * @brief 从DR16原始数据融合
- * @note  在此处完成方向转换：向上为正，向左为正
- */
-static void FuseFromDR16(void)
-{
-    // 鼠标
-    remote_fusion.mouse.x = rc.mouse.x;
-    remote_fusion.mouse.y = rc.mouse.y;
-    remote_fusion.mouse.z = rc.mouse.z;
-    remote_fusion.mouse.left = rc.mouse.l;
-    remote_fusion.mouse.right = rc.mouse.r;
-    
-    // 键盘
-    remote_fusion.keyboard.key_code = rc.kb.key_code;
-    
-    // 摇杆 - 从原始值转换为带符号值
-    // 方向约定：向上为正，向左为正（以 remote_fusion 定义为准：ch3水平/ch4垂直）
-    // 原始值范围: 364~1684, 中值1024
-    remote_fusion.channel.ch1 = (int16_t)(1024 - rc.ch1);   // 右摇杆水平 (向左为正)
-    remote_fusion.channel.ch2 = (int16_t)(rc.ch2 - 1024);   // 右摇杆垂直 (向上为正)
-    remote_fusion.channel.ch3 = (int16_t)(1024 - rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
-    remote_fusion.channel.ch4 = (int16_t)(rc.ch4 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
-    remote_fusion.channel.dial = (int16_t)(rc.ch5 - 1024); // 拨轮
-    
-    // 死区处理
-    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
-    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
-    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
-    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
-    
-    // 开关 - DR16 sw 已经是 1=上, 2=下, 3=中
-    remote_fusion.sw.sw1 = rc.sw1;
-    remote_fusion.sw.sw2 = rc.sw2;
-    remote_fusion.sw.cns = rc.sw1;  // DR16 使用 sw1 作为 CNS
-}
+///**
+// * @brief 从DR16原始数据融合
+// * @note  在此处完成方向转换：向上为正，向左为正
+// */
+//static void FuseFromDR16(void)
+//{
+//    // 鼠标
+//    remote_fusion.mouse.x = rc.mouse.x;
+//    remote_fusion.mouse.y = rc.mouse.y;
+//    remote_fusion.mouse.z = rc.mouse.z;
+//    remote_fusion.mouse.left = rc.mouse.l;
+//    remote_fusion.mouse.right = rc.mouse.r;
+//    
+//    // 键盘
+//    remote_fusion.keyboard.key_code = rc.kb.key_code;
+//    
+//    // 摇杆 - 从原始值转换为带符号值
+//    // 方向约定：向上为正，向左为正（以 remote_fusion 定义为准：ch3水平/ch4垂直）
+//    // 原始值范围: 364~1684, 中值1024
+//    remote_fusion.channel.ch1 = (int16_t)(1024 - rc.ch1);   // 右摇杆水平 (向左为正)
+//    remote_fusion.channel.ch2 = (int16_t)(rc.ch2 - 1024);   // 右摇杆垂直 (向上为正)
+//    remote_fusion.channel.ch3 = (int16_t)(1024 - rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+//    remote_fusion.channel.ch4 = (int16_t)(rc.ch4 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+//    remote_fusion.channel.dial = (int16_t)(rc.ch5 - 1024); // 拨轮
+//    
+//    // 死区处理
+//    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
+//    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
+//    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
+//    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
+//    
+//    // 开关 - DR16 sw 已经是 1=上, 2=下, 3=中
+//    remote_fusion.sw.sw1 = rc.sw1;
+//    remote_fusion.sw.sw2 = rc.sw2;
+//    remote_fusion.sw.cns = rc.sw1;  // DR16 使用 sw1 作为 CNS
+//}
 
 
 

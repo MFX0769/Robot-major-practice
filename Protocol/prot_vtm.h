@@ -24,7 +24,7 @@
  */
 
 #include "stdint.h"
-
+#include "prot_dr16.h"
 #define VTM_DATA_LEN    21
 
 #pragma pack(1)
@@ -83,5 +83,7 @@ typedef struct
 
 extern vtm_rc_t vtm_rc;
 void vtm_callback_handler(uint8_t *buff);
+void FuseFromVTM(void);
+
 
 #endif /* __PROT_VTM_H__ */

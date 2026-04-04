@@ -17,7 +17,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "prot_dr16.h"
-
+#include "prot_remote_fusion.h"
 
 /* Private define ------------------------------------------------------------*/
 
@@ -32,11 +32,49 @@ scale_t scale;
 /* 键盘按键状态标志位 */
 uint8_t kb_status[12]= {0};
 /* Private type --------------------------------------------------------------*/
-
+/*dr16断联计数器*/
+uint16_t dr16_online_cnt = 0;
 /* Private function declarations ---------------------------------------------*/
 
 /* function prototypes -------------------------------------------------------*/
 
+
+/**
+ * @brief 从DR16原始数据融合
+ * @note  在此处完成方向转换：向上为正，向左为正
+ */
+void FuseFromDR16(void)
+{
+    // 鼠标
+    remote_fusion.mouse.x = rc.mouse.x;
+    remote_fusion.mouse.y = rc.mouse.y;
+    remote_fusion.mouse.z = rc.mouse.z;
+    remote_fusion.mouse.left = rc.mouse.l;
+    remote_fusion.mouse.right = rc.mouse.r;
+    
+    // 键盘
+    remote_fusion.keyboard.key_code = rc.kb.key_code;
+    
+    // 摇杆 - 从原始值转换为带符号值
+    // 方向约定：向上为正，向左为正（以 remote_fusion 定义为准：ch3水平/ch4垂直）
+    // 原始值范围: 364~1684, 中值1024
+    remote_fusion.channel.ch1 = (int16_t)(1024 - rc.ch1);   // 右摇杆水平 (向左为正)
+    remote_fusion.channel.ch2 = (int16_t)(rc.ch2 - 1024);   // 右摇杆垂直 (向上为正)
+    remote_fusion.channel.ch3 = (int16_t)(1024 - rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+    remote_fusion.channel.ch4 = (int16_t)(rc.ch4 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+    remote_fusion.channel.dial = (int16_t)(rc.ch5 - 1024); // 拨轮
+    
+    // 死区处理
+    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
+    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
+    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
+    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
+    
+    // 开关 - DR16 sw 已经是 1=上, 2=下, 3=中
+    remote_fusion.sw.sw1 = rc.sw1;
+    remote_fusion.sw.sw2 = rc.sw2;
+    remote_fusion.sw.cns = rc.sw1;  // DR16 使用 sw1 作为 CNS
+}
 
 /**
  * @brief       handle received rc data
@@ -51,6 +89,7 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
    /* ?????????? */
 	  // remote_online.DT7_online_cnt = 0;
   //  rc_normal_flag = 1;
+	dr16_online_cnt = 0;
    /* ??????? */
    rc->ch1 = (buff[0]      | buff[1]  << 8) & 0x07FF;
    rc->ch1 -= 1024;
@@ -81,6 +120,8 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
    rc->mouse.r = buff[13];
 
    rc->kb.key_code = buff[14] | buff[15] << 8; // key borad code
+   
+   FuseFromDR16();
 }
 
 /**

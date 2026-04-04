@@ -42,7 +42,7 @@ extern float std;
 float float_test;
 uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 4; 
+uint8_t debug_wave = 2; 
 
 void log_scope_data_pkg(void)
 {
@@ -70,11 +70,7 @@ void log_scope_data_pkg(void)
             break;
         }
         case 2: { /* 云台PIT PID IMU */
-//					  log_scope_get_data(gimbal.gimbal_limit.pitch_angle_max);
-//			      log_scope_get_data(gimbal.gimbal_limit.pitch_angle_min);
-					
-//						log_scope_get_data(vision.aim_status);
-//						log_scope_get_data(vision .rx_freq);
+
 						
 //			          log_scope_get_data(imu_data.pitch);
 					  log_scope_get_data(gimbal.pit_angle.ref);
@@ -84,7 +80,7 @@ void log_scope_data_pkg(void)
             log_scope_get_data(gimbal.pit_spd.fdb);
 ////////					
 //			log_scope_get_data(gimbal.pit_spd.pid.pout);		
-//            log_scope_get_data(dm3507_motor.t_ref);
+            log_scope_get_data(dm3507_motor.t_ref);
 //            log_scope_get_data(dm3507_motor.t_set);
 								  
 //            log_scope_get_data(dm3507_motor.send_cnt);

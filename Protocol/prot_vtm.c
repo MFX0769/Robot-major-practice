@@ -5,7 +5,7 @@
  */
 
 #include "prot_vtm.h"
-//#include "prot_remote_fusion.h"
+#include "prot_remote_fusion.h"
 #include "string.h"
 
 #define VTM_HEADER_1    0xA9
@@ -81,6 +81,52 @@ static uint8_t vtm_crc16_verify(uint8_t *p_msg, uint16_t len)
 }
 
 /**
+ * @brief 从VTM原始数据融合（以 remote_fusion 通道定义为准）
+ * @note  在此处完成方向转换和CNS映射
+ * @note  统一定义：remote_fusion.ch3=左摇杆水平，remote_fusion.ch4=左摇杆垂直
+ * @note  VTM文档通道命名与DR16不同（VTM左摇杆垂直对应其“ch3”，在本工程变量为 vtm_rc.ch2）
+ */
+void FuseFromVTM(void)
+{
+    // 鼠标
+    remote_fusion.mouse.x = vtm_rc.mouse.x;
+    remote_fusion.mouse.y = vtm_rc.mouse.y;
+    remote_fusion.mouse.z = vtm_rc.mouse.z;
+    remote_fusion.mouse.left = vtm_rc.mouse.l;
+    remote_fusion.mouse.right = vtm_rc.mouse.r;
+    
+    // 键盘
+    remote_fusion.keyboard.key_code = vtm_rc.kb.key_code;
+    
+    // 摇杆 - 从原始值转换为带符号值
+    // 方向约定：向上为正，向左为正
+    // 原始值范围: 364~1684, 中值1024
+    remote_fusion.channel.ch1 = (int16_t)(1024 - vtm_rc.ch0);   // 右摇杆水平 (向左为正)
+    remote_fusion.channel.ch2 = (int16_t)(vtm_rc.ch1 - 1024);   // 右摇杆垂直 (向上为正)
+    remote_fusion.channel.ch4 = (int16_t)(vtm_rc.ch2 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+    remote_fusion.channel.ch3 = (int16_t)(1024 - vtm_rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+    remote_fusion.channel.dial = (int16_t)(1024 - vtm_rc.dial); // 拨轮
+    
+    // 死区处理
+    if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
+    if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;
+    if (remote_fusion.channel.ch3 > -RC_DEADZONE && remote_fusion.channel.ch3 < RC_DEADZONE) remote_fusion.channel.ch3 = 0;
+    if (remote_fusion.channel.ch4 > -RC_DEADZONE && remote_fusion.channel.ch4 < RC_DEADZONE) remote_fusion.channel.ch4 = 0;
+    
+    // 开关 - VTM CNS 原始值映射到DR16兼容值
+    // 原始值: C=0(上), N=1(中), S=2(下)
+    // 目标值: RC_UP=1(上), RC_DN=2(下), RC_MI=3(中)
+    switch (vtm_rc.cns) {
+        case 0: remote_fusion.sw.cns = RC_UP; break;  // C档(上) -> RC_UP
+        case 1: remote_fusion.sw.cns = RC_MI; break;  // N档(中) -> RC_MI
+        case 2: remote_fusion.sw.cns = RC_DN; break;  // S档(下) -> RC_DN
+        default: remote_fusion.sw.cns = RC_MI; break; // 默认中
+    }
+    remote_fusion.sw.sw1 = remote_fusion.sw.cns;
+    remote_fusion.sw.sw2 = RC_UP;  // 默认上
+}
+
+/**
  * @brief  VTM遥控数据解析
  * @param  buff: 21字节原始数据
  */
@@ -88,9 +134,9 @@ void vtm_callback_handler(uint8_t *buff)
 {
     uint64_t ctrl_word = 0;
     uint16_t mouse_btn_bits = 0;
-
+	
     if (buff == NULL) return;
-    
+    dr16_online_cnt++;
     // 帧头校验
     if (buff[0] != VTM_HEADER_1 || buff[1] != VTM_HEADER_2) return;
     
@@ -129,7 +175,11 @@ void vtm_callback_handler(uint8_t *buff)
     vtm_rc.mouse.r = (((mouse_btn_bits >> 2) & 0x03U) != 0U) ? 1U : 0U;   // [130,131]
     
     vtm_rc.kb.key_code = (uint16_t)buff[17] | ((uint16_t)buff[18] << 8);
-    
+    if(dr16_online_cnt > 200)
+	{
+		FuseFromVTM();
+        remote_fusion.current_source = REMOTE_SOURCE_VTM;
+	}
 //    RemoteFusion_SetVTMOnline();
 }
 

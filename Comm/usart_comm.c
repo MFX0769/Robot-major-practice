@@ -188,8 +188,8 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		
 	 else if(huart->Instance==USART3)    
 		{
-//			  wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-//				new_rc_callback_handler(&new_rc,dma_new_rc_buf);
+			  wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
+//				vtm_callback_handler(&new_rc,dma_new_rc_buf);
 //				memset(dma_new_rc_buf, 0, DMA_NEW_RC_LEN);
 //				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, DMA_NEW_RC_LEN);
 		}
