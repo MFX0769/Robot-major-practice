@@ -28,6 +28,7 @@
 
 gimbal_t gimbal;
 
+
 static void gimbal_init(void)
 {
 	scale.ch1 = RC_CH1_SCALE_IMU;//灵敏度
@@ -40,17 +41,14 @@ static void gimbal_init(void)
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-//	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 23.0f, 0.0f, 12.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.008,0.0, 0.006, 0, 0.0f, 0.0f, NONE_IMPROVE);
-	
 	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE);
     PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-//    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 15.0f, 0.0f, 8.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 80.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 135.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 135.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -61,6 +59,10 @@ float yaw_err;
 static void gimbal_pid_calc(void)
 {
 //	if(ctrl_mode == PROTECT_MODE){return;}
+	if (dm3507_motor.err_code != 1) {
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+//		return;
+    }
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
     gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -20);

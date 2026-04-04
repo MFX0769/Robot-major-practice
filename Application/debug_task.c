@@ -42,7 +42,7 @@ extern float std;
 float float_test;
 uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 1; 
+uint8_t debug_wave = 4; 
 
 void log_scope_data_pkg(void)
 {
@@ -59,13 +59,13 @@ void log_scope_data_pkg(void)
 //					log_scope_get_data(STIR_SERIES_SHOT_FLAG);
 					log_scope_get_data(shoot.pid.trigger_spd_ref);
 					log_scope_get_data(shoot.pid.trigger_spd_fdb);
-					log_scope_get_data(pid_trigger_spd.pos_out);
+//					log_scope_get_data(pid_trigger_spd.pos_out);
 					
-					log_scope_get_data(trigger_motor.tx_current);
+//					log_scope_get_data(trigger_motor.tx_current);
 					log_scope_get_data(back_flag_tri);
 					log_scope_get_data(back_flag_cnt);
-//					log_scope_get_data(back_flag);
-//				log_scope_get_data(err_time);
+					log_scope_get_data(back_flag);
+				log_scope_get_data(err_time);
 
             break;
         }
@@ -133,34 +133,19 @@ void log_scope_data_pkg(void)
 ////			      log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
             break;
         }
-				case 4: { 
+		case 4: { 
 					log_scope_get_data(vision.rx_cnt);
 					log_scope_get_data(vision.target_pit_angle);
 					log_scope_get_data(vision.target_yaw_angle);
-					            log_scope_get_data(gimbal.pit_angle.fdb);
+			log_scope_get_data(gimbal.pit_angle.fdb);
+            log_scope_get_data(gimbal.yaw_angle.fdb);
+			log_scope_get_data(gimbal.yaw_spd.ref);
             log_scope_get_data(gimbal.yaw_spd.fdb);
-
+            log_scope_get_data(yaw_motor.tx_current);
 
             break;
         }
-//        case 113: { /* 云台YAW PID ECD*/
-//            log_scope_get_data(gimbal.pid.yaw_angle_ref);
-//            log_scope_get_data(moto_yaw.ecd);
-//            log_scope_get_data(pid_yaw_ecd.pos_out);
-//            log_scope_get_data(moto_yaw.speed_rpm);
-//            break;
-//        }
-//        case 114: {/* 云台PIT PID ECD*/
-//            log_scope_get_data(gimbal.pid.pit_ecd_ref);
-//            log_scope_get_data(gimbal.pid.pit_ecd_fdb);
-//					
-//            log_scope_get_data(gimbal.pid.pit_spd_ref);
-//            log_scope_get_data(dm4310_vel_lpf);
 
-//            log_scope_get_data(motor_dm4310_pitch.toq_ref);
-////            log_scope_get_data(motor_dm4310_pitch.toq);
-//            break;
-//        }
         case 5: { /* 摩擦轮 */
  
 					  log_scope_get_data(fric[0].spd_ref);
@@ -169,9 +154,8 @@ void log_scope_data_pkg(void)
 					  log_scope_get_data(fric_motor[0].speed_rpm);
             log_scope_get_data(fric_motor[1].speed_rpm);    
 			log_scope_get_data(fric_can_recive_cnt);
-
-				}
             break;
+				}
         case 6: { /* 陀螺仪 */
             log_scope_get_data(imu_data.pitch);
             log_scope_get_data(imu_data.yaw);
@@ -182,24 +166,17 @@ void log_scope_data_pkg(void)
 			log_scope_get_data(imu_data.real_yaw);
             break;
         }
-//				case 7: { /* 力矩测试相关 */
-//					
-//					//ROLL
-//            log_scope_get_data(motor_dm4310_roll.avrg_toq);
-//            log_scope_get_data(motor_dm4310_roll.max_toq);
-//					
-//					  log_scope_get_data(motor_dm4310_roll.toq);
-//            log_scope_get_data(gimbal.pid.roll_angle_fdb);
-//					
-//					//PITCH
-//	          log_scope_get_data(moto_pit_4005.avrg_toq);
-//            log_scope_get_data(moto_pit_4005.max_toq);
-//					
-//					  log_scope_get_data(moto_pit_4005.toq_cal);
-//            log_scope_get_data(gimbal.pid.pit_angle_fdb);				
-//					
-//            break;
-//        }
+		case 7: { /* 热量测试相关 */
+					
+            log_scope_get_data(shoot.barrel.heat);   //当前枪管(理论)热量
+            log_scope_get_data(shoot.barrel.heat_remain);   //当前枪管(理论)剩余热量
+			log_scope_get_data(back_flag_tri);
+			log_scope_get_data(back_flag_cnt);
+			log_scope_get_data(back_flag);
+			log_scope_get_data(err_time);
+			log_scope_get_data(dm3507_motor.err_code);	
+            break;
+        }
 //        case 8: { /*其余待打印*/
 //		  log_scope_get_data(Shoot_Data.bullet_speed);//裁判系统回传射速   
 //                log_scope_get_data(Shoot_Data.bullet_freq);

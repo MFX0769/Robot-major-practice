@@ -151,8 +151,14 @@ static void shoot_mode_sw(void)
 //        
         case RC_DN:
         {
+				if( key_scan_clear(KB_B) ){
+					 shoot.firc_mode = FIRC_MODE_RUN;
+					 shoot.stir_mode = STIR_MODE_SINGLE;
+				}
+				else{	 
 					 shoot.firc_mode = FIRC_MODE_RUN;
 					 shoot.stir_mode = STIR_MODE_SERIES;
+				}
         }
         break;
         default: break;
@@ -166,11 +172,15 @@ static void shoot_param_update(void)
     //更新裁判系统数据
     if (robot_status.shooter_barrel_heat_limit != 0) {
         shoot.barrel.heat_max = robot_status.shooter_barrel_heat_limit;//枪管热量上限
-        shoot.barrel.cooling_rate = robot_status.shooter_barrel_cooling_value;//枪管冷却速率
+        shoot.barrel.cooling_rate = robot_status.shooter_barrel_cooling_value;//枪管冷却速率   /*裁判系统热量数据*/
+		
     }
+	/*模仿裁判系统热量数据*/
+	shoot.barrel.heat_max =100;  //满级 200
+		shoot.barrel.cooling_rate =20;   //满级 120
     //更新模拟裁判系统数据
     shoot.barrel.heat -= shoot.barrel.cooling_rate * SHOOT_PERIOD * 0.001f;  //当前枪管(理论)热量
     if (shoot.barrel.heat < 0) shoot.barrel.heat = 0;
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat;  //当前枪管(理论)剩余热量
-    shoot.barrel.heat_remain = 50;
+//    shoot.barrel.heat_remain = 50;
 }

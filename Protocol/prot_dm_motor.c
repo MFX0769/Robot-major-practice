@@ -56,10 +56,10 @@ void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,prot_can_channel_e can_c
 	motor->zero_point = zero_point;
 	
 	dm_set_cmd(motor,DM_ENABLE_CMD);
-	HAL_Delay(1);
+	osDelay(1);
 	dm_mit_set_para(motor,0,0,0,0,0);
 	dm_mit_control(motor);
-	HAL_Delay(1);
+	osDelay(1);
 }
 /*
 * @brief    	达妙电机发送命令
