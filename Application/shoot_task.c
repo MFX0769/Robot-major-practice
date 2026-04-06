@@ -176,8 +176,8 @@ static void shoot_param_update(void)
 		
     }
 	/*模仿裁判系统热量数据*/
-	shoot.barrel.heat_max =100;  //满级 200
-		shoot.barrel.cooling_rate =20;   //满级 120
+	shoot.barrel.heat_max =120;  //满级 200
+		shoot.barrel.cooling_rate =40;   //满级 120
     //更新模拟裁判系统数据
     shoot.barrel.heat -= shoot.barrel.cooling_rate * SHOOT_PERIOD * 0.001f;  //当前枪管(理论)热量
     if (shoot.barrel.heat < 0) shoot.barrel.heat = 0;

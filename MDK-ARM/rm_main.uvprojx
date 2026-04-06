@@ -943,11 +943,6 @@
               <FilePath>..\Protocol\prot_dr16.c</FilePath>
             </File>
             <File>
-              <FileName>prot_new_rc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Protocol\prot_new_rc.c</FilePath>
-            </File>
-            <File>
               <FileName>prot_dm_motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Protocol\prot_dm_motor.c</FilePath>

@@ -38,7 +38,7 @@ typedef enum
 	DRAW_IMAGINE7=120,
 	PRINTF_CODE	=60,
 	JUDGE_DELETE=17,
-	ROBOT_COMM=(15+LEN_robot_interract),
+//	ROBOT_COMM=(15+LEN_robot_interract),
 }Judgesend_length_e;//自定义数据发送总长度
 
 

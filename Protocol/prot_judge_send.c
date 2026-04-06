@@ -61,7 +61,7 @@ void ui_delete(type_graphic_delete_e type, uint8_t layer)
 	delete_frame.txFrameHeader.Seq = ui_seq;
 //	ui_seq++;
 
-	delete_frame.CmdID = ID_robot_interact;
+//	delete_frame.CmdID = ID_robot_interact;
 	delete_frame.data_header.data_cmd_id = CLIENT_DELETE_GRAPH_CMD_ID;
 	delete_frame.data_header.send_ID = self_inf.robot_ID;
 	delete_frame.data_header.receiver_ID = self_inf.client_ID;//客户端的ID，只能为发送者机器人对应的客户端
@@ -113,7 +113,7 @@ void ui_sendcode(
 	code_frame.txFrameHeader.Seq = ui_seq;
 //	ui_seq++;
 
-	code_frame.CmdID = ID_robot_interact;
+//	code_frame.CmdID = ID_robot_interact;
 	code_frame.data_header.data_cmd_id = CLIENT_WRITE_STRINGS_CMD_ID;
 	code_frame.data_header.send_ID = self_inf.robot_ID;
 	code_frame.data_header.receiver_ID = self_inf.client_ID;//客户端的ID，只能为发送者机器人对应的客户端	
@@ -158,7 +158,7 @@ void ui_sendgraph(Judgesend_length_e data_length, uint8_t* data_locate, client_d
 	graph_frame.txFrameHeader.Seq = ui_seq;
 //	ui_seq++;
 	
-	graph_frame.CmdID = ID_robot_interact;
+//	graph_frame.CmdID = ID_robot_interact;
 	graph_frame.data_header.data_cmd_id = date_type;         //子内容ID
 	graph_frame.data_header.send_ID = self_inf.robot_ID;     //发送者ID
 	graph_frame.data_header.receiver_ID = self_inf.client_ID;//客户端的ID，只能为发送者机器人对应的客户端	
@@ -380,29 +380,29 @@ void ui_data_packed_int (
   * @param  交互数据?
   * @attention
   */
-	uint8_t CliendTxBuffer_message[ROBOT_COMM];
+//	uint8_t CliendTxBuffer_message[ROBOT_COMM];
 
 void ui_sendmessage(uint16_t Robot_Target_ID, client_data_cmd_e CLIENT_INTERACTIVE_CMD_ID, uint8_t* comm_date)
 {
 	judgesend_frame_t message_frame;
 	
 	message_frame.txFrameHeader.SOF = 0xA5;			//数据帧头
-	message_frame.txFrameHeader.DataLength = sizeof(message_frame.data_header) + LEN_robot_interract;
+//	message_frame.txFrameHeader.DataLength = sizeof(message_frame.data_header) + LEN_robot_interract;
 	message_frame.txFrameHeader.Seq = ui_seq;
 //	ui_seq++;
 
-	message_frame.CmdID = ID_robot_interact;
+//	message_frame.CmdID = ID_robot_interact;
 	message_frame.data_header.data_cmd_id = CLIENT_INTERACTIVE_CMD_ID_TEST;
 	message_frame.data_header.send_ID = self_inf.robot_ID;
 	message_frame.data_header.receiver_ID = Robot_Target_ID;//目标机器人ID
 	
 	//打包写入数据段
-	memcpy(CliendTxBuffer_message, &message_frame.txFrameHeader, sizeof(frame_header));//写入帧头数据
-	Append_CRC8_Check_Sum((uint8_t *)CliendTxBuffer_message, sizeof(frame_header));//写入帧头CRC8校验码
-	memcpy(CliendTxBuffer_message + 5, (uint8_t*)&message_frame.data_header, 8);
-	memcpy(CliendTxBuffer_message + 13, (uint8_t*)comm_date, LEN_robot_interract);
-	Append_CRC16_Check_Sum(CliendTxBuffer_message, ROBOT_COMM); //写入数据段CRC16校验码
-	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_message, ROBOT_COMM);
+//	memcpy(CliendTxBuffer_message, &message_frame.txFrameHeader, sizeof(frame_header));//写入帧头数据
+//	Append_CRC8_Check_Sum((uint8_t *)CliendTxBuffer_message, sizeof(frame_header));//写入帧头CRC8校验码
+//	memcpy(CliendTxBuffer_message + 5, (uint8_t*)&message_frame.data_header, 8);
+////	memcpy(CliendTxBuffer_message + 13, (uint8_t*)comm_date, LEN_robot_interract);
+//	Append_CRC16_Check_Sum(CliendTxBuffer_message, ROBOT_COMM); //写入数据段CRC16校验码
+//	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_message, ROBOT_COMM);
 }
 
 /**
@@ -424,7 +424,7 @@ void data_pack_map_position(float target_position_x, float target_position_y, fl
 	map_frame.txFrameHeader.Seq = ui_seq;
 //	ui_seq++;
 	
-	map_frame.CmdID = ID_client_map;
+//	map_frame.CmdID = ID_client_map;
 	
 	map_data.target_position_x = target_position_x;
 	map_data.target_position_y = target_position_y;
@@ -437,6 +437,6 @@ void data_pack_map_position(float target_position_x, float target_position_y, fl
 	Append_CRC8_Check_Sum((uint8_t *)CliendTxBuffer_map, sizeof(frame_header));//写入帧头CRC8校验码
 	memcpy(CliendTxBuffer_map + 5, (uint8_t*)&map_frame.CmdID, 2);
 	memcpy(CliendTxBuffer_map + 7, (uint8_t*)&map_data.target_position_x, 15);
-	Append_CRC16_Check_Sum(CliendTxBuffer_map, ROBOT_COMM); //写入数据段CRC16校验码
+//	Append_CRC16_Check_Sum(CliendTxBuffer_map, ROBOT_COMM); //写入数据段CRC16校验码
 	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_map, 29);	
 }

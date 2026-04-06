@@ -102,14 +102,14 @@ static void rc_abnormal_proess(void)
 		}
     RC_FAIL_KEYBOARD_FLAG=1;
 
-		rc.mouse.x=Remote_Control.mouse_x;
-		rc.mouse.y=Remote_Control.mouse_y;
-		rc.mouse.z=Remote_Control.mouse_z;
-		rc.mouse.l=Remote_Control.left_button_down;
-		rc.mouse.r=Remote_Control.right_button_down;
-		 
-		rc.kb.key_code=Remote_Control.keyboard_value;
-		
+//		rc.mouse.x=Remote_Control.mouse_x;
+//		rc.mouse.y=Remote_Control.mouse_y;
+//		rc.mouse.z=Remote_Control.mouse_z;
+//		rc.mouse.l=Remote_Control.left_button_down;
+//		rc.mouse.r=Remote_Control.right_button_down;
+//		 
+//		rc.kb.key_code=Remote_Control.keyboard_value;
+//		
 //		
 //	shoot.firc_mode = FIRC_MODE_RUN;  //±£³Ö¿ªÆôÄ¦²ÁÂÖ
 //	shoot.stir_mode = STIR_MODE_SERIES;

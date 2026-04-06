@@ -67,8 +67,13 @@ typedef enum
 	ID_dart_client    =   0x020A,		//飞镖机器人客户端指令数据 10Hz
 	
 	ID_robot_interact=		0x0301,		//机器人间交互数据	发送方触发发送,上限10Hz
-	ID_client_map			= 	0x0303,	//客户端小地图交互数据	触发发送
-	ID_remote_control=0x304             //图传链路 
+	ID_custom_robot_data            = 0x0302, //自定义控制器与机器人交互数据，发送方触发发送，频率上限为30Hz 图传链路
+	ID_map_command			= 	0x0303,	//客户端小地图交互数据	触发发送
+	ID_map_robot_data               = 0x0305, //选手端小地图接收雷达数据，频率上限为5Hz
+    ID_custom_client_data           = 0x0306, //自定义控制器与选手端交互数据，发送方触发发送，频率上限为30Hz
+    ID_map_data                     = 0x0307, //选手端小地图接收路径数据，频率上限为1Hz
+    ID_custom_info                  = 0x0308, //选手端小地图接收机器人数据，频率上限为3Hz
+	ID_robot_custom_data			= 0x0309, //自定义控制器接收机器人数据，频率上限为10Hz 图传链路
 }cmd_ID;
 
 //数据段长度
@@ -92,8 +97,9 @@ typedef enum
     LEN_bullet_remaining     = 6,    
     LEN_RFID_status          = 5,    // ★旧 4→新 5（新增 rfid_status_2）
     LEN_dart_client          = 6,    // ★旧 12→新 6（精简指令结构）
-    LEN_robot_interract      = 20,  // ★旧 20（用户数据）
-    LEN_remote_control       = 12    // 无变化
+    LEN_robot_interract      = 118,  // ★旧 20（用户数据）
+	LEN_map_command                 = 12,//手册有矛盾 有15和12
+    LEN_map_robot_data              = 24,
 }cmd_LEN;
 
 
@@ -197,55 +203,41 @@ typedef struct
 /* 比赛机器人状态：0x0201。发送频率：10Hz，发送范围：单一机器人。*/
 typedef struct
 { 
-	uint8_t robot_id; 		//本机ID
-	uint8_t robot_level;	//机器人等级：
-	uint16_t current_HP;	//机器人剩余血量
-	uint16_t max_HP; 			//机器人上限血量
-	
-	uint16_t shooter_id1_17mm_cooling_rate; 		//机器人1号17mm枪口每秒冷却值
-	uint16_t shooter_id1_17mm_cooling_limit;		//机器人1号17mm枪口热量上限
-	uint16_t shooter_id1_17mm_speed_limit;			//机器人1号17mm 枪口上限速度 单位 m/s
-	uint16_t shooter_id2_17mm_cooling_rate;			//机器人2号17mm枪口每秒冷却值
-	uint16_t shooter_id2_17mm_cooling_limit;		//机器人2号17mm枪口热量上限
-	uint16_t shooter_id2_17mm_speed_limit;			//机器人2号17mm 枪口上限速度 单位 m/s
-	uint16_t shooter_id1_42mm_cooling_rate; 		//机器人42mm枪口每秒冷却值
-	uint16_t shooter_id1_42mm_cooling_limit;		//机器人42mm枪口热量上限
-	uint16_t shooter_id1_42mm_speed_limit;		//机器人42mm枪口上限速度 单位 m/s
-	
-	uint16_t shooter_barrel_cooling_value;
-	uint16_t shooter_barrel_heat_limit;
-	uint16_t chassis_power_limit; 							//机器人底盘功率限制上限
-	//主控电源输出情况
-	uint8_t mains_power_gimbal_output : 1; 			//gimbal口输出 	1为有24V输出，0为无24v输出
-	uint8_t mains_power_chassis_output : 1; 		//chassis口输出 1为有24V输出，0为无24v输出
-	uint8_t mains_power_shooter_output : 1;			//shooter口输出 1为有24V输出，0为无24v输出
+	/*本机器人ID*/
+    uint8_t robot_id;
+	/*机器人等级*/
+    uint8_t robot_level;
+	/*机器人当前血量*/
+    uint16_t current_HP;
+	/*机器人血量上限*/
+    uint16_t maximum_HP;
+	/*机器人射击热量每秒冷却值*/
+    uint16_t shooter_barrel_cooling_value;
+	/*机器人射击热量上限*/
+    uint16_t shooter_barrel_heat_limit;
+	/*机器人底盘功率上限*/
+    uint16_t chassis_power_limit;
+	/* 电源管理模块的输出情况： 
+	? bit 0：gimbal口输出，0为无输出，1为 24V输出 
+	? bit 1：chassis口输出，0为无输出，1为24V输出 
+	? bit 2：shooter口输出，0为无输出，1为24V输出*/
+    uint8_t power_management_gimbal_output : 1;
+    uint8_t power_management_chassis_output : 1;
+    uint8_t power_management_shooter_output : 1;
 }__attribute__((packed)) robot_status_t;
 
 /* 实时功率热量数据：0x0202。发送频率：50Hz，发送范围：单一机器人。*/
 typedef struct
 {
-	uint16_t chassis_volt; 					//单位毫伏
-	uint16_t chassis_current; 			//单位毫安
-	float chassis_power;						//单位瓦 
-
-	
-	uint16_t chassis_power_buffer;	//单位焦耳，备注：飞坡根据规则增加至250J 
-	uint16_t shooter_id1_17mm_cooling_heat; 		//1号17mm 枪口热量
-	uint16_t shooter_id1_42mm_cooling_heat;			//42mm 枪口热量
-	
-//	float chassis_current_last; 			    //
-//	float chassis_power_last;						//
-//	
-//	float chassis_power_tol;						//总值 用于计算平均值 平均 单位瓦 
-//	float chassis_current_tol; 			//平均 单位毫安
-//	
-//  float chassis_current_avrg; 			//平均 单位毫安
-//	float chassis_power_avrg;						//平均 单位瓦 
-//	
-//	float chassis_current_max; 			//平均 单位毫安
-//	float chassis_power_max;						//平均 单位瓦 
-	
-//	uint32_t power_cnt;
+	uint16_t reserved_1; 
+	uint16_t reserved_2; 
+    float reserved_3;
+	/*缓冲能量（单位：J）*/
+    uint16_t buffer_energy;
+	/*17mm发射机构的射击热量 */
+    uint16_t shooter_17mm_barrel_heat;
+	/*42mm发射机构的射击热量 */
+    uint16_t shooter_42mm_barrel_heat;
 }__attribute__((packed)) power_heat_data_t;
 
 /* 机器人位置：0x0203。发送频率：10Hz，发送范围：单一机器人。*/
@@ -341,6 +333,31 @@ typedef struct
 ? bit 1：对方地形跨越增益点（隧道）（靠近对方梯形高地较高处）*/
 }__attribute__((packed)) rfid_status_t;
 
+//typedef struct
+//{
+//	float target_position_x; 
+//	float target_position_y; 
+//	uint8_t cmd_keyboard; 
+//	uint8_t target_robot_id; 
+//	uint16_t cmd_source;
+//}__attribute__((packed)) map_command_t;
+
+//typedef struct
+//{
+//    uint16_t hero_position_x; 
+//	uint16_t hero_position_y; 
+//	uint16_t engineer_position_x; 
+//	uint16_t engineer_position_y; 
+//	uint16_t infantry_3_position_x; 
+//	uint16_t infantry_3_position_y; 
+//	uint16_t infantry_4_position_x; 
+//	uint16_t infantry_4_position_y; 
+//	uint16_t reserved; 
+//	uint16_t reserved_1; 
+//	uint16_t sentry_position_x; 
+//	uint16_t sentry_position_y;
+//}__attribute__((packed)) map_robot_data_t;
+
 /* 飞镖机器人客户端指令数据：0x020A。发送频率：10Hz，发送范围：单一机器人。*/
 typedef struct
 {
@@ -353,7 +370,10 @@ typedef struct
 /* 机器人间交互数据：0x0200~0x02ff。发送范围：单一机器人。*/
 typedef struct 
 { 
-	uint8_t data[LEN_robot_interract+6];
+uint16_t data_cmd_id;
+    uint16_t sender_id;
+    uint16_t receiver_id;
+    uint8_t user_data[112];
 }__attribute__((packed)) robot_interactive_receivedata_t;//机器人间交互数据
 typedef struct
 {

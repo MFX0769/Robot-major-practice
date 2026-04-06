@@ -30,7 +30,9 @@ bullet_remaining_t						Bullet_Remaining;
 rfid_status_t									RFID_Status;
 dart_client_cmd_t							Dart_Client;
 robot_interactive_receivedata_t		Comm_getdata;
-remote_control_t                            Remote_Control;
+//小地图交互接收
+//map_command_t                       map_command;                    //选手端小地图交互数据，选手端触发发送
+//map_robot_data_t                    map_robot_data;
 /******************************************************/
 
 
@@ -147,10 +149,8 @@ int Judge_Read_Data(uint8_t *ReadFromUsart)
         case ID_robot_interact:
             memcpy(&Comm_getdata, ReadFromUsart + DATA, LEN_robot_interract);
             break;
-
-        case ID_remote_control:
-            memcpy(&Remote_Control, ReadFromUsart + DATA, LEN_remote_control);
-            break;
+//		case ID_map_command                  : memcpy(&map_command                 , ReadFromUsart + DATA, LEN_map_command                 );break;
+//        case ID_map_robot_data               : memcpy(&map_robot_data              , ReadFromUsart + DATA, LEN_map_robot_data              );break;
 
         default:
             break;

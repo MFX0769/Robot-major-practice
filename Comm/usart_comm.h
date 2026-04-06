@@ -27,12 +27,12 @@ extern "C" {
 #include "prot_vision.h"
 #include "data_log.h"
 /* Private macros ------------------------------------------------------------*/
-#define USART1_RX_BUFFER_SIZE 18  //dt7遥控数据长度
-#define USART2_RX_BUFFER_SIZE 100
-#define USART3_RX_BUFFER_SIZE 21  //新遥控数据长度
-#define USART9_RX_BUFFER_SIZE 256
-#define USART10_RX_BUFFER_SIZE 28   //vision数据长度
-#define USART6_RX_BUFFER_SIZE 18
+//#define USART1_RX_BUFFER_SIZE 18  //dt7遥控数据长度
+//#define USART2_RX_BUFFER_SIZE 100
+//#define USART3_RX_BUFFER_SIZE 21  //新遥控数据长度
+//#define USART9_RX_BUFFER_SIZE 256
+//#define USART10_RX_BUFFER_SIZE 28   //vision数据长度
+//#define USART6_RX_BUFFER_SIZE 18
 
 #define   JUDGE_HUART   huart2
 #define DEBUG_HUART	huart6 
@@ -50,12 +50,12 @@ extern "C" {
 //extern uint8_t Uart5_Rx_Buff[USART5_RX_BUFFER_SIZE];
 //extern uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE];
 
-extern volatile uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-extern volatile uint8_t Uart2_Rx_Buff[USART2_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-extern volatile uint8_t Uart3_Rx_Buff[USART3_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-extern volatile uint8_t Uart9_Rx_Buff[USART9_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-extern volatile uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
-extern volatile uint8_t Uart10_Rx_Buff[USART10_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart2_Rx_Buff[USART2_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart3_Rx_Buff[USART3_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart9_Rx_Buff[USART9_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
+//extern volatile uint8_t Uart10_Rx_Buff[USART10_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 
 
 /* Exported function declarations --------------------------------------------*/
@@ -71,8 +71,8 @@ void comm_usart_init(void);
 
 #define  DMA_DBUS_LEN			18
 #define  DMA_NEW_RC_LEN		21     //放在遥控器解算的头文件里
-#define DMA_TUCHUAN_LEN  30
-#define  DMA_JUDGE_LEN		100
+#define DMA_TUCHUAN_LEN  1
+#define  DMA_JUDGE_LEN		150
 #define  DMA_VISION_LEN		28     //原23  2025年4月1
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);

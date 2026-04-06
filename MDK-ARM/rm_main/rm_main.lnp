@@ -65,7 +65,6 @@
 "rm_main\status_task.o"
 "rm_main\prot_lk_motor.o"
 "rm_main\prot_dr16.o"
-"rm_main\prot_new_rc.o"
 "rm_main\prot_dm_motor.o"
 "rm_main\prot_rm_motor.o"
 "rm_main\prot_t_imu.o"

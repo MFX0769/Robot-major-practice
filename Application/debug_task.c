@@ -83,8 +83,8 @@ void log_scope_data_pkg(void)
             log_scope_get_data(dm3507_motor.t_ref);
 //            log_scope_get_data(dm3507_motor.t_set);
 								  
-//            log_scope_get_data(dm3507_motor.send_cnt);
-//            log_scope_get_data(dm3507_motor.receive_cnt);
+            log_scope_get_data(dm3507_motor.send_cnt);
+            log_scope_get_data(dm3507_motor.receive_cnt);
 						
 
             break;

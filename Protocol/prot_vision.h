@@ -70,30 +70,6 @@ typedef struct
             uint8_t eof;
         } data;
     } rx[2];
-    __packed union
-    {
-        uint8_t buff[25];
-         __packed struct
-        {
-            uint8_t sof;
-            uint8_t imu_pit[4];
-            uint8_t imu_yaw[4];
-            uint8_t imu_pit_spd[4];
-            uint8_t imu_yaw_spd[4];
-					
-            uint8_t vacancy :1;
-            uint8_t camp :1;
-            uint8_t aiming_mode :3;
-            uint8_t shooter_speed :3;
-						uint8_t trace_id;
-						uint8_t shoot_speed[4];
-            uint8_t empty;
-            uint8_t eof1;
-            uint8_t eof2;
-					
-            uint16_t empty1;
-        } data;
-    } tx;
     
     __packed union
     {

@@ -37,7 +37,7 @@
 extern robot_status_t robot_status;
 extern game_robot_HP_t      RobotHP;
 extern game_status_t					Game_status;
-extern robot_interactive_receivedata_t		Comm_getdata;
+//extern robot_interactive_receivedata_t		Comm_getdata;
 extern Taurus_imu_data_t   imu_data;
 
 
