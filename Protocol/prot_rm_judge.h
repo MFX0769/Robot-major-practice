@@ -333,30 +333,30 @@ typedef struct
 ? bit 1：对方地形跨越增益点（隧道）（靠近对方梯形高地较高处）*/
 }__attribute__((packed)) rfid_status_t;
 
-//typedef struct
-//{
-//	float target_position_x; 
-//	float target_position_y; 
-//	uint8_t cmd_keyboard; 
-//	uint8_t target_robot_id; 
-//	uint16_t cmd_source;
-//}__attribute__((packed)) map_command_t;
+typedef struct
+{
+	float target_position_x; 
+	float target_position_y; 
+	uint8_t cmd_keyboard; 
+	uint8_t target_robot_id; 
+	uint16_t cmd_source;
+}__attribute__((packed)) map_command_t;
 
-//typedef struct
-//{
-//    uint16_t hero_position_x; 
-//	uint16_t hero_position_y; 
-//	uint16_t engineer_position_x; 
-//	uint16_t engineer_position_y; 
-//	uint16_t infantry_3_position_x; 
-//	uint16_t infantry_3_position_y; 
-//	uint16_t infantry_4_position_x; 
-//	uint16_t infantry_4_position_y; 
-//	uint16_t reserved; 
-//	uint16_t reserved_1; 
-//	uint16_t sentry_position_x; 
-//	uint16_t sentry_position_y;
-//}__attribute__((packed)) map_robot_data_t;
+typedef struct
+{
+    uint16_t hero_position_x; 
+	uint16_t hero_position_y; 
+	uint16_t engineer_position_x; 
+	uint16_t engineer_position_y; 
+	uint16_t infantry_3_position_x; 
+	uint16_t infantry_3_position_y; 
+	uint16_t infantry_4_position_x; 
+	uint16_t infantry_4_position_y; 
+	uint16_t reserved; 
+	uint16_t reserved_1; 
+	uint16_t sentry_position_x; 
+	uint16_t sentry_position_y;
+}__attribute__((packed)) map_robot_data_t;
 
 /* 飞镖机器人客户端指令数据：0x020A。发送频率：10Hz，发送范围：单一机器人。*/
 typedef struct

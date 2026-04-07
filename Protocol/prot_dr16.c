@@ -58,12 +58,18 @@ void FuseFromDR16(void)
     // 摇杆 - 从原始值转换为带符号值
     // 方向约定：向上为正，向左为正（以 remote_fusion 定义为准：ch3水平/ch4垂直）
     // 原始值范围: 364~1684, 中值1024
-    remote_fusion.channel.ch1 = (int16_t)(1024 - rc.ch1);   // 右摇杆水平 (向左为正)
-    remote_fusion.channel.ch2 = (int16_t)(rc.ch2 - 1024);   // 右摇杆垂直 (向上为正)
-    remote_fusion.channel.ch3 = (int16_t)(1024 - rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
-    remote_fusion.channel.ch4 = (int16_t)(rc.ch4 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
-    remote_fusion.channel.dial = (int16_t)(rc.ch5 - 1024); // 拨轮
+//    remote_fusion.channel.ch1 = (int16_t)(1024 - rc.ch1);   // 右摇杆水平 (向左为正)
+//    remote_fusion.channel.ch2 = (int16_t)(rc.ch2 - 1024);   // 右摇杆垂直 (向上为正)
+//    remote_fusion.channel.ch3 = (int16_t)(1024 - rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+//    remote_fusion.channel.ch4 = (int16_t)(rc.ch4 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+//    remote_fusion.channel.dial = (int16_t)(rc.ch5 - 1024); // 拨轮
     
+	remote_fusion.channel.ch1 = (int16_t)rc.ch1;   // 右摇杆水平 (向左为正)
+    remote_fusion.channel.ch2 = (int16_t)rc.ch2;   // 右摇杆垂直 (向上为正)
+    remote_fusion.channel.ch3 = (int16_t)rc.ch3;   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+    remote_fusion.channel.ch4 = (int16_t)rc.ch4;   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
+    remote_fusion.channel.dial = (int16_t)rc.ch5; // 拨轮
+	
     // 死区处理
     if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
     if (remote_fusion.channel.ch2 > -RC_DEADZONE && remote_fusion.channel.ch2 < RC_DEADZONE) remote_fusion.channel.ch2 = 0;

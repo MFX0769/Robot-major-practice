@@ -171,7 +171,7 @@
 #include "status_task.h"
 uint8_t	dma_judge_buf[DMA_JUDGE_LEN];
 uint8_t dma_dbus_buf[DMA_DBUS_LEN];
-uint8_t dma_new_rc_buf[DMA_NEW_RC_LEN];
+uint8_t dma_new_rc_buf[VTM_DATA_LEN];
 uint8_t dma_tuchuan_buf[DMA_TUCHUAN_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
 //uint8_t dma_A3_buf[DMA_A3_LEN];
@@ -189,9 +189,9 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 	 else if(huart->Instance==USART3)    
 		{
 			  wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-//				vtm_callback_handler(&new_rc,dma_new_rc_buf);
-//				memset(dma_new_rc_buf, 0, DMA_NEW_RC_LEN);
-//				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, DMA_NEW_RC_LEN);
+				vtm_callback_handler(dma_new_rc_buf);
+				memset(dma_new_rc_buf, 0, VTM_DATA_LEN);
+				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, VTM_DATA_LEN);
 		}
 		
 				
@@ -252,7 +252,7 @@ void USER_UART_Init()
     
 	  __HAL_UART_CLEAR_IDLEFLAG(&NEW_RC_HUART);
     __HAL_UART_ENABLE_IT(&NEW_RC_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, DMA_NEW_RC_LEN);//图传链路
+    HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, VTM_DATA_LEN);//图传链路
 	
 //		  __HAL_UART_CLEAR_IDLEFLAG(&TUCHUAN_HUART);
 //    __HAL_UART_ENABLE_IT(&TUCHUAN_HUART, UART_IT_IDLE);

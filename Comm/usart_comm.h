@@ -22,7 +22,7 @@ extern "C" {
 #include "bsp_usart.h"
 
 #include "prot_dr16.h"
-#include "prot_new_rc.h"
+#include "prot_vtm.h"
 #include "prot_rm_judge.h"
 #include "prot_vision.h"
 #include "data_log.h"
@@ -70,7 +70,7 @@ void comm_usart_init(void);
 #define   VISION_HUART	huart10
 
 #define  DMA_DBUS_LEN			18
-#define  DMA_NEW_RC_LEN		21     //放在遥控器解算的头文件里
+#define VTM_DATA_LEN    21     //放在遥控器解算的头文件里
 #define DMA_TUCHUAN_LEN  1
 #define  DMA_JUDGE_LEN		150
 #define  DMA_VISION_LEN		28     //原23  2025年4月1

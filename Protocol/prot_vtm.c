@@ -177,6 +177,7 @@ void vtm_callback_handler(uint8_t *buff)
     vtm_rc.kb.key_code = (uint16_t)buff[17] | ((uint16_t)buff[18] << 8);
     if(dr16_online_cnt > 200)
 	{
+		dr16_online_cnt = 202;
 		FuseFromVTM();
         remote_fusion.current_source = REMOTE_SOURCE_VTM;
 	}
