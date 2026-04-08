@@ -55,8 +55,8 @@ extern "C" {
  */
 #define RC_CH1_SCALE    0.000006f   // 右摇杆水平
 #define RC_CH2_SCALE    12.0f       // 右摇杆垂直
-#define RC_CH3_SCALE    10.0f       // 左摇杆垂直
-#define RC_CH4_SCALE    10.0f       // 左摇杆水平
+//#define RC_CH3_SCALE    10.0f       // 左摇杆垂直
+//#define RC_CH4_SCALE    10.0f       // 左摇杆水平
 
 /* 摇杆方向判断阈值 */
 #define RC_LEVER_THRESHOLD  (500)

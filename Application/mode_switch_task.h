@@ -18,12 +18,12 @@ typedef enum
 }_gimbal_ctrl_;
 
 void mode_switch_task(void const *argu);
+void fly_led_status(void);
 
-void new_rc_mode_handler(void); //由拨杆1决定系统模式切换，主要是云台、底盘和发射
-void new_rc_unlock_init(void);
+void vtm_mode_handler(void); //由拨杆1决定系统模式切换，主要是云台、底盘和发射
+void vtm_unlock_init(void);
 void Rc_Fail_mode_handler(void);  //由拨杆1决定系统模式切换，主要是云台、底盘和发射器
-void new_rc_abnormal_proess(void);
-void new_rc_safe_lock(void);
+void vtm_safe_lock(void);
 extern uint8_t pit_init_flag; 
 extern uint8_t lock_flag;
 extern ctrl_mode_e ctrl_mode;

@@ -14,7 +14,7 @@
 #include "mode_switch_task.h"
 #include "pid.h"
 #include "prot_dr16.h"
-
+#include "prot_remote_fusion.h"
 extern robot_status_t	robot_status;
 extern game_status_t game_status;
 //extern aerial_robot_energy_t					Aerial_Robot_Energy;
@@ -112,7 +112,7 @@ static void shoot_mode_sw(void)
 //		{
 		
 		    /* 模式切换 */
-    switch( rc.sw1 )
+    switch( remote_fusion.sw.sw1 )
     {
         case RC_MI:
         {
@@ -124,7 +124,7 @@ static void shoot_mode_sw(void)
         case RC_UP:
         {
             /* 摩擦轮和拨盘模式切换 */
-            switch( rc.sw2 )
+            switch( remote_fusion.sw.sw2 )
             {
                 case RC_UP:
                 {

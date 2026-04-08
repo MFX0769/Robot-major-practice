@@ -11,7 +11,8 @@
 #include "prot_rm_judge.h"
 #include "prot_dr16.h"
 #include "prot_new_rc.h"
-
+#include "prot_remote_fusion.h"
+#include "prot_ws2812.h"
 static void unlock_init(void);
 static void sw1_mode_handler(void);
 static void rc_abnormal_proess(void);
@@ -23,7 +24,7 @@ ctrl_mode_e ctrl_mode;
 //vision_mode_e vision_mode;
 
 /*Ò£¿ØÆ÷ÉÏÒ»´ÎµÄÊı¾İ¡ª¡ªÓÃÓÚÒ»Ğ©±ßÑØ¼ì²â*/
-//static uint8_t new_rc_last_pause=0;
+static uint8_t vtm_last_pause=0;
 /* ½âËø±êÖ¾ */
 uint8_t lock_flag = 0;
 
@@ -46,45 +47,41 @@ void mode_switch_task(void const *argu)
 //				lock_flag = 1;
 			
 ////			#if NEW_RC
-//			if(remote_online.NEW_OLD_RC_FLAG == 1)
-//			{				
-//				new_rc_safe_lock();
-//				
-//        if( !lock_flag  )
-//				{
-//            new_rc_unlock_init();  //½âËø²Ù×÷
-//				}
-
-//        else if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
-//        {
-//            new_rc_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
-//        }
-//        else
-//				{
-//					new_rc_abnormal_proess();  //Ò£¿ØÆ÷Ê§Áª´¦Àí
-//				}
-////			#else
-//			}
+		if(remote_fusion.current_source == REMOTE_SOURCE_VTM)
+		{				
+			vtm_safe_lock();
 			
-//			else if(remote_online.NEW_OLD_RC_FLAG == 0)
-//			{
-				 if( !lock_flag  )
-				{
-            unlock_init();  //½âËø²Ù×÷
-				}
+			if( !lock_flag  )
+			{
+				vtm_unlock_init();  //½âËø²Ù×÷
+			}
+	
+			else if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
+			{
+				vtm_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
+			}
+			
+		}
+			
+		else if(remote_fusion.current_source == REMOTE_SOURCE_DR16)
+		{
+			if( !lock_flag  )
+			{
+				unlock_init();  //½âËø²Ù×÷
+			}
 				
-				
-        if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
-        {
-            sw1_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
-        }
-        else
-				{
-            rc_abnormal_proess();  //Ò£¿ØÆ÷Ê§Áª´¦Àí
-				}
-//				#endif
-//			}
-				
+			if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
+			{
+				sw1_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
+			}
+			else
+			{
+				rc_abnormal_proess();  //Ò£¿ØÆ÷Ê§Áª´¦Àí
+			}
+		}
+		/*·ÉÊÖµÆ±ä»¯*/
+			fly_led_status();
+
 				wdg_user_set_bit(WDG_BIT_TASK_MODES);
         osDelay(5);				
     }
@@ -137,13 +134,13 @@ ctrl_mode_e last_vision_flag ;
 static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
 {
 	last_vision_flag = ctrl_mode;
-    switch( rc.sw1 )
+    switch( remote_fusion.sw.sw1 )
     {
 			
 			
         case RC_UP:
         {
-						if( rc.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
+						if( remote_fusion.channel.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
 						{
 							ctrl_mode = VISION_MODE;
 											vision_mode = vMODE_AUTO;
@@ -169,7 +166,7 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
         case RC_DN:
         {
 
-						if( rc.mouse.r == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
+						if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
 						{
 							ctrl_mode = VISION_MODE;
 						}
@@ -195,11 +192,11 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
 //2025Äê5ÔÂ16ÈÕÌí¼Ó ÓÃÓÚ½«Í¼´«Á´Â·µÄ½âËøÏà¹Ø²Ù×÷ÊÊÅä½øÀ´£¬ÕâÊÇÎÒÄ¿Ç°ÄÜÏëµ½µÄ¿ìËÙÍêÃÀ¼æÈİÍ¼´«Á´Â·µÄ×îºÃ·½·¨
 void Rc_Fail_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
 {
-if(rc.kb.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mode¹¦ÄÜ
+if(remote_fusion.keyboard.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mode¹¦ÄÜ
 {
-	     if(rc.kb.bit.R)// r for remote µ«ÆäÊµ¼üÅÌÇĞ»»Ä£Ê½ÊÇÒ£¿ØÆ÷Ê§ÁªµÄÊ±ºò²ÅÓÃµÄ£¬ËùÒÔÕâÀïÆäÊµÃ»ÒâÒå£¬½ö±£Áô
+	     if(remote_fusion.keyboard.bit.R)// r for remote µ«ÆäÊµ¼üÅÌÇĞ»»Ä£Ê½ÊÇÒ£¿ØÆ÷Ê§ÁªµÄÊ±ºò²ÅÓÃµÄ£¬ËùÒÔÕâÀïÆäÊµÃ»ÒâÒå£¬½ö±£Áô
         {
-						if( rc.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
+						if( remote_fusion.channel.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
 						{
 							ctrl_mode = VISION_MODE;
 											vision_mode = vMODE_AUTO;
@@ -213,16 +210,16 @@ if(rc.kb.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mode¹¦ÄÜ
         }
 				
 				
-	     if(rc.kb.bit.S)//s for safe=protect
+	     if(remote_fusion.keyboard.bit.S)//s for safe=protect
         {
             ctrl_mode = PROTECT_MODE;          		   
         }
 				
 				
-	     if(rc.kb.bit.B)//b for keyboard
+	     if(remote_fusion.keyboard.bit.B)//b for keyboard
         {
 
-						if( rc.mouse.r == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
+						if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
 						{
 							ctrl_mode = VISION_MODE;
 						}
@@ -240,13 +237,13 @@ if(rc.kb.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mode¹¦ÄÜ
 /* ½âËøº¯Êı */
 static void unlock_init(void)
 {
-    if( rc.sw1 == RC_MI && rc.sw2 == RC_UP )//×ó²¦¸Ë¾ÓÖĞ£¬ÓÒ²¦¸ËÖÃÉÏ
+    if( remote_fusion.sw.sw1 == RC_MI && remote_fusion.sw.sw2 == RC_UP )//×ó²¦¸Ë¾ÓÖĞ£¬ÓÒ²¦¸ËÖÃÉÏ
     {
-        if( rc.ch4 <= -600 && rc.ch3 >= 600 && rc.ch1 <= -600 && rc.ch2 <= -600 )
+        if( remote_fusion.channel.ch4 <= -600 && remote_fusion.channel.ch3 >= 600 && remote_fusion.channel.ch1 <= -600 && remote_fusion.channel.ch2  <= -600 )
         {
             lock_flag = 1;  //ÄÚ°Ë
         }
-		else  if( rc.ch4 >= 600 && rc.ch3 <= -600 && rc.ch1 >= 600 && rc.ch2 >= 600 )
+		else  if( remote_fusion.channel.ch4 >= 600 && remote_fusion.channel.ch3 <= -600 && remote_fusion.channel.ch1 >= 600 && remote_fusion.channel.ch2 >= 600 )
         {
             lock_flag = 2;
 			
@@ -254,7 +251,7 @@ static void unlock_init(void)
     }
 		
 		/*2025Äê5ÔÂ16ÈÕÌí¼Ó  Ò£¿ØÆ÷¶ÏÁªÊ±£¬ÈôÃ»ÓĞĞÂÒ£¿ØµÄ¿ØÖÆÂß¼­£¬ÓÖÃ»ÓĞ²ÃÅĞÏµÍ³¼üÊóÊı¾İµÄ»°£¬Ã»°ì·¨¿ØÖÆlock_flag¡£ ËùÒÔ£¬²ÃÅĞÏµÍ³¼üÊóÊı¾İ£¬±ØĞë£¬Í¬ÑùÄÜÊµÏÖÒ£¿ØÆ÷µÄÂß¼­*/
-		else if( rc.kb.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
+		else if( remote_fusion.keyboard.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
 		{
             lock_flag = 1;  //ÄÚ°Ë
 		}
@@ -266,131 +263,104 @@ static void unlock_init(void)
 
 
 ///*===============================================ĞÂÒ£¿Ø£¨N3£©´úÂë¿ªÊ¼===========================*/
-//void new_rc_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
-//{
-//	  last_vision_flag = ctrl_mode;
-//	
-//    switch( new_rc.mode_sw )
-//    {
-//			
-//		  case RC_MODE_C://×î×ó±ß
-//			{
-//					ctrl_mode = PROTECT_MODE;							 
-//			}
-//			break;
-//				
-//			case RC_MODE_N://ÖĞ¼ä Ò£¿ØÄ£Ê½
-//			{
-//					if( new_rc.ch_2 <= -660 )//×ó²¦¸ËÏÂ²¦//×ÔÃé
-//					{
-//						ctrl_mode = VISION_MODE;
-//						vision_mode = vMODE_AUTO;
-//					}				
-//					else
-//					{
-//						ctrl_mode = REMOTER_MODE;  //»ØÖĞ//Ò£¿ØÄ£Ê½
-//					}			 
-//			}break;
-//       
-//			case RC_MODE_S://×îÓÒ±ß ¼üÊóÄ£Ê½
-//			{
-//				if( new_rc.mouse_right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ//Ä¬ÈÏ×ÔÃéÎŞÔ¤²â
-//				{
-//					  ctrl_mode = VISION_MODE;
-//				}
-//				else
-//				{
-//						ctrl_mode = KEYBOARD_MODE;  //¼üÅÌÄ£Ê½
-//						vision_mode = vMODE_AUTO;
-//				}			
-//      }break;
-//			
-//      default: break;
-//	  }
-//		
-//		if((last_vision_flag == VISION_MODE)&&(ctrl_mode != VISION_MODE))
-//		{	
-//			vision_flag = 1;
-//		}
+void vtm_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
+{
+	  last_vision_flag = ctrl_mode;
+	
+    switch(remote_fusion.sw.sw1)
+    {
+			
+		  case RC_UP://×î×ó±ß Ò£¿ØÄ£Ê½
+			{
+					if( remote_fusion.channel.ch4 <= -660 )//×ó²¦¸ËÏÂ²¦//×ÔÃé
+					{
+						ctrl_mode = VISION_MODE;
+						vision_mode = vMODE_AUTO;
+					}				
+					else
+					{
+						ctrl_mode = REMOTER_MODE;  //»ØÖĞ//Ò£¿ØÄ£Ê½
+					}
+			}
+			break;
+				
+			case RC_MI://ÖĞ¼ä ±£»¤Ä£Ê½
+			{
+					ctrl_mode = PROTECT_MODE;		 
+			}break;
+       
+			case RC_DN://×îÓÒ±ß ¼üÊóÄ£Ê½
+			{
+				if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ//Ä¬ÈÏ×ÔÃéÎŞÔ¤²â
+				{
+					ctrl_mode = VISION_MODE;
+				}
+				else
+				{
+					ctrl_mode = KEYBOARD_MODE;  //¼üÅÌÄ£Ê½
+					vision_mode = vMODE_AUTO;
+				}			
+			}break;
+			
+      default: break;
+	  }
+		
+		if((last_vision_flag == VISION_MODE)&&(ctrl_mode != VISION_MODE))
+		{	
+			vision_flag = 1;
+		}
 
-//}
+}
 
-///* ½âËøº¯Êı */
-//void new_rc_unlock_init(void)
-//{
-//	ctrl_mode = PROTECT_MODE;	//Èç¹û³ö²»È¥Õâ¸öº¯Êı£¬¾ÍÒ»Ö±PROTECT_MODE;	
-//	
-//    if(new_rc.mode_sw == RC_MODE_C)//Ä£Ê½ÇĞ»»¿ª¹Ø´òµ½×î×ó±ß ±£»¤Ä£Ê½
-//    {
-//        if( new_rc.ch_0 == -660 && new_rc.ch_3 == 660 && new_rc.ch_1 == -660 && new_rc.ch_2 == -660 )
-//        {
-//            lock_flag = 1;  //ÄÚ°Ë
-//        }
-//        else if( new_rc.ch_0 == 660 && new_rc.ch_3 == -660 && new_rc.ch_1 == -660 && new_rc.ch_2 == -660 )
-//        {
-//            lock_flag = 2;			
-//        }
-//    }
+/* ½âËøº¯Êı */
+void vtm_unlock_init(void)
+{
+	ctrl_mode = PROTECT_MODE;	//Èç¹û³ö²»È¥Õâ¸öº¯Êı£¬¾ÍÒ»Ö±PROTECT_MODE;	
+	
+    if(remote_fusion.sw.sw1 == RC_MI)//Ä£Ê½ÇĞ»»¿ª¹Ø´òµ½×î×ó±ß ±£»¤Ä£Ê½
+    {
+        if( remote_fusion.channel.ch1 == -660 && remote_fusion.channel.ch3 == 660 && remote_fusion.channel.ch2 == -660 && remote_fusion.channel.ch4 == -660 )
+        {
+            lock_flag = 1;  //ÄÚ°Ë
+        }
+        else if( remote_fusion.channel.ch1 == 660 && remote_fusion.channel.ch3 == -660 && remote_fusion.channel.ch2 == -660 && remote_fusion.channel.ch4== -660 )
+        {
+            lock_flag = 2;			
+        }
+    }
 
-//		/*2025Äê5ÔÂ16ÈÕÌí¼Ó  Ò£¿ØÆ÷¶ÏÁªÊ±£¬ÈôÃ»ÓĞĞÂÒ£¿ØµÄ¿ØÖÆÂß¼­£¬ÓÖÃ»ÓĞ²ÃÅĞÏµÍ³¼üÊóÊı¾İµÄ»°£¬Ã»°ì·¨¿ØÖÆlock_flag¡£ ËùÒÔ£¬²ÃÅĞÏµÍ³¼üÊóÊı¾İ£¬±ØĞë£¬Í¬ÑùÄÜÊµÏÖÒ£¿ØÆ÷µÄÂß¼­*/
-//		else if( rc.kb.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
-//		{
-//            lock_flag = 1;  //ÄÚ°Ë
-//		}
-//		/**/
-//}
-
-///* Ò£¿ØÆ÷Ê§Áª´¦Àíº¯Êı */
-//void new_rc_abnormal_proess(void)
-//{
-
-////	  if(status.remote)
-////		{
-////			return;//Ò£¿ØÆ÷ÓÅÏÈ¼¶×î¸ß£¬Èç¹ûÓĞÒ£¿ØÆ÷£¬¾ÍÎŞ¼üÅÌ½âËø
-////		}
-////    RC_FAIL_KEYBOARD_FLAG=1;
-
-////		rc.mouse.x=Remote_Control.mouse_x;
-////		rc.mouse.y=Remote_Control.mouse_y;
-////		rc.mouse.z=Remote_Control.mouse_z;
-////		rc.mouse.l=Remote_Control.left_button_down;
-////		rc.mouse.r=Remote_Control.right_button_down;
-////		 
-////		rc.kb.key_code=Remote_Control.keyboard_value;
-////		
-//////		
-//////	shoot.firc_mode = FIRC_MODE_RUN;  //±£³Ö¿ªÆôÄ¦²ÁÂÖ
-//////	shoot.stir_mode = STIR_MODE_SERIES;
-//////										
-//////										
-//////		if(rc.mouse.r)
-//////		{
-//////	  ctrl_mode=VISION_MODE;
-//////		}
-//////		else 
-//////		{
-//////	  ctrl_mode=KEYBOARD_MODE;
-//////		}
-////		
-////	 Rc_Fail_mode_handler();
-
-//	  ctrl_mode=PROTECT_MODE;
-
-//}
+		/*2025Äê5ÔÂ16ÈÕÌí¼Ó  Ò£¿ØÆ÷¶ÏÁªÊ±£¬ÈôÃ»ÓĞĞÂÒ£¿ØµÄ¿ØÖÆÂß¼­£¬ÓÖÃ»ÓĞ²ÃÅĞÏµÍ³¼üÊóÊı¾İµÄ»°£¬Ã»°ì·¨¿ØÖÆlock_flag¡£ ËùÒÔ£¬²ÃÅĞÏµÍ³¼üÊóÊı¾İ£¬±ØĞë£¬Í¬ÑùÄÜÊµÏÖÒ£¿ØÆ÷µÄÂß¼­*/
+		else if( remote_fusion.keyboard.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
+		{
+            lock_flag = 1;  //ÄÚ°Ë
+		}
+		/**/
+}
 
 
-///* Ò£¿ØÆ÷½ô¼±½ø±£»¤ */
-//void new_rc_safe_lock(void)
-//{			
-//		
-//	  if( new_rc_last_pause==0 && new_rc.pause==1)//ÔİÍ£°´¼ü±»°´ÏÂ
-//		{
-//	     ctrl_mode=PROTECT_MODE;
-//			 lock_flag=0;//ĞèÒªÖØĞÂ½âËø		 
-//		}
-
-
-//	  new_rc_last_pause=new_rc.pause;
-//}
+/* Ò£¿ØÆ÷½ô¼±½ø±£»¤ */
+void vtm_safe_lock(void)
+{			
+	if( vtm_last_pause==0 && vtm_rc.pause==1)//ÔİÍ£°´¼ü±»°´ÏÂ
+	{
+		ctrl_mode=PROTECT_MODE;
+		lock_flag=0;//ĞèÒªÖØĞÂ½âËø		 
+	}
+	
+	vtm_last_pause=vtm_rc.pause;
+}
 
 /*===============================================ĞÂÒ£¿Ø£¨N3£©´úÂë½áÊø===========================*/
+
+void fly_led_status(void)
+{
+	clear_all_leds();
+	if(remote_fusion.keyboard.bit.W) led_range_on(0, 7, GREEN);
+	else if(remote_fusion.keyboard.bit.W) led_range_on(8, 16, GREEN);
+	else if(remote_fusion.keyboard.bit.W) led_range_on(17, 24, GREEN);
+	else if(remote_fusion.keyboard.bit.W) led_range_on(25, 32, GREEN);
+	else led_double_flash(0, 32, GREEN, 200, 200);  // 0-7ºÅµÆË«ÉÁ£¬ºìÉ«£¬ÁÁ200msÃğ200ms
+
+	rgb_output_data();
+
+}

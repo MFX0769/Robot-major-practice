@@ -128,6 +128,8 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
    rc->kb.key_code = buff[14] | buff[15] << 8; // key borad code
    
    FuseFromDR16();
+   remote_fusion.current_source = REMOTE_SOURCE_DR16;
+
 }
 
 /**
@@ -141,20 +143,20 @@ static uint16_t key_map(key_index_e key_index)
     uint16_t key;
     switch( key_index )
     {
-        case KB_Q:  key = rc.kb.bit.Q; break;
-        case KB_E:  key = rc.kb.bit.E; break;
-        case KB_R:  key = rc.kb.bit.R; break;
-        case KB_F:  key = rc.kb.bit.F; break;
-        case KB_G:  key = rc.kb.bit.G; break;
-        case KB_Z:  key = rc.kb.bit.Z; break;
-        case KB_X:  key = rc.kb.bit.X; break;
-        case KB_C:  key = rc.kb.bit.C; break;
-        case KB_V:  key = rc.kb.bit.V; break;
-        case KB_B:  key = rc.kb.bit.B; break;
+        case KB_Q:  key = remote_fusion.keyboard.bit.Q; break;
+        case KB_E:  key = remote_fusion.keyboard.bit.E; break;
+        case KB_R:  key = remote_fusion.keyboard.bit.R; break;
+        case KB_F:  key = remote_fusion.keyboard.bit.F; break;
+        case KB_G:  key = remote_fusion.keyboard.bit.G; break;
+        case KB_Z:  key = remote_fusion.keyboard.bit.Z; break;
+        case KB_X:  key = remote_fusion.keyboard.bit.X; break;
+        case KB_C:  key = remote_fusion.keyboard.bit.C; break;
+        case KB_V:  key = remote_fusion.keyboard.bit.V; break;
+        case KB_B:  key = remote_fusion.keyboard.bit.B; break;
         case KB_CTRL:
-                    key = rc.kb.bit.CTRL; break;
+                    key = remote_fusion.keyboard.bit.CTRL; break;
 	   case KB_SHIFT:
-		          key = rc.kb.bit.SHIFT;break;
+		          key = remote_fusion.keyboard.bit.SHIFT;break;
         default:    break;
     }
     return key;

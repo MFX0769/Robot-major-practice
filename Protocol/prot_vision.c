@@ -25,6 +25,7 @@
 #include "prot_rm_judge.h"
 #include "prot_dr16.h"
 #include "usart.h"
+#include "prot_remote_fusion.h"
 /* Private define ------------------------------------------------------------*/
 #ifndef ABS
 #define ABS(x)  ((x)>0?(x):-(x))
@@ -160,12 +161,12 @@ void vsn_gimbal_ref_calc(void)
 
     case UNAIMING:
        /* 丢失目标：遥控增量 */
-        if (rc.sw1 == RC_DN){
-            gimbal.yaw_angle.ref += (-rc.mouse.x) * KEYBOARD_SCALE_YAW;
-            gimbal.pit_angle.ref += (-rc.mouse.y) * KEYBOARD_SCALE_PIT;
+        if (remote_fusion.sw.sw1 == RC_DN){
+            gimbal.yaw_angle.ref += (-remote_fusion.mouse.x) * KEYBOARD_SCALE_YAW;
+            gimbal.pit_angle.ref += (-remote_fusion.mouse.y) * KEYBOARD_SCALE_PIT;
         }else{
-            gimbal.yaw_angle.ref += rc.ch1 * scale.ch1 * (-1);
-            gimbal.pit_angle.ref += rc.ch2 * scale.ch2 * (-1);
+            gimbal.yaw_angle.ref += remote_fusion.channel.ch1 * scale.ch1 * (-1);
+            gimbal.pit_angle.ref += remote_fusion.channel.ch2  * scale.ch2 * (-1);
         }
         break;
     }
@@ -188,11 +189,11 @@ void vsn_gimbal_ref_calc(void)
 */
 void Trace_ID_Select_OLD(rc_info_t *rc)
 {
-	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;         //"w"��ζ��ǰ�棺ǰ��վ
-	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;         //"z"����ζ�����¹����Ĳ��� 4��
-	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;         //"a"��ζ����ߣ����¹����Ĳ��� 3��
-	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;         //"d"��ζ���ұߣ����ڵ���λ��Ӣ��
-	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	        //"s"��ζ�ź��棺�������Ķһ�վ�Ĺ���
+	if(remote_fusion.keyboard.bit.W)  vision_tx.data.trace_id = 7;  // W - 前哨站
+    if(remote_fusion.keyboard.bit.Z)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
+    if(remote_fusion.keyboard.bit.A)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
+    if(remote_fusion.keyboard.bit.D)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
+    if(remote_fusion.keyboard.bit.S)  vision_tx.data.trace_id = 2;  // S - 哨兵站，己方前哨站的攻击
 }
 
 /**

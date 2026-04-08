@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define RGB_NUM 10
+#define RGB_NUM 32
 #define ZERO_NUM 30
 
 typedef struct
@@ -35,7 +35,10 @@ extern rgb_t rgb;
 void rgb_change(uint8_t i, uint8_t status);
 void rgb_set_bright(uint8_t i, uint8_t bright);
 void update_leds(uint8_t led_num,uint8_t status);
-void led_flow(uint8_t led_num, Color_t color, uint8_t direction, uint16_t speed_ms);
+void led_range_on(uint8_t start_led, uint8_t end_led, Color_t color);
+void led_flow(uint8_t start_led, uint8_t end_led, Color_t color, uint8_t direction, uint16_t speed_ms);
+void led_double_flash(uint8_t start_led, uint8_t end_led, Color_t color, uint16_t on_ms, uint16_t off_ms);
+void clear_all_leds(void);
 
 void rgb_output_data(void);
 

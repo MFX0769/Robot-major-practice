@@ -34,6 +34,7 @@
 #include "remote_msg.h"
 #include "prot_T_imu.h"
 #include "prot_vision.h"
+#include "prot_remote_fusion.h"
 extern robot_status_t robot_status;
 extern game_robot_HP_t      RobotHP;
 extern game_status_t					Game_status;
@@ -146,7 +147,7 @@ void judge_send_task(void const *argu)
 ////		}
 ////	}
 ////		else if(remote_online.NEW_OLD_RC_FLAG	==	0)
-//		if(rc.kb.bit.R == 1)
+//		if(remote_fusion.keyboard.bit.R == 1)
 //		{
 //			ui_init_flag++;
 //			for(uint8_t i=0;i<10;i++)
@@ -274,7 +275,7 @@ void ui_dynamic_data_pack(void)
 		
 		case FIRC_MODE_RUN:
 		{
-			if((rc.mouse.l || rc.ch5 >= 500)&&shoot.stir_mode!=STIR_MODE_PROTECT)
+			if((remote_fusion.mouse.left ||remote_fusion.channel.dial >= 500)&&shoot.stir_mode!=STIR_MODE_PROTECT)
 			{
 				if(SHOOT_PERIOD_CHANGE_FLAG)
 				{

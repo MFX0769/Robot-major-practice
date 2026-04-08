@@ -25,7 +25,7 @@
 #include "prot_rm_motor.h"
 #include "prot_dm_motor.h"
 #include "prot_dr16.h"
-
+#include "prot_remote_fusion.h"
 gimbal_t gimbal;
 
 
@@ -155,15 +155,15 @@ void gimbal_task(void const *argu)
 			
 			case REMOTER_MODE:
 			{
-//				gimbal.yaw_ecd.ref   -= rc.ch1 * scale.ecd_remote;
-				gimbal.yaw_angle.ref += rc.ch1 * (-1)*scale.ch1;
-				gimbal.pit_angle.ref += rc.ch2 * scale.ch2*(-1);
+//				gimbal.yaw_ecd.ref   -= remote_fusion.channel.ch1 * scale.ecd_remote;
+				gimbal.yaw_angle.ref += remote_fusion.channel.ch1 * (-1)*scale.ch1;
+				gimbal.pit_angle.ref += remote_fusion.channel.ch2  * scale.ch2*(-1);
 			}break;
 			
 			case KEYBOARD_MODE:
 			{
-				gimbal.pit_angle.ref   += (-rc.mouse.y) *  KEYBOARD_SCALE_PIT;
-				gimbal.yaw_angle.ref   += (-rc.mouse.x) *  KEYBOARD_SCALE_YAW;
+				gimbal.pit_angle.ref   += (-remote_fusion.mouse.y) *  KEYBOARD_SCALE_PIT;
+				gimbal.yaw_angle.ref   += (-remote_fusion.mouse.x) *  KEYBOARD_SCALE_YAW;
 			}break;
 			
 			case VISION_MODE: /* ÊÓ¾õÄ£Ê½ */

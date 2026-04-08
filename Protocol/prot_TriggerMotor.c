@@ -26,6 +26,7 @@
 #include "prot_rm_motor.h"
 #include "prot_dr16.h"
 #include "prot_rm_judge.h"
+#include "prot_remote_fusion.h"
 extern shoot_t shoot;
 
 static void TriggerMotor_pidcal(void);
@@ -112,7 +113,7 @@ uint8_t single_shoot_enable(void) {
 				return(
         trigger.trigger_enable
 		&& shoot.barrel.heat_remain >= MIN_HEAT
-        && (rc.mouse.l || rc.ch5 > 500)
+        && (remote_fusion.mouse.left || remote_fusion.channel.dial > 500)
         && ABS(shoot.pid.trigger_ecd_error) < TRIGGER_MOTOR_ECD
     );
 	#endif
@@ -139,7 +140,7 @@ uint8_t series_shoot_enable(void) {
 //		{
 			return(
 				((ctrl_mode == REMOTER_MODE)// && vision.shoot_enable
-					|| (ctrl_mode == KEYBOARD_MODE && rc.mouse.l) 
+					|| (ctrl_mode == KEYBOARD_MODE && remote_fusion.mouse.left) 
 					|| (ctrl_mode == VISION_MODE && vision.shoot_enable)
 				)
 		&& shoot.barrel.heat_remain >= MIN_HEAT  //热量控制
@@ -154,7 +155,7 @@ uint8_t series_shoot_enable(void) {
 static void single_ammo_stuck_judge(void) 
 {
 
-	          if(ABS(shoot.pid.trigger_ecd_error) > 2.0f * TRIGGER_MOTOR_ECD)
+	          if(ABS(shoot.pid.trigger_ecd_error) > 1.5f * TRIGGER_MOTOR_ECD)
 					{
 						
 								AMMO_STUCK_FLAG = 1;//置位单发卡弹退弹标志位，用于后面退一发
@@ -170,11 +171,11 @@ static void single_ammo_stuck_judge(void)
 static uint8_t single_shoot_reset(void) 
 {
     return (
-							((   (rc.mouse.l)==0  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable )	
-				&&(ABS(rc.ch5) < 10  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable ))    //视觉模式下：松开鼠标左键&视觉允许发射并且拨盘也是松开的，才复位
+							((   (remote_fusion.mouse.left)==0  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable )	
+				&&(ABS(remote_fusion.channel.dial) < 10  &&  ctrl_mode==VISION_MODE  &&  vision.shoot_enable ))    //视觉模式下：松开鼠标左键&视觉允许发射并且拨盘也是松开的，才复位
 							    //视觉模式下：拨轮松开&视觉允许发射，才复位
-							|| (ABS(rc.ch5) < 10 && ctrl_mode == REMOTER_MODE)                             //遥控模式下：拨轮松开，回到（接近）原位，才复位
-							|| ((rc.mouse.l) == 0 && ctrl_mode == KEYBOARD_MODE)                       //键盘模式下：松开鼠标左键，才复位
+							|| (ABS(remote_fusion.channel.dial) < 10 && ctrl_mode == REMOTER_MODE)                             //遥控模式下：拨轮松开，回到（接近）原位，才复位
+							|| ((remote_fusion.mouse.left) == 0 && ctrl_mode == KEYBOARD_MODE)                       //键盘模式下：松开鼠标左键，才复位
            );
 }
 
@@ -226,20 +227,23 @@ void TriggerMotor_control(void)
 					{
 						if(SINGLE_AMMO_STUCK_BACK_FLAG==1)//因为这个else里面要等待退一发后电机到位，所以这个ecd-=要单独出来保证只执行一次
 						{
+							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
+							last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
 							shoot.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD; //退一发
 							SINGLE_AMMO_STUCK_BACK_FLAG=0;//ecd-=一发后，置零单发卡弹退弹标志位，防止多次ecd-=	
 						}
 						
 						
-						if(rc.mouse.l || rc.ch5 > 500)//ecd-=后，AMMO_STUCK_FLAG依然为1，依然进这个else，此时如果继续请求单发，则等待PID控制器完成ecd-=，用CNT来模拟计时器
-						{
+//						if(remote_fusion.mouse.left|| remote_fusion.channel.dial > 500)//ecd-=后，AMMO_STUCK_FLAG依然为1，依然进这个else，此时如果继续请求单发，则等待PID控制器完成ecd-=，用CNT来模拟计时器
+//						{
 							SINGLE_STUCK_CNT++;
-							if(SINGLE_STUCK_CNT>=1000)//ecd_ref退一发之后，本来是还需要判断能不能退到位的，但没测过，不知道退1发？还是退0.5发？还是退0.1发的位置就够了？ 所以一发退不到位也是正常的，故不判断，只搞一个CNT，用来计时，计几次够呢？ 不知道，随便填个1000，即大概1秒
+							if(SINGLE_STUCK_CNT>=400)//ecd_ref退一发之后，本来是还需要判断能不能退到位的，但没测过，不知道退1发？还是退0.5发？还是退0.1发的位置就够了？ 所以一发退不到位也是正常的，故不判断，只搞一个CNT，用来计时，计几次够呢？ 不知道，随便填个1000，即大概1秒
 							{
 								SINGLE_STUCK_CNT = 0;//清零，下一次卡弹再用
 								AMMO_STUCK_FLAG=0;
+								shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;
 							}
-						}
+//						}
 					}
 			TriggerMotor_pidcal();
             break;
@@ -294,10 +298,10 @@ void TriggerMotor_control(void)
 //					}
 //						else if(remote_online.NEW_OLD_RC_FLAG == 0)
 //						{
-							if( (rc.mouse.l || rc.ch5 >= 500) )
+							if( (remote_fusion.mouse.left || remote_fusion.channel.dial >= 500) )
 							{					
 							  /*2025年5月15日 加个射频变化控制 云台手可以通过摁住shift来提高射频*/
-							  if(rc.kb.bit.SHIFT==1 || rc.ch3 <=-600)
+							  if(remote_fusion.keyboard.bit.SHIFT==1 || remote_fusion.channel.ch3 <=-600)
 								{
 									SHOOT_PERIOD_CHANGE_CNT+=2;
 									SHOOT_PERIOD_CHANGE_FLAG=1;
@@ -355,7 +359,6 @@ void TriggerMotor_control(void)
 						//每次卡弹，只-=一次ref
 				if(back_flag==1)
 				{
-					trigger_test++;
 					  shoot.pid.trigger_ecd_ref -= 2.0f * TRIGGER_MOTOR_ECD;//退两发的位置
 					  back_flag = 0;//清除，防止重复-=ref
 				}
