@@ -83,6 +83,13 @@ void mode_switch_task(void const *argu)
 			fly_led_status();
 
 				wdg_user_set_bit(WDG_BIT_TASK_MODES);
+		
+
+    volatile uint32_t ndtr = DMA2_Stream1->NDTR;
+    
+    // 在这里打断点，看变量的值
+    __NOP();  // 断点位置
+		
         osDelay(5);				
     }
 }

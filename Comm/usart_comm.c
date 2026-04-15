@@ -186,12 +186,13 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
         HAL_UART_Receive_DMA(huart, dma_dbus_buf, DMA_DBUS_LEN);
     }
 		
-	 else if(huart->Instance==USART3)    
+	 else if(huart->Instance==UART9)    
 		{
 			  wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
 				vtm_callback_handler(dma_new_rc_buf);
 				memset(dma_new_rc_buf, 0, VTM_DATA_LEN);
 				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, VTM_DATA_LEN);
+		 
 		}
 		
 				
@@ -210,6 +211,11 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
         Judge_Read_Data(dma_judge_buf);
 			  memset(dma_judge_buf, 0, DMA_JUDGE_LEN);
         HAL_UART_Receive_DMA(huart, dma_judge_buf, DMA_JUDGE_LEN);
+		
+//		wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
+//				vtm_callback_handler(dma_new_rc_buf);
+//				memset(dma_new_rc_buf, 0, VTM_DATA_LEN);
+//				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, VTM_DATA_LEN);
     }
    
 	
@@ -253,7 +259,6 @@ void USER_UART_Init()
 	  __HAL_UART_CLEAR_IDLEFLAG(&NEW_RC_HUART);
     __HAL_UART_ENABLE_IT(&NEW_RC_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, VTM_DATA_LEN);//Í¼´«Á´Â·
-	
 //		  __HAL_UART_CLEAR_IDLEFLAG(&TUCHUAN_HUART);
 //    __HAL_UART_ENABLE_IT(&TUCHUAN_HUART, UART_IT_IDLE);
 //    HAL_UART_Receive_DMA(&TUCHUAN_HUART, dma_tuchuan_buf, DMA_TUCHUAN_LEN);
@@ -261,7 +266,8 @@ void USER_UART_Init()
     __HAL_UART_CLEAR_IDLEFLAG(&JUDGE_HUART);
     __HAL_UART_ENABLE_IT(&JUDGE_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&JUDGE_HUART, dma_judge_buf, DMA_JUDGE_LEN);
-
+	judge_init(&JUDGE_HUART);
+	
     __HAL_UART_CLEAR_IDLEFLAG(&VISION_HUART);
     __HAL_UART_ENABLE_IT(&VISION_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&VISION_HUART,dma_vision_buf,DMA_VISION_LEN);

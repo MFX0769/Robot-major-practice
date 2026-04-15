@@ -74,7 +74,7 @@ osThreadId vision_send_task_t;
 osThreadId mode_sw_task_t;
 osThreadId status_task_t;
 osThreadId debug_task_t;
-osThreadId judge_send_task_t;
+//osThreadId judge_send_task_t;
 
 
 
@@ -227,8 +227,8 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(debugTask, debug_task, osPriorityNormal, 0, 128);
     debug_task_t = osThreadCreate(osThread(debugTask), NULL);
 //////	
-	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
-    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
+//	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
+//    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
 /**************************Low priority task**************************/
 	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
 	status_task_t = osThreadCreate(osThread(statusTask),NULL);

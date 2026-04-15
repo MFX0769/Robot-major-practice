@@ -151,11 +151,11 @@ uint8_t series_shoot_enable(void) {
 //    #endif
 }
 
-/*单发卡弹判断函数：single_shoot_enable通过则进入判断。单发模式下，若ecd_err大于4发的位置，则视为卡弹。 即4次单发请求通过，拨弹盘都没转超过0.5发.注意，该函数在单发ecd+=后被执行，所以该函数内的ecd_err必须至少大于1发的位置，否则必定误判*/
+/*单发卡弹判断函数：single_shoot_enable通过则进入判断。单发模式下，若ecd_err大于1.2发的位置，则视为卡弹。 即1.3次单发请求通过，拨弹盘都没转超过0.5发.注意，该函数在单发ecd+=后被执行，所以该函数内的ecd_err必须至少大于1发的位置，否则必定误判*/
 static void single_ammo_stuck_judge(void) 
 {
 
-	          if(ABS(shoot.pid.trigger_ecd_error) > 1.5f * TRIGGER_MOTOR_ECD)
+	          if(ABS(shoot.pid.trigger_ecd_error) > 1.3f * TRIGGER_MOTOR_ECD)
 					{
 						
 								AMMO_STUCK_FLAG = 1;//置位单发卡弹退弹标志位，用于后面退一发

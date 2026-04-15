@@ -13,6 +13,11 @@
 
 vtm_rc_t vtm_rc;
 
+// ========== 新增：sw2 状态切换相关静态变量 ==========
+static uint8_t vtm_sw2_state = 0;        // 0=上, 1=中, 2=下
+static uint8_t custom_l_last = 0;        // 上一次按键状态
+static uint8_t custom_l_cnt = 0;         // 按键计数器
+
 /* CRC16 查找表（按 DJI 示例代码） */
 static const uint16_t crc16_tab[256] = {
     0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -101,11 +106,11 @@ void FuseFromVTM(void)
     // 摇杆 - 从原始值转换为带符号值
     // 方向约定：向上为正，向左为正
     // 原始值范围: 364~1684, 中值1024
-    remote_fusion.channel.ch1 = (int16_t)(1024 - vtm_rc.ch0);   // 右摇杆水平 (向左为正)
+    remote_fusion.channel.ch1 = (int16_t)(vtm_rc.ch0 - 1024);   // 右摇杆水平 (向左为正)
     remote_fusion.channel.ch2 = (int16_t)(vtm_rc.ch1 - 1024);   // 右摇杆垂直 (向上为正)
     remote_fusion.channel.ch4 = (int16_t)(vtm_rc.ch2 - 1024);   // remote_fusion.ch4: 左摇杆垂直 (向上为正)
-    remote_fusion.channel.ch3 = (int16_t)(1024 - vtm_rc.ch3);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
-    remote_fusion.channel.dial = (int16_t)(1024 - vtm_rc.dial); // 拨轮
+    remote_fusion.channel.ch3 = (int16_t)(vtm_rc.ch3 - 1024);   // remote_fusion.ch3: 左摇杆水平 (向左为正)
+    remote_fusion.channel.dial = (int16_t)(vtm_rc.dial-1024); // 拨轮
     
     // 死区处理
     if (remote_fusion.channel.ch1 > -RC_DEADZONE && remote_fusion.channel.ch1 < RC_DEADZONE) remote_fusion.channel.ch1 = 0;
@@ -117,13 +122,39 @@ void FuseFromVTM(void)
     // 原始值: C=0(上), N=1(中), S=2(下)
     // 目标值: RC_UP=1(上), RC_DN=2(下), RC_MI=3(中)
     switch (vtm_rc.cns) {
-        case 0: remote_fusion.sw.cns = RC_UP; break;  // C档(上) -> RC_UP
-        case 1: remote_fusion.sw.cns = RC_MI; break;  // N档(中) -> RC_MI
-        case 2: remote_fusion.sw.cns = RC_DN; break;  // S档(下) -> RC_DN
-        default: remote_fusion.sw.cns = RC_MI; break; // 默认中
+        case 0: remote_fusion.sw.sw1 = RC_UP; break;  // C档(上) -> RC_UP
+        case 1: remote_fusion.sw.sw1 = RC_MI; break;  // N档(中) -> RC_MI
+        case 2: remote_fusion.sw.sw1 = RC_DN; break;  // S档(下) -> RC_DN
+        default: remote_fusion.sw.sw1 = RC_MI; break; // 默认中
     }
-    remote_fusion.sw.sw1 = remote_fusion.sw.cns;
-    remote_fusion.sw.sw2 = RC_UP;  // 默认上
+    remote_fusion.sw.cns = remote_fusion.sw.cns;
+    // 读取当前按键状态
+    uint8_t custom_l_now = vtm_rc.custom_l;
+    
+    // 检测上升沿（刚按下）
+    if(custom_l_now == 1 && custom_l_last == 0)
+    {
+        custom_l_cnt++;  // 按一次计数+1
+    }
+    
+    // 按2次切换一档
+    if(custom_l_cnt >= 2)
+    {
+        custom_l_cnt = 0;           // 清零计数器
+        vtm_sw2_state++;            // 切换档位
+        if(vtm_sw2_state > 2)       // 超过2回到0
+            vtm_sw2_state = 0;
+    }
+    
+    // 保存本次状态
+    custom_l_last = custom_l_now;
+    
+    // 映射到 RC 标准值
+    switch(vtm_sw2_state) {
+        case 0: remote_fusion.sw.sw2 = RC_UP; break;  // 上
+        case 1: remote_fusion.sw.sw2 = RC_MI; break;  // 中
+        case 2: remote_fusion.sw.sw2 = RC_DN; break;  // 下
+    }
 }
 
 /**

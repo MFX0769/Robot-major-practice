@@ -7,6 +7,7 @@
 
 #include "prot_rm_judge.h"
 #include "string.h"
+#include "cmsis_os.h"
 
 /*****************数据结构体定义**********************/
 frame_header											FrameHeader;		//帧头
@@ -35,7 +36,7 @@ map_command_t                       map_command;                    //选手端小地
 map_robot_data_t                    map_robot_data;
 /******************************************************/
 
-
+UART_HandleTypeDef *judge_huart;
 
 uint16_t Robot_Self_HP;//自身血量
 
@@ -161,4 +162,20 @@ int Judge_Read_Data(uint8_t *ReadFromUsart)
         Judge_Read_Data(ReadFromUsart + judge_length);
 
     return retval_tf;
+}
+
+void judge_init(UART_HandleTypeDef *huart)
+{
+    judge_huart = huart;
+}
+
+/*
+ * @brief     发送裁判数据
+ */
+void judge_send_data(uint8_t* message, int length)
+{
+    while (judge_huart->gState != HAL_UART_STATE_READY) {
+        osDelay(1);
+    }
+    HAL_UART_Transmit_DMA(judge_huart, message, length);
 }

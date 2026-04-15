@@ -34,8 +34,6 @@ extern "C" {
 //#define USART10_RX_BUFFER_SIZE 28   //vision数据长度
 //#define USART6_RX_BUFFER_SIZE 18
 
-#define   JUDGE_HUART   huart2
-#define DEBUG_HUART	huart6 
 /* Private type --------------------------------------------------------------*/
 
 /* Exported macros -----------------------------------------------------------*/
@@ -65,8 +63,10 @@ void comm_usart_init(void);
 /*---------------------------------------------分界线------------------------*/
 #define 	DBUS_HUART    huart1
 #define   JUDGE_HUART   huart2
-#define   NEW_RC_HUART  huart3
+#define   NEW_RC_HUART  huart9
 #define 	TUCHUAN_HUART		huart5		//因最新陀螺仪使用CAN，暂时无用
+#define DEBUG_HUART	huart6 
+
 #define   VISION_HUART	huart10
 
 #define  DMA_DBUS_LEN			18

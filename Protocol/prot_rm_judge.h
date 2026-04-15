@@ -13,7 +13,7 @@
 #include "stdint.h"
 #include "crc.h"
 #include "mode_switch_task.h"
-
+#include "usart.h"
 
 #define 	JUDGESEND_PERIOD 	10  //发送间隔，理论上越短越快
 #define		JUDGESEND_TIME		10
@@ -387,6 +387,10 @@ typedef struct
 }__attribute__((packed)) remote_control_t;
 
 int Judge_Read_Data(uint8_t *ReadFromUsart);
+
+void judge_init(UART_HandleTypeDef *huart);
+void judge_send_data(uint8_t* message, int length);
+
 
 extern robot_status_t robot_status;
 extern shoot_data_t Shoot_Data;

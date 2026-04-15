@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_PWR_LDO_SUPPLY,USE_HAL_DRIVER,STM32H723xx,ARM_MATH_CM7,__FPU_PRESENT=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System</IncludePath>
+              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System;../UI</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -927,6 +927,16 @@
               <FileType>5</FileType>
               <FilePath>..\Application\status_task.h</FilePath>
             </File>
+            <File>
+              <FileName>ui_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\ui_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\ui_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1115,6 +1125,44 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>UI</GroupName>
+          <Files>
+            <File>
+              <FileName>ui_g.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UI\ui_g.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UI\ui_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_g.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UI\ui_g.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UI\ui_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UI\ui_types.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UI\ui.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Driver</GroupName>
+        </Group>
+        <Group>
           <GroupName>Math</GroupName>
           <Files>
             <File>
@@ -1218,9 +1266,6 @@
               <FilePath>..\Math\data_log.h</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>Driver</GroupName>
         </Group>
         <Group>
           <GroupName>System</GroupName>
