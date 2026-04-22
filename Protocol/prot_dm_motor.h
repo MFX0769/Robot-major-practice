@@ -69,6 +69,8 @@ typedef struct
 	float last_p, p, v, t;
 	uint8_t err_code;
 	uint8_t online;
+	uint8_t t_mos;
+	uint8_t t_rotor;
 	//有传动比的情况下，反馈数据换算到输出轴
 	float p_tmp,real_p,real_v;
 }dm_motor_t;

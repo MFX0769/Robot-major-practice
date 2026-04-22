@@ -5,7 +5,6 @@
 
 #define RGB_NUM 32
 #define ZERO_NUM 30
-
 typedef struct
 {
     uint8_t r, g, b;

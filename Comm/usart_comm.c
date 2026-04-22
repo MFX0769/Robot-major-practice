@@ -172,7 +172,7 @@
 uint8_t	dma_judge_buf[DMA_JUDGE_LEN];
 uint8_t dma_dbus_buf[DMA_DBUS_LEN];
 uint8_t dma_new_rc_buf[VTM_DATA_LEN];
-uint8_t dma_tuchuan_buf[DMA_TUCHUAN_LEN];
+//uint8_t dma_tuchuan_buf[DMA_TUCHUAN_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
 //uint8_t dma_A3_buf[DMA_A3_LEN];
 

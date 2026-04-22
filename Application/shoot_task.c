@@ -54,62 +54,6 @@ void shoot_init(void)
 static void shoot_mode_sw(void)
 { 
 	shoot_param_update();
-////		#if NEW_RC
-//		if(remote_online.NEW_OLD_RC_FLAG == 1)
-//			{
-//    /* 模式切换 */
-
-//		 switch( new_rc.mode_sw )
-//    {
-//        case RC_MODE_C://保护
-//        {
-//            shoot.firc_mode = FIRC_MODE_STOP;
-//            shoot.stir_mode = STIR_MODE_PROTECT;
-//			shoot.shoot_mode_CNT=0;
-//        }
-//        break;
-//				
-//        case RC_MODE_N://遥控
-//        {
-//					shoot.FN2=new_rc.fn_2;
-//						if(shoot.FN2==1 && shoot.last_FN2==0)//上升沿
-//						{
-//								 shoot.shoot_mode_CNT++;
-//						}
-//						
-//						if(shoot.firc_mode == FIRC_MODE_RUN && shoot.FN2==1 && shoot.last_FN2==0)
-//						{
-//							shoot.firc_mode = FIRC_MODE_STOP;
-//							shoot.stir_mode = STIR_MODE_PROTECT;
-//							shoot.shoot_mode_CNT = 0;
-//						}
-//						
-//						if(shoot.shoot_mode_CNT>=5)
-//						{
-//							shoot.firc_mode = FIRC_MODE_RUN;
-//							shoot.stir_mode = STIR_MODE_SERIES;
-//						}
-//					shoot.last_FN2=shoot.FN2;
-
-//        }
-//        break;
-//       
-//        case RC_MODE_S://键鼠
-//        {
-//					 shoot.firc_mode = FIRC_MODE_RUN;
-//					 shoot.stir_mode = STIR_MODE_SERIES;
-//        }
-//        break;
-//        default: break;
-//    }
-//			
-
-//			
-////		#else
-//	  }
-//			
-//		else if(remote_online.NEW_OLD_RC_FLAG == 0)
-//		{
 		
 		    /* 模式切换 */
     switch( remote_fusion.sw.sw1 )
@@ -164,7 +108,6 @@ static void shoot_mode_sw(void)
         default: break;
     }
 		
-//	}
 }
 
 static void shoot_param_update(void)

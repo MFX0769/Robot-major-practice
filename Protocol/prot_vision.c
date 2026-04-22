@@ -189,10 +189,10 @@ void vsn_gimbal_ref_calc(void)
 */
 void Trace_ID_Select_OLD(rc_info_t *rc)
 {
-	if(remote_fusion.keyboard.bit.W)  vision_tx.data.trace_id = 7;  // W - 前哨站
-    if(remote_fusion.keyboard.bit.Z)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
-    if(remote_fusion.keyboard.bit.A)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
-    if(remote_fusion.keyboard.bit.D)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
+	if(remote_fusion.keyboard.bit.Z)  vision_tx.data.trace_id = 7;  // W - 前哨站
+    if(remote_fusion.keyboard.bit.X)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
+    if(remote_fusion.keyboard.bit.C)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
+    if(remote_fusion.keyboard.bit.F)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
     if(remote_fusion.keyboard.bit.S)  vision_tx.data.trace_id = 2;  // S - 哨兵站，己方前哨站的攻击
 }
 

@@ -35,20 +35,20 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-//	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1.0, 0.0,0.0, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
-//    
+//PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE);
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE);
+       
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.0f, 0.018f, 20.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.02,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE);
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
-	
+    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 18.0f, 0.05f, 18.0f, 0,0,0,NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	
 //	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 135.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -68,6 +68,8 @@ static void gimbal_pid_calc(void)
     gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -20);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
+//	  gimbal.pit_spd.ref = -10;
+
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;
     gimbal.pit_spd.fdb = imu_data.wy;
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);

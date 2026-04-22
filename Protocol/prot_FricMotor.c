@@ -40,9 +40,9 @@ void FricMotor_init(void)
 
 					
      PID_struct_init(&fric_spd_pid[FRIC_LEFT], 16000, 0,
-                    10, 0, 0,0,0,0,Integral_Limit);
+                    5, 0, 0,0,0,0,Integral_Limit);
     PID_struct_init(&fric_spd_pid[FRIC_RIGHT], 16000, 0,
-                    10, 0, 0,0,0,0,Integral_Limit);
+                    5, 0, 0,0,0,0,Integral_Limit);
 									
     shoot.firc_mode = FIRC_MODE_STOP;
 	shoot.stir_mode = STIR_MODE_PROTECT;

@@ -27,7 +27,7 @@
 #include "remote_msg.h"
 #include "prot_dm_motor.h"
 #include "prot_rm_motor.h"
-
+#include "prot_remote_fusion.h"
 //#define DEBUG_TASK_ENABLE
 
 //#define ABS(x) ((x>0)? (x): (-(x)))
@@ -40,7 +40,6 @@ extern float* last_imu_yaw_data;
 extern float std;
 	
 float float_test;
-uint32_t debug_fcnt=0;
 /* 用以选择打印的数据类型 */
 uint8_t debug_wave = 2; 
 
@@ -56,16 +55,16 @@ void log_scope_data_pkg(void)
 //					log_scope_get_data(pid_trigger_ecd.pos_out);
 
 //					log_scope_get_data(shoot.frequency_cnt);
-//					log_scope_get_data(STIR_SERIES_SHOT_FLAG);
+					log_scope_get_data(trigger_motor.receive_cnt);
 					log_scope_get_data(shoot.pid.trigger_spd_ref);
 					log_scope_get_data(shoot.pid.trigger_spd_fdb);
-//					log_scope_get_data(pid_trigger_spd.pos_out);
+					log_scope_get_data(pid_trigger_spd.pos_out);
 					
-//					log_scope_get_data(trigger_motor.tx_current);
-					log_scope_get_data(back_flag_tri);
-					log_scope_get_data(back_flag_cnt);
-					log_scope_get_data(back_flag);
-				log_scope_get_data(err_time);
+					log_scope_get_data(trigger_motor.tx_current);
+//					log_scope_get_data(back_flag_tri);
+//					log_scope_get_data(back_flag_cnt);
+//					log_scope_get_data(back_flag);
+//				log_scope_get_data(err_time);
 
             break;
         }
@@ -79,9 +78,9 @@ void log_scope_data_pkg(void)
             log_scope_get_data(gimbal.pit_spd.ref);
             log_scope_get_data(gimbal.pit_spd.fdb);
 ////////					
-//			log_scope_get_data(gimbal.pit_spd.pid.pout);		
+			log_scope_get_data(dm3507_motor.t_rotor);		
             log_scope_get_data(dm3507_motor.t_ref);
-//            log_scope_get_data(dm3507_motor.t_set);
+            log_scope_get_data(dm3507_motor.err_code);
 								  
             log_scope_get_data(dm3507_motor.send_cnt);
             log_scope_get_data(dm3507_motor.receive_cnt);
@@ -208,11 +207,11 @@ void log_scope_data_pkg(void)
 //        }
 				
 				       case 9: { /*imu*/
-		  log_scope_get_data(imu_data.pitch);//裁判系统回传射速
-			log_scope_get_data(imu_data.wy);//裁判系统回传射速
-		  log_scope_get_data(imu_data.yaw);//裁判系统回传射速
-		  log_scope_get_data(imu_data.wz);//裁判系统回传射速
-
+		  log_scope_get_data(remote_fusion.mouse.x);//裁判系统回传射速
+			log_scope_get_data(remote_fusion.mouse.y);//裁判系统回传射速
+		  log_scope_get_data(shoot.stir_mode);//裁判系统回传射速
+		  log_scope_get_data(remote_fusion.keyboard.key_code);//裁判系统回传射速
+			
 
             break;
         }

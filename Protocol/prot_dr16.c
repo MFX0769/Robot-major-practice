@@ -33,6 +33,7 @@ scale_t scale;
 uint8_t kb_status[12]= {0};
 /* Private type --------------------------------------------------------------*/
 /*dr16断联计数器*/
+uint8_t rc_normal_flag = 0;
 uint16_t dr16_online_cnt = 0;
 /* Private function declarations ---------------------------------------------*/
 
@@ -94,7 +95,7 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
 {
    /* ?????????? */
 	  // remote_online.DT7_online_cnt = 0;
-  //  rc_normal_flag = 1;
+    rc_normal_flag = 1;
 	dr16_online_cnt = 0;
    /* ??????? */
    rc->ch1 = (buff[0]      | buff[1]  << 8) & 0x07FF;
@@ -171,7 +172,7 @@ static uint16_t key_map(key_index_e key_index)
   */
 uint8_t keyboard_scan(key_index_e key_index)
 {
-    static uint8_t key_press_enable[11] = {0};
+    static uint8_t key_press_enable[12] = {0};
     uint16_t key = key_map(key_index);  //获取当前按键状态
     if( key && key_press_enable[key_index] == 0 )  //如果当前按键按下且之前没有按下
     {

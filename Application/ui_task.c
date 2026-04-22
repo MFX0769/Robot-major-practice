@@ -22,7 +22,7 @@ extern vision_t              vision;
 
 /* ========== ÅäÖÃ ========== */
 #define UI_INIT_RETRY   30
-#define UI_TASK_PERIOD  10  // 10ms = 100Hz
+#define UI_TASK_PERIOD  30  // 10ms = 100Hz
 
 /* ========== UI¸üÐÂº¯Êý ========== */
 

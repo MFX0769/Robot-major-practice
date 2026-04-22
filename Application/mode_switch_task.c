@@ -361,12 +361,29 @@ void vtm_safe_lock(void)
 
 void fly_led_status(void)
 {
-	clear_all_leds();
-	if(remote_fusion.keyboard.bit.W) led_range_on(0, 7, GREEN);
-	else if(remote_fusion.keyboard.bit.W) led_range_on(8, 16, GREEN);
-	else if(remote_fusion.keyboard.bit.W) led_range_on(17, 24, GREEN);
-	else if(remote_fusion.keyboard.bit.W) led_range_on(25, 32, GREEN);
-	else led_double_flash(0, 32, GREEN, 200, 200);  // 0-7ºÅµÆË«ÉÁ£¬ºìÉ«£¬ÁÁ200msÃð200ms
+	
+	if(remote_fusion.keyboard.bit.W || remote_fusion.channel.ch4 > 600) // ÏÈÈ«²¿Ï¨Ãð
+    {	update_leds(RGB_NUM, OFF);
+		led_range_on(4, 12, GREEN);
+	}
+	else if(remote_fusion.keyboard.bit.D || remote_fusion.channel.ch3 > 600) 
+	{	update_leds(RGB_NUM, OFF);	
+		led_range_on(0, 8, GREEN);
+	}
+	else if(remote_fusion.keyboard.bit.S || remote_fusion.channel.ch4 < -600) 
+	{	update_leds(RGB_NUM, OFF);		
+		led_range_on(0, 4, GREEN);
+		led_range_on(12,16, GREEN);
+	}
+	else if(remote_fusion.keyboard.bit.A || remote_fusion.channel.ch3 < -600) 
+	{	update_leds(RGB_NUM, OFF);	
+		led_range_on(12, 16, GREEN);
+	}
+	else if(remote_fusion.keyboard.bit.Q) 
+	{	update_leds(RGB_NUM, OFF);	
+		led_range_on(0, RGB_NUM, RED);
+	}
+	else led_double_flash(0, 16, GREEN, 600, 600);  // 0-7ºÅµÆË«ÉÁ£¬ºìÉ«£¬ÁÁ200msÃð200ms
 
 	rgb_output_data();
 

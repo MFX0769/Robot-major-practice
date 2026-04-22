@@ -210,6 +210,10 @@ void dm_get_single_data(dm_motor_t *motor,uint8_t *data)
 	motor->v = uint_to_float(v_int,DM_V_MIN,DM_V_MAX,12);
 
 	t_int = ((data[4]&0xF)<<8)|data[5];
+	
+	motor->t_mos = data[6];      // MOS温度，单位°C，有符号8位整数
+	motor->t_rotor = data[7];    // 电机线圈温度，单位°C，有符号8位整数
+	
 	switch(motor->motor_type)
 	{
 		case DM4310:
