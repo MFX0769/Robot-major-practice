@@ -59,13 +59,13 @@ float yaw_err;
 static void gimbal_pid_calc(void)
 {
 //	if(ctrl_mode == PROTECT_MODE){return;}
-	if (dm3507_motor.err_code != 1) {
-	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
-//		return;
-    }
+//	if (dm3507_motor.err_code != 1) {
+//	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+////		return;
+//    }
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
-    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -20);
+    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -15);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //	  gimbal.pit_spd.ref = -10;
@@ -74,7 +74,7 @@ static void gimbal_pid_calc(void)
     gimbal.pit_spd.fdb = imu_data.wy;
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
 /*pitch电机实际控制输出名*/
-	if(ctrl_mode==PROTECT_MODE)
+	if(ctrl_mode==PROTECT_MODE || dm3507_motor.err_code != 1)
 	{
 		dm3507_motor.t_ref = 0;
 		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！

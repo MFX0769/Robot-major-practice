@@ -20,7 +20,7 @@
 #include "prot_FricMotor.h"
 #include "math_calcu.h"
 #include "remote_msg.h"
-
+#include "prot_dm_motor.h"
 /* 状态合并 */
 #define WDG_BITS_TASK           ( WDG_BIT_TASK_MODES                  \
                                 | WDG_BIT_TASK_GIMBAL         | WDG_BIT_TASK_SHOOT         ) 
@@ -107,7 +107,12 @@ static void status_init(void) {
 ////    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);  //LED_A
 //}
 
-
+void dm_motor_online(void)
+{
+	if (dm3507_motor.err_code != 1) {
+	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+    }
+}
 
 void status_task(void const *argu) {
     status_init();
@@ -116,7 +121,7 @@ void status_task(void const *argu) {
 
     for (;;) {
 //        static uint8_t led_status;
-        taskENTER_CRITICAL();
+//        taskENTER_CRITICAL();
         
 
 			
@@ -154,7 +159,10 @@ void status_task(void const *argu) {
 				/*旧遥控失联切新遥控或图传链路  25国赛版*/
 //				NEW_OLD_RC_Switch();
 				
-        taskEXIT_CRITICAL();
+//        taskEXIT_CRITICAL();
+
+		dm_motor_online();
+
         osDelay(30); // 决定LED time_cnt 单位，比任务最长的周期长两到三倍即可  
 //        osDelayUntil(&status_task_time,20);//必须使用绝对延时！否则会影响遥控器断联时间的判断！！！  2025年5月14日 2：22 好家伙改出石了，小于15就会，导致 lock_flag内八松掉之后马上变回0
 

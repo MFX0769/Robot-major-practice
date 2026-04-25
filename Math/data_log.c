@@ -3,6 +3,7 @@
 #include "cmsis_os.h"
 
 UART_HandleTypeDef *log_huart;
+//log_struct_t log_info;
 
 /*********************************** printf重定向 *********************************/
 /* printf重定向使用的为HAL_UART_Transmit */
@@ -61,6 +62,85 @@ int log_printf_to_buffer(char *buff, int size, char *format, ...)
     va_end(arg);
     return len;
 }
+
+///**
+//* @brief 初始化log结构体重要信息
+//* @param 发送串口，缓冲区长度，发送周期
+//* @use   在主函数或初始化任务中调用
+//*
+//**/
+//void Log_Init(UART_HandleTypeDef* huart,uint16_t len,uint8_t term)
+//{
+//	log_info.log_huart = huart;
+//	log_info.log_buffer = (uint8_t*)calloc(len,sizeof(uint8_t));	/*分配堆空间*/
+//	ASSERT(log_info.log_buffer);
+//	log_info.log_len = len;
+//	log_info.log_status = LOG_CRITICAL;
+//	log_info.log_term = term;
+//	Log_Check();
+////	log_info.log_status = LOG_READY;  // 强制启用日志（正式版需恢复检查逻辑）
+//}
+///**
+//* @brief 检测初始化log是否出现异常，并输出相应的异常码
+//* @use   初始化结束后调用即可
+//* 
+//**/
+//void Log_Check(void)
+//{
+//	if(log_info.log_len > LOG_WARN_LEN)
+//	{
+//		printf("LEN WARNING\n");
+//		log_info.log_status = LOG_NOTICE;
+//		return;
+//	}
+//	if(log_info.log_len > LOG_ERR_LEN)
+//	{
+//		printf("LEN ERROR\n");
+//		log_info.log_status = LOG_ERROR;
+//		return;
+//	}
+//	if(log_info.log_term < LOG_WARN_TERM)
+//	{
+//		printf("TERM WARNING\n");
+//		log_info.log_status = LOG_NOTICE;
+//		return;
+//	}
+//	if(log_info.log_term < LOG_ERR_TERM)
+//	{
+//		printf("TERM ERROR\n");
+//		log_info.log_status = LOG_ERROR;
+//		return;
+//	}
+//	log_info.log_status = LOG_READY;
+//}
+//void Log_Send(const char* format, ...) {
+//    // 等待前一次DMA发送完成
+//   while(HAL_UART_GetState(log_info.log_huart) == HAL_UART_STATE_BUSY_TX) {
+//        if(__HAL_UART_GET_FLAG(log_info.log_huart, UART_FLAG_TC)) {
+//            log_info.log_huart->gState = HAL_UART_STATE_READY; // 手动解除BUSY状态
+//            break;
+//        }
+//        __NOP(); // 空指令避免编译器优化
+//    }
+//          
+//    // 格式化数据（改用静态缓冲区避免动态内存问题）
+//    static char buf[256];
+//    va_list args;
+//    va_start(args, format);
+//    vsnprintf(buf, sizeof(buf), format, args);
+//    va_end(args);
+
+//    // 启动DMA发送
+////    HAL_UART_Transmit_DMA(log_info.log_huart, (uint8_t*)buf, strlen(buf));
+//	//检查DMA问题
+//	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(log_info.log_huart, (uint8_t*)buf, strlen(buf));
+//    if (status != HAL_OK) {
+//        printf("DMA Send Error: %d\n", status);  // 调试输出错误码
+//        // 可选： fallback 到阻塞发送
+////        HAL_UART_Transmit(log_info.log_huart, (uint8_t*)buf, strlen(buf), 1000);
+//    }
+//}
+
 
 /*********************************** DataScope *********************************/
 /* 示波器数据结构体 */

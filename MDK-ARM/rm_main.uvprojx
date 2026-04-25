@@ -937,6 +937,16 @@
               <FileType>5</FileType>
               <FilePath>..\Application\ui_task.h</FilePath>
             </File>
+            <File>
+              <FileName>log_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\log_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>log_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\log_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
