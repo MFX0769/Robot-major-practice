@@ -33,7 +33,7 @@ scale_t scale;
 uint8_t kb_status[12]= {0};
 /* Private type --------------------------------------------------------------*/
 /*dr16¶ÏÁª¼ÆÊýÆ÷*/
-uint8_t rc_normal_flag = 0;
+//uint8_t rc_normal_flag = 0;
 uint16_t dr16_online_cnt = 0;
 /* Private function declarations ---------------------------------------------*/
 
@@ -95,7 +95,7 @@ void rc_callback_handler(rc_info_t *rc, uint8_t *buff)
 {
    /* ?????????? */
 	  // remote_online.DT7_online_cnt = 0;
-    rc_normal_flag = 1;
+//    rc_normal_flag = 1;
 	dr16_online_cnt = 0;
    /* ??????? */
    rc->ch1 = (buff[0]      | buff[1]  << 8) & 0x07FF;

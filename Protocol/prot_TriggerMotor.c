@@ -155,16 +155,42 @@ uint8_t series_shoot_enable(void) {
 static void single_ammo_stuck_judge(void) 
 {
 
-	          if(ABS(shoot.pid.trigger_ecd_error) > 1.3f * TRIGGER_MOTOR_ECD)
-					{
+	          if(ABS((int)trigger_motor.rx_current)>10000 && ABS(trigger_motor.speed_rpm)<500)//
+				{
+					back_flag_cnt++;
+					trigger_motor.tx_current = 0;
+				}
 						
-								AMMO_STUCK_FLAG = 1;//置位单发卡弹退弹标志位，用于后面退一发
-								SINGLE_AMMO_STUCK_BACK_FLAG=1;
-					}
-					else
+						/*若持续卡弹，则进入退弹*/
+				if(back_flag_cnt > 200)
+				{          
+					shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
+					last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
+					back_flag_tri = 1;//置位退弹标志位 表面拨盘退弹中
+					back_flag = 1;//置位一次back_flag，后续只-=一次
+					back_flag_cnt = 0;//清除卡弹计数，防止重复进入该if
+				}   
+						
+						//每次卡弹，只-=一次ref
+				if(back_flag==1)
+				{
+					  shoot.pid.trigger_ecd_ref -= 2.0f * TRIGGER_MOTOR_ECD;//退两发的位置
+					  back_flag = 0;//清除，防止重复-=ref
+				}
+				
+				/*等待退弹执行结束*/
+				if( back_flag_tri == 1 )//退弹标志位 表明正在执行退弹
+				{  
+					 err_time += SHOOT_PERIOD;//退弹执行计时 或超时，则直接退出退弹而不再等拨盘到位（退弹时阻力依然很大，拨盘不到位也正常）
+					
+					//退弹结束的依据：反转到位（2.0发）或超时（执行150次发射任务）
+					if((err_time >= 150) || (ABS(trigger_motor.total_ecd - last_tri_ecd + 2.0f * TRIGGER_MOTOR_ECD) < 0.5f * TRIGGER_MOTOR_ECD) )
 					{
-						AMMO_STUCK_FLAG = 0;
-					}	
+						  err_time = 0;//清除退弹执行时间 防止影响下一次退弹
+						  back_flag_tri=0;//清除退弹标志位 
+						shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;
+					}
+				 }
 }
 
 ///*单发复位函数 */
@@ -209,8 +235,8 @@ void TriggerMotor_control(void)
         case STIR_MODE_SINGLE: 
 		{ 
 			shoot.pid.trigger_ecd_error = shoot.pid.trigger_ecd_ref - shoot.pid.trigger_ecd_fdb;
-            if(!AMMO_STUCK_FLAG)//非卡弹标志位 即不卡
-				   { 					
+            if(!back_flag_tri)//非卡弹标志位 即不卡
+			{ 					
 						/*执行单发逻辑*/
 						if (single_shoot_reset())
 						{//单次发射后等待复位
@@ -222,29 +248,8 @@ void TriggerMotor_control(void)
 							shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
 							single_ammo_stuck_judge();//执行卡弹判断
 						}
-				   }
-			else//若AMMO_STUCK_FLAG为1，视为卡弹，执行退弹操作
-					{
-						if(SINGLE_AMMO_STUCK_BACK_FLAG==1)//因为这个else里面要等待退一发后电机到位，所以这个ecd-=要单独出来保证只执行一次
-						{
-							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//对齐当前拨盘位置（拨盘的位置环一般都跟不上，会拉很远，所以要重新对齐）
-							last_tri_ecd = trigger_motor.total_ecd;//记录当前拨盘位置，后续用于退出退弹的判断
-							shoot.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD; //退一发
-							SINGLE_AMMO_STUCK_BACK_FLAG=0;//ecd-=一发后，置零单发卡弹退弹标志位，防止多次ecd-=	
-						}
-						
-						
-//						if(remote_fusion.mouse.left|| remote_fusion.channel.dial > 500)//ecd-=后，AMMO_STUCK_FLAG依然为1，依然进这个else，此时如果继续请求单发，则等待PID控制器完成ecd-=，用CNT来模拟计时器
-//						{
-							SINGLE_STUCK_CNT++;
-							if(SINGLE_STUCK_CNT>=400)//ecd_ref退一发之后，本来是还需要判断能不能退到位的，但没测过，不知道退1发？还是退0.5发？还是退0.1发的位置就够了？ 所以一发退不到位也是正常的，故不判断，只搞一个CNT，用来计时，计几次够呢？ 不知道，随便填个1000，即大概1秒
-							{
-								SINGLE_STUCK_CNT = 0;//清零，下一次卡弹再用
-								AMMO_STUCK_FLAG=0;
-								shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;
-							}
-//						}
-					}
+			}
+			single_ammo_stuck_judge();//执行卡弹判断
 			TriggerMotor_pidcal();
             break;
         }
@@ -254,50 +259,6 @@ void TriggerMotor_control(void)
             shoot.pid.trigger_ecd_error = shoot.pid.trigger_ecd_ref - shoot.pid.trigger_ecd_fdb;				
 			if(!back_flag_tri)//如果卡弹了，就不再接收发射指令，专心完成退弹操作先
 			{
-//				if(remote_online.NEW_OLD_RC_FLAG == 1)
-//					{
-////					#if NEW_RC
-//						if( (new_rc.mouse_left || new_rc.trigger == 1) )
-//						{					
-//							  /*2025年5月15日 加个射频变化控制 云台手可以通过摁住shift来提高射频*/
-//							  if(new_rc.key_SHIFT==1 || rc.ch3 <=364)
-//								{
-//									SHOOT_PERIOD_CHANGE_CNT+=2;
-//									SHOOT_PERIOD_CHANGE_FLAG=1;
-
-//								}
-//								else
-//								{
-//						   		SHOOT_PERIOD_CHANGE_FLAG=0;
-
-//								}
-//								if(SHOOT_PERIOD_CHANGE_CNT>=4)
-//								{
-//									SHOOT_PERIOD_CHANGE_CNT=0;
-//									shoot.frequency_cnt+=1;
-//									SHOOT_PERIOD_CHANGE_FLAG=1;
-//								}
-//						
-//									/*以上代码，不用时，直接注释*/			
-//									shoot.frequency_cnt++;
-//							  		/*射频变换代码结束，相关代码还有：最上面CNT定义，init函数CNT清零*/
-//									if (series_shoot_enable() && back_flag_tri ==0) 
-//									{ 
-//										STIR_SERIES_SHOT_FLAG++;
-//										shoot.frequency_cnt = 0;
-//										shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;/* 拨一颗子弹 */							
-//									}
-//						}
-//						else
-//						{
-//							shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//让其原地停下，防干碎拨盘
-//							shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;   
-//						}
-////						
-////					#else
-//					}
-//						else if(remote_online.NEW_OLD_RC_FLAG == 0)
-//						{
 							if( (remote_fusion.mouse.left || remote_fusion.channel.dial >= 500) )
 							{					
 							  /*2025年5月15日 加个射频变化控制 云台手可以通过摁住shift来提高射频*/
@@ -335,9 +296,6 @@ void TriggerMotor_control(void)
 								shoot.pid.trigger_ecd_ref = trigger_motor.total_ecd;//让其原地停下，防干碎拨盘
 								shoot.pid.trigger_ecd_fdb = trigger_motor.total_ecd;   
 							}
-						
-//						#endif
-//						}//else if 的括号
 				}
             /* 先卡弹判断：若电机堵转，电流会增大 + 转速会降低*/
 				if(ABS((int)trigger_motor.rx_current)>10000 && ABS(trigger_motor.speed_rpm)<500)//

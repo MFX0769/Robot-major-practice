@@ -35,20 +35,20 @@ static void gimbal_init(void)
 	scale.ch2 = RC_CH2_SCALE_IMU;
     memset(&gimbal, 0, sizeof(gimbal_t));
    
-//PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//PID_struct_init(&gimbal.pit_angle.pid,  400,100.0f, 28.0f, 0.0f, 18.0f, 0,0,0,NONE_IMPROVE); //无裁判系统
+//    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.0095,0.0, 0.0078, 0, 0.0f, 0.0f, NONE_IMPROVE); //无裁判系统
        
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.0f, 0.018f, 20.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.02,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE);
+	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.0f, 0.018f, 20.0f, 0,0,0,NONE_IMPROVE);  //有裁判系统
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.02,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 18.0f, 0.05f, 18.0f, 0,0,0,NONE_IMPROVE);
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 11.5f, 0.00f, 18.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
 //	
-//	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE);
-//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
+//	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE); //无裁判系统
+//    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //无裁判系统
 	
 //  PID_struct_init(&gimbal.yaw_ecd.pid, 300,5.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //	PID_struct_init(&gimbal.yaw_spd_ecd.pid, 7, 1.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
@@ -79,6 +79,11 @@ static void gimbal_pid_calc(void)
 		dm3507_motor.t_ref = 0;
 		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
 	}
+//	else if(dm3507_motor.t_rotor >=75)
+//	{
+//		dm3507_motor.t_ref = gimbal.pit_output * 0.7;
+//		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
+//	}
 	else{
 		pitch_motor.t_ref = gimbal.pit_output;
 		dm3507_motor.t_ref = gimbal.pit_output;
@@ -87,8 +92,8 @@ static void gimbal_pid_calc(void)
 	}
 //--------------------yaw_pid_calu----------------------------------//
 	/*yaw限位*/
-//	gimbal.gimbal_limit.yaw_angle_max = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +310.0f;//
-//	gimbal.gimbal_limit.yaw_angle_min = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +520.0f;//
+//	gimbal.gimbal_limit.yaw_angle_max = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +0.0f;//
+//	gimbal.gimbal_limit.yaw_angle_min = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +0.0f;//
 	
 	
 //	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,gimbal.gimbal_limit.yaw_angle_max,gimbal.gimbal_limit.yaw_angle_min);	//目标值限幅	

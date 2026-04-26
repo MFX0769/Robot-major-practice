@@ -187,13 +187,27 @@ void vsn_gimbal_ref_calc(void)
 * @param  None
 * @retval None
 */
-void Trace_ID_Select_OLD(rc_info_t *rc)
+//void Trace_ID_Select_OLD(rc_info_t *rc)
+//{
+//	if(rc->kb.bit.W)  vision_tx.data.trace_id  = 7;         //"w"��ζ��ǰ�棺ǰ��վ
+//	if(rc->kb.bit.Z)  vision_tx.data.trace_id  = 4;         //"z"����ζ�����¹����Ĳ��� 4��
+//	if(rc->kb.bit.A)  vision_tx.data.trace_id  = 3;         //"a"��ζ����ߣ����¹����Ĳ��� 3��
+//	if(rc->kb.bit.D)  vision_tx.data.trace_id  = 1;         //"d"��ζ���ұߣ����ڵ���λ��Ӣ��
+//	if(rc->kb.bit.S)  vision_tx.data.trace_id  = 2;	        //"s"��ζ�ź��棺�������Ķһ�վ�Ĺ���
+//}
+
+/**
+* @brief  选择优先级更高的目标  Choose the target with higher priority
+* @param  None
+* @retval None
+*/
+void Trace_ID_Select_OLD(RemoteFusion_Handle_t *remote_fusion)
 {
-	if(remote_fusion.keyboard.bit.Z)  vision_tx.data.trace_id = 7;  // W - 前哨站
-    if(remote_fusion.keyboard.bit.X)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
-    if(remote_fusion.keyboard.bit.C)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
-    if(remote_fusion.keyboard.bit.F)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
-    if(remote_fusion.keyboard.bit.S)  vision_tx.data.trace_id = 2;  // S - 哨兵站，己方前哨站的攻击
+	if(remote_fusion->keyboard.bit.Z)  vision_tx.data.trace_id = 7;  // W - 前哨站
+    if(remote_fusion->keyboard.bit.X)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
+    if(remote_fusion->keyboard.bit.C)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
+    if(remote_fusion->keyboard.bit.F)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
+//    if(remote_fusion->keyboard.bit.S)  vision_tx.data.trace_id = 2;  // S - 哨兵站，己方前哨站的攻击
 }
 
 /**
@@ -216,14 +230,20 @@ void vision_output_data(void)
     tmp = Shoot_Data.bullet_speed;         memcpy(vision_tx.data.shoot_speed, &tmp, 4);
 
     /* 3. 位域+单字节 */
-    vision_tx.data.camp = 0;
+	if(robot_status.robot_id>100)
+	{
+		vision_tx.data.camp = 1;
+	}
+	else{
+		vision_tx.data.camp = 0;
+	}
     vision_tx.data.aiming_mode   = vision_mode;             // 0:自瞄 1:大能量 2:小能量 4:反陀螺  这是抄步兵的，飞机记得后面改一下
     vision_tx.data.shooter_speed = 3;                       // 固定 3 档
     vision_tx.data.vacancy       = 0;                       // 预留，填 0
     
 
-	Trace_ID_Select_OLD(&rc);
-    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
+	Trace_ID_Select_OLD(&remote_fusion);
+//    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
     /* 4. 串口DMA 发出 */
     HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);

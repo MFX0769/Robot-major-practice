@@ -206,9 +206,9 @@ void vtm_callback_handler(uint8_t *buff)
     vtm_rc.mouse.r = (((mouse_btn_bits >> 2) & 0x03U) != 0U) ? 1U : 0U;   // [130,131]
     
     vtm_rc.kb.key_code = (uint16_t)buff[17] | ((uint16_t)buff[18] << 8);
-    if(dr16_online_cnt > 200)
+    if(dr16_online_cnt > 150)
 	{
-		dr16_online_cnt = 202;
+		dr16_online_cnt = 152;
 		FuseFromVTM();
         remote_fusion.current_source = REMOTE_SOURCE_VTM;
 	}

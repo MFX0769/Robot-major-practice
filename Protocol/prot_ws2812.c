@@ -72,34 +72,7 @@ void clear_all_leds(void)
     }
 }
 
-//void led_flow(uint8_t led_num, Color_t color, uint8_t direction, uint16_t speed_ms)
-//{
-//    static uint8_t current_led = 0;
-//    static uint32_t last_time = 0;
-//    
-//    uint32_t now = HAL_GetTick();
-//    
-//    // 时间控制
-//    if (now - last_time < speed_ms) return;
-//    
-//    last_time = now;
-//    
-//    // 移到下一个灯
-//    current_led++;
-//    if (current_led > led_num) {
-//		update_leds(led_num,OFF);
-//        current_led = 0;		
-//    }
-//    
-//    // 显示
-//    if (direction == 0) {  // 从左到右
-//        update_leds(current_led, color);
-//    } else {  // 从右到左
-//		update_leds(led_num,OFF);
-//        update_leds(led_num - current_led, color);
-//    }
-//    
-//}
+
 
 void led_flow(uint8_t start_led, uint8_t end_led, Color_t color, uint8_t direction, uint16_t speed_ms)
 {

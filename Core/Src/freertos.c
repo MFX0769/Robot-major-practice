@@ -200,7 +200,7 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(can1Task, Task_CAN1Transmit, osPriorityHigh, 0, 256);
    can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
 
-	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 512);
+	osThreadDef(can2Task,Task_CAN2Transmit , osPriorityHigh, 0, 256);
     can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
 	
 	osThreadDef(can3Task,Task_CAN3Transmit , osPriorityHigh, 0, 256);
