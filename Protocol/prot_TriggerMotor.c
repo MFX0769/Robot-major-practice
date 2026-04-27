@@ -246,7 +246,6 @@ void TriggerMotor_control(void)
 						{ //已复位并且单发条件判断通过，则ecd+=，同时判断是否卡弹
 							trigger.trigger_enable = T_DISABLE;//已经执行ecd+=，需要再次复位才允许再次ecd+=
 							shoot.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
-							single_ammo_stuck_judge();//执行卡弹判断
 						}
 			}
 			single_ammo_stuck_judge();//执行卡弹判断

@@ -40,6 +40,7 @@
 #include "debug_task.h"
 #include "judge_comm.h"
 #include "ui_task.h"
+#include "log_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,6 +77,7 @@ osThreadId mode_sw_task_t;
 osThreadId status_task_t;
 osThreadId debug_task_t;
 osThreadId ui_task_t;
+osThreadId log_task_t;
 
 //osThreadId judge_send_task_t;
 
@@ -234,8 +236,8 @@ void MX_FREERTOS_Init(void) {
 //    ui_task_t = osThreadCreate(osThread(uiTask),NULL);
 	
 //////	
-//	osThreadDef(judgesendTask,judge_send_task, osPriorityNormal, 0, 128);
-//    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
+//	osThreadDef(logTask,AirRobot_Log_Task, osPriorityNormal, 0, 128);
+//    log_task_t = osThreadCreate(osThread(logTask),NULL);
 /**************************Low priority task**************************/
 	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
 	status_task_t = osThreadCreate(osThread(statusTask),NULL);

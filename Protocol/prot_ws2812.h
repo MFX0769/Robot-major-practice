@@ -3,8 +3,9 @@
 
 #include "stdint.h"
 
-#define RGB_NUM 32
-#define ZERO_NUM 30
+#define RGB_NUM 17
+#define ZERO_NUM 50
+
 typedef struct
 {
     uint8_t r, g, b;

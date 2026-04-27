@@ -76,8 +76,8 @@
 
 
 //KEYBOARD_MODE_SCALE
-#define KEYBOARD_SCALE_PIT          ( 0.0002f )    //云台任务频率2ms时0.0004f
-#define KEYBOARD_SCALE_YAW	        ( 0.0002f )		//云台任务频率2ms时0.0004f
+#define KEYBOARD_SCALE_PIT          ( 0.0003f )    //云台任务频率2ms时0.0004f
+#define KEYBOARD_SCALE_YAW	        ( 0.0003f )		//云台任务频率2ms时0.0004f
 #define KEYBOARD_SCALE_YAW_SUPPLY   ( -0.0003f )
 
 #define GIMBAL_PIT_CENTER_OFFSET    3400         //电机编码器值的限幅,会比实际小一点点，防止代码把机械带走

@@ -3,7 +3,7 @@
 #include "dma.h"
 
 #define brightness 0x50 //亮度 0x00-0xff
-const uint8_t code[] = {0xE0, 0xF8};
+const uint8_t code[] = {0xC0, 0xF8};
 extern DMA_HandleTypeDef hdma_spi1_tx;
 
 rgb_t rgb = {0};
@@ -32,8 +32,6 @@ void rgb_reflash(uint8_t reflash_num)
         }
     }
     HAL_SPI_Transmit_DMA(&hspi1, rgb.rgb_buffer, 24 * reflash_num  + 2 * ZERO_NUM);
-	// 临时把 rgb_reflash 里的 DMA 换成阻塞
-//HAL_SPI_Transmit(&hspi1, rgb.rgb_buffer, 24 * reflash_num + 2 * ZERO_NUM, 1000);
 }
 
 void rgb_change(uint8_t i, uint8_t status)
@@ -55,6 +53,8 @@ void update_leds(uint8_t led_num,uint8_t status)
 
 void led_range_on(uint8_t start_led, uint8_t end_led, Color_t color)
 {
+    // 先全部熄灭
+//    update_leds(RGB_NUM, OFF);
     
     // 点亮指定范围
     for (uint8_t i = start_led; i <= end_led && i < RGB_NUM; i++) {
@@ -72,7 +72,34 @@ void clear_all_leds(void)
     }
 }
 
-
+//void led_flow(uint8_t led_num, Color_t color, uint8_t direction, uint16_t speed_ms)
+//{
+//    static uint8_t current_led = 0;
+//    static uint32_t last_time = 0;
+//    
+//    uint32_t now = HAL_GetTick();
+//    
+//    // 时间控制
+//    if (now - last_time < speed_ms) return;
+//    
+//    last_time = now;
+//    
+//    // 移到下一个灯
+//    current_led++;
+//    if (current_led > led_num) {
+//		update_leds(led_num,OFF);
+//        current_led = 0;		
+//    }
+//    
+//    // 显示
+//    if (direction == 0) {  // 从左到右
+//        update_leds(current_led, color);
+//    } else {  // 从右到左
+//		update_leds(led_num,OFF);
+//        update_leds(led_num - current_led, color);
+//    }
+//    
+//}
 
 void led_flow(uint8_t start_led, uint8_t end_led, Color_t color, uint8_t direction, uint16_t speed_ms)
 {
@@ -132,11 +159,6 @@ void led_double_flash(uint8_t start_led, uint8_t end_led, Color_t color, uint16_
 
 void rgb_output_data(void)
 {
-//	// 调试：强制点亮第一个灯为红色
-//    rgb_set_color(0, (rgb_color_t){brightness, 0, 0});
-//    rgb_reflash(1);  // 只刷新1个灯
-//    return;  // 跳过下面的逻辑，测试硬件是否正常
-    
     for (int i = 0; i < RGB_NUM; i++) {
         switch (rgb.rgb_status[i]) {
             case OFF: rgb_set_color(i, (rgb_color_t){0,0,0});break;                           //无色

@@ -1,48 +1,48 @@
-//#include "log_task.h"
-//#include "data_log.h"
-//#include "cmsis_os.h"
-//#include "prot_T_imu.h"
-//#include "prot_rm_judge.h"
-//#include "mode_switch_task.h"
-//#include "prot_vision.h"
-//#include "prot_FricMotor.h"
-//#include "prot_TriggerMotor.h"
-//#include "gimbal_task.h"
-//#include "prot_dm_motor.h"
-//#include "shoot_task.h"
-//#include <stdio.h>
+#include "log_task.h"
+#include "data_log.h"
+#include "cmsis_os.h"
+#include "prot_T_imu.h"
+#include "prot_rm_judge.h"
+#include "mode_switch_task.h"
+#include "prot_vision.h"
+#include "prot_FricMotor.h"
+#include "prot_TriggerMotor.h"
+#include "gimbal_task.h"
+#include "prot_dm_motor.h"
+#include "shoot_task.h"
+#include <stdio.h>
 
 
-///*****************全局变量定义**********************/
-////robot_state_e robot_current_state = ROBOT_STATE_INIT;
+/*****************全局变量定义**********************/
+//robot_state_e robot_current_state = ROBOT_STATE_INIT;
 
-///*****************数据结构体定义**********************/
-//extern pid_t pid_trigger_ecd;
-//extern pid_t pid_trigger_spd;
+/*****************数据结构体定义**********************/
+extern pid_t pid_trigger_ecd;
+extern pid_t pid_trigger_spd;
 
 
-///**
-//  * @brief  初始化空中机器人日志系统
-//  * @param  huart: 使用的串口句柄
-//  */
+/**
+  * @brief  初始化空中机器人日志系统
+  * @param  huart: 使用的串口句柄
+  */
 //void AirRobot_Log_Init(void)
 //{
 //    // 初始化日志模块，缓冲区长度200，发送周期50ms
-//    Log_Init(&huart3, 200, 10);
+//    Log_Init(&huart3, 128, 10);
 
 //	//HAL_UART_Transmit(&huart5, (uint8_t*)"TEST\n", 5, 1000);
 //}
 
-///**
-//  * @brief  日志任务，定期记录机器人状态信息
-//  * @note   纯发送，不做任何数据拷贝
-//  */
-//void AirRobot_Log_Task(const void* argu)
-//{
-//    uint32_t thread_wake_time = osKernelSysTick();
-//    
-//    for (;;)
-//    {
+/**
+  * @brief  日志任务，定期记录机器人状态信息
+  * @note   纯发送，不做任何数据拷贝
+  */
+void AirRobot_Log_Task(const void* argu)
+{
+    uint32_t thread_wake_time = osKernelSysTick();
+    
+    for (;;)
+    {
 //        if (log_info.log_status == LOG_READY || log_info.log_status == LOG_NOTICE)
 //        {
 ////            Log_Send("[time][%lu] ID=%d HP=%d/%d Lv=%d Camp=%s Bullet=%d@%dcm/s\r\n", 
@@ -101,9 +101,9 @@
 //            Log_Send("----------------------------------------\r\n");
 //        }
 //        
-//        osDelayUntil(&thread_wake_time, 10);
-//    }
-//}
+        osDelayUntil(&thread_wake_time, 10);
+    }
+}
 
 /////**
 ////  * @brief  日志任务，定期记录机器人状态信息

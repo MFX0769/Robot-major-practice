@@ -272,5 +272,6 @@ void USER_UART_Init()
     __HAL_UART_ENABLE_IT(&VISION_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&VISION_HUART,dma_vision_buf,DMA_VISION_LEN);
 	log_init(&DEBUG_HUART);
+//	AirRobot_Log_Init();
 }
 

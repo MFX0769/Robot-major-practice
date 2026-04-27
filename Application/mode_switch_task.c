@@ -362,7 +362,7 @@ void vtm_safe_lock(void)
 void fly_led_status(void)
 {
 	
-	if(remote_fusion.keyboard.bit.W || remote_fusion.channel.ch4 > 600) // ÏÈÈ«²¿Ï¨Ãð
+	if(remote_fusion.keyboard.bit.W || remote_fusion.channel.ch4 > 600) // ????????
     {	update_leds(RGB_NUM, OFF);
 		led_range_on(4, 12, GREEN);
 	}
@@ -383,8 +383,7 @@ void fly_led_status(void)
 	{	update_leds(RGB_NUM, OFF);	
 		led_range_on(0, RGB_NUM, RED);
 	}
-	else led_double_flash(0, 16, GREEN, 600, 600);  // 0-7ºÅµÆË«ÉÁ£¬ºìÉ«£¬ÁÁ200msÃð200ms
-
+	else led_double_flash(0, 16, GREEN, 600, 600);  // 0-7???????????????200ms??200ms
+	
 	rgb_output_data();
-
 }

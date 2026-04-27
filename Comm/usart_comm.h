@@ -26,6 +26,7 @@ extern "C" {
 #include "prot_rm_judge.h"
 #include "prot_vision.h"
 #include "data_log.h"
+#include "log_task.h"
 /* Private macros ------------------------------------------------------------*/
 //#define USART1_RX_BUFFER_SIZE 18  //dt7遥控数据长度
 //#define USART2_RX_BUFFER_SIZE 100
@@ -64,9 +65,9 @@ void comm_usart_init(void);
 #define 	DBUS_HUART    huart1
 #define   JUDGE_HUART   huart2
 #define   NEW_RC_HUART  huart9
-#define 	TUCHUAN_HUART		huart5		//因最新陀螺仪使用CAN，暂时无用
+//#define 	TUCHUAN_HUART		huart5		//因最新陀螺仪使用CAN，暂时无用
 #define DEBUG_HUART	huart6 
-
+#define LOG_HUART huart3
 #define   VISION_HUART	huart10
 
 #define  DMA_DBUS_LEN			18
