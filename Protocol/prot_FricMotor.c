@@ -39,9 +39,9 @@ void FricMotor_init(void)
 {	
 
 					
-     PID_struct_init(&fric_spd_pid[FRIC_LEFT], 16000, 0,
+     PID_struct_init(&fric_spd_pid[FRIC_LEFT], 8000, 0,
                     5, 0, 0,0,0,0,Integral_Limit);
-    PID_struct_init(&fric_spd_pid[FRIC_RIGHT], 16000, 0,
+    PID_struct_init(&fric_spd_pid[FRIC_RIGHT], 8000, 0,
                     5, 0, 0,0,0,0,Integral_Limit);
 									
     shoot.firc_mode = FIRC_MODE_STOP;
@@ -71,7 +71,7 @@ void FricMotor_init(void)
 								//7600 28.5-29.5 //ÊÔ¹ýµôµ½26
   */
 
-
+ 
 void FricMotor_Control(void)
 {        
 	static int a,b=0;

@@ -114,6 +114,7 @@ typedef enum
 extern rc_info_t rc;
 extern scale_t scale;
 extern uint16_t dr16_online_cnt;
+extern uint8_t kb_status[12];
 
 /* Exported function declarations --------------------------------------------*/
 void rc_callback_handler(rc_info_t *rc, uint8_t *buff);

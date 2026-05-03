@@ -49,7 +49,7 @@
 #define FLAG_VISION_SENTRY      kb_status[KEY_VISION_SENTRY]
 
 
-#define HIGH_SPEED	 6000 // 2025年5月15日 比赛实际射速21~23 6000
+#define HIGH_SPEED	 5900 // 2025年5月15日 比赛实际射速21~23 6000
 
 
 

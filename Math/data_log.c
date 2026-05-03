@@ -3,7 +3,7 @@
 #include "cmsis_os.h"
 
 UART_HandleTypeDef *log_huart;
-log_struct_t log_info;
+//log_struct_t log_info;
 
 /*********************************** printf重定向 *********************************/
 /* printf重定向使用的为HAL_UART_Transmit */

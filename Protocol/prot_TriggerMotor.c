@@ -121,23 +121,6 @@ uint8_t single_shoot_enable(void) {
 
 uint8_t series_shoot_enable(void) {
 	
-//	  #if NEW_RC 
-	  
-//	if(remote_online.NEW_OLD_RC_FLAG == 1)
-//	{
-//		return(
-//        ((ctrl_mode == REMOTER_MODE)// && vision.shoot_enable
-//            || (ctrl_mode == KEYBOARD_MODE && new_rc.mouse_left) 
-//            || (ctrl_mode == VISION_MODE && vsn_drive.shoot_enable)
-//        )
-//        && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* 射频控制 */
-//		&& ABS(shoot.pid.trigger_ecd_error) < 0.9f * TRIGGER_MOTOR_ECD
-//    );
-//	}
-//		#else
-		
-//		else if(remote_online.NEW_OLD_RC_FLAG == 0)
-//		{
 			return(
 				((ctrl_mode == REMOTER_MODE)// && vision.shoot_enable
 					|| (ctrl_mode == KEYBOARD_MODE && remote_fusion.mouse.left) 
@@ -147,8 +130,7 @@ uint8_t series_shoot_enable(void) {
         && (shoot.frequency_cnt  >= TRIGGER_PERIOD)  /* 射频控制 */
 		&& ABS(shoot.pid.trigger_ecd_error) < TRIGGER_MOTOR_ECD  /*拨盘误差控制*/
     );
-//	}
-//    #endif
+
 }
 
 /*单发卡弹判断函数：single_shoot_enable通过则进入判断。单发模式下，若ecd_err大于1.2发的位置，则视为卡弹。 即1.3次单发请求通过，拨弹盘都没转超过0.5发.注意，该函数在单发ecd+=后被执行，所以该函数内的ecd_err必须至少大于1发的位置，否则必定误判*/

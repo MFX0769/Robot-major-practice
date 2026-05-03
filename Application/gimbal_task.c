@@ -41,10 +41,10 @@ static void gimbal_init(void)
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.0f, 0.018f, 20.0f, 0,0,0,NONE_IMPROVE);  //有裁判系统
-    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.02,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
+	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.8f, 0.021f, 14.0f, 0,0,0,NONE_IMPROVE);  //有裁判系统
+    PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.021,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 11.5f, 0.00f, 18.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
+    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 12.8f, 0.00f, 18.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
     PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
 //	
 //	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE); //无裁判系统
@@ -56,16 +56,17 @@ static void gimbal_init(void)
 }
 
 float yaw_err;
+//float limit_err;
+
 static void gimbal_pid_calc(void)
 {
-//	if(ctrl_mode == PROTECT_MODE){return;}
 //	if (dm3507_motor.err_code != 1) {
 //	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 ////		return;
 //    }
     //位置环反馈 陀螺仪
     //速度环反馈 陀螺仪
-    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -15);
+    gimbal.pit_angle.ref = data_limit(gimbal.pit_angle.ref, 53, -8);
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //	  gimbal.pit_spd.ref = -10;
@@ -90,23 +91,45 @@ static void gimbal_pid_calc(void)
 	//	dm3507_motor.t_ref = 0;
 		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
 	}
-//--------------------yaw_pid_calu----------------------------------//
+//--------------------yaw_pid_calu(imu)----------------------------------//
 	/*yaw限位*/
 //	gimbal.gimbal_limit.yaw_angle_max = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +0.0f;//
 //	gimbal.gimbal_limit.yaw_angle_min = -imu_data.yaw - yaw_motor.ecd*MOTOR_ECD_TO_DEG  +0.0f;//
+//	limit_err = 
 	
-	
-//	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,gimbal.gimbal_limit.yaw_angle_max,gimbal.gimbal_limit.yaw_angle_min);	//目标值限幅	
     gimbal.yaw_angle.fdb = imu_data.yaw;
-//	gimbal.yaw_angle.ref = data_limit(gimbal.yaw_angle.ref ,360,0);	//目标值限幅	
-
-	
     //此yaw_err用于云台yaw环形控制
     yaw_err = circle_error(gimbal.yaw_angle.ref, gimbal.yaw_angle.fdb, 360);
+		
+    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);
+
+//	uint16_t ecd = yaw_motor.ecd;
+										
+//	if (ecd >= YAW_ECD_RIGHT) {
+//        // 超右限位：给一个往回拉的期望速度
+//        float pull_back = -(float)(ecd - YAW_ECD_RIGHT) * YAW_LIMIT_KP;
+//        // 只允许≤pull_back（往回的方向）
+//        if (gimbal.yaw_spd.ref > pull_back) {
+//            gimbal.yaw_spd.ref = pull_back;
+//        }
+//    }
+//    else if (ecd <= YAW_ECD_LEFT) {
+//        // 超左限位
+//        float pull_back = (float)(YAW_ECD_LEFT - ecd) * YAW_LIMIT_KP;
+//        // 只允许≥pull_back（往回的方向）
+//        if (gimbal.yaw_spd.ref < pull_back) {
+//            gimbal.yaw_spd.ref = pull_back;
+//        }
+//    }
 	
-    gimbal.yaw_spd.ref = pid_calc(&gimbal.yaw_angle.pid, gimbal.yaw_angle.fdb, gimbal.yaw_angle.fdb + yaw_err);  
 	gimbal.yaw_spd.fdb = imu_data.wz;
 	gimbal.yaw_output = -pid_calc(&gimbal.yaw_spd.pid, gimbal.yaw_spd.fdb, gimbal.yaw_spd.ref);
+/*----------------------yaw_pid_calu(ecd)--------------*/
+
+//	gimbal.yaw_ecd.fdb = (float)yaw_motor.ecd / 8192 * 2  * PI;
+//	yaw_err = circle_error(gimbal.yaw_angle.ref, gimbal.yaw_ecd.fdb, 360);
+//	gimbal.yaw_spd_ecd.ref = pid_calc(&gimbal.yaw_ecd.pid, gimbal.yaw_ecd.fdb + yaw_err, gimbal.yaw_ecd.fdb);
+	
 /*----------------------yaw电机实际控制输出--------------*/
 	if(ctrl_mode==PROTECT_MODE)
 	{

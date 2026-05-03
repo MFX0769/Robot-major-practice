@@ -5,6 +5,14 @@
 #include "stdint.h"
 
 #define MOTOR_ECD_TO_DEG 0.04395067757294591624954f //     360 /8192
+// 标定值（手动摆到位置后记录，写死在代码里或存flash）
+#define YAW_ECD_LEFT    500     // 左硬限位 ecd
+#define YAW_ECD_RIGHT   4000    // 右硬限位 ecd
+#define YAW_ECD_CENTER  2250    // 正对机头（可选，用于显示角度）
+
+// 限位参数
+#define YAW_LIMIT_KP    0.03f    // 弹性拉回系数，调大拉回快
+
 
 typedef struct
 {

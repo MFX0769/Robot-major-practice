@@ -95,9 +95,11 @@ static void shoot_mode_sw(void)
 //        
         case RC_DN:
         {
-				if( key_scan_clear(KB_B) ){
-					 shoot.firc_mode = FIRC_MODE_RUN;
-					 shoot.stir_mode = STIR_MODE_SINGLE;
+			keyboard_scan(KB_B);  // 更新 B 键 toggle 状态，不按的时候也会维持状态
+    
+			if(kb_status[KB_B] == KEY_RUN) {
+				shoot.firc_mode = FIRC_MODE_RUN;
+				shoot.stir_mode = STIR_MODE_SINGLE;
 				}
 				else{	 
 					 shoot.firc_mode = FIRC_MODE_RUN;

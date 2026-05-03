@@ -232,8 +232,8 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(debugTask, debug_task, osPriorityNormal, 0, 128);
     debug_task_t = osThreadCreate(osThread(debugTask), NULL);
 	
-//	osThreadDef(uiTask,ui_task, osPriorityNormal, 0, 128);
-//    ui_task_t = osThreadCreate(osThread(uiTask),NULL);
+	osThreadDef(uiTask,ui_task, osPriorityNormal, 0, 256);
+    ui_task_t = osThreadCreate(osThread(uiTask),NULL);
 	
 //////	
 //	osThreadDef(logTask,AirRobot_Log_Task, osPriorityNormal, 0, 128);

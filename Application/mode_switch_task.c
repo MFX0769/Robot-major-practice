@@ -84,11 +84,6 @@ void mode_switch_task(void const *argu)
 
 				wdg_user_set_bit(WDG_BIT_TASK_MODES);
 		
-
-    volatile uint32_t ndtr = DMA2_Stream1->NDTR;
-    
-    // 在这里打断点，看变量的值
-    __NOP();  // 断点位置
 		
         osDelay(5);				
     }
@@ -373,17 +368,17 @@ void fly_led_status(void)
 	else if(remote_fusion.keyboard.bit.S || remote_fusion.channel.ch4 < -600) 
 	{	update_leds(RGB_NUM, OFF);		
 		led_range_on(0, 4, GREEN);
-		led_range_on(12,16, GREEN);
+		led_range_on(11,15, GREEN);
 	}
 	else if(remote_fusion.keyboard.bit.A || remote_fusion.channel.ch3 < -600) 
 	{	update_leds(RGB_NUM, OFF);	
-		led_range_on(12, 16, GREEN);
+		led_range_on(9, 15, GREEN);
 	}
 	else if(remote_fusion.keyboard.bit.Q) 
 	{	update_leds(RGB_NUM, OFF);	
 		led_range_on(0, RGB_NUM, RED);
 	}
-	else led_double_flash(0, 16, GREEN, 600, 600);  // 0-7???????????????200ms??200ms
+	else led_double_flash(0, 15, GREEN, 600, 600);  // 0-7???????????????200ms??200ms
 	
 	rgb_output_data();
 }

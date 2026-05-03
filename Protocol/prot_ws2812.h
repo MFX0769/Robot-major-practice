@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define RGB_NUM 17
+#define RGB_NUM 15
 #define ZERO_NUM 50
 
 typedef struct

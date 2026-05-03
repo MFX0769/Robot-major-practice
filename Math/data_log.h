@@ -28,42 +28,40 @@ extern "C"
 #include "string.h"
 #include "stdarg.h"
 #include "cmsis_os.h"
-#ifdef __cplusplus
- extern "C" {
-#endif
 
-extern UART_HandleTypeDef huart3;  // 确保CubeMX已生成
-#ifndef ASSERT
-	#define ASSERT(x) do {while(!(x));} while(0)
-#endif
-#define LOG_WARN_LEN 	100
-#define LOG_ERR_LEN  	128
-#define LOG_WARN_TERM   20
-#define LOG_ERR_TERM    10
 
-/**< status of log enum.*/
-typedef enum
-{
-	LOG_EMERGENCY,	/**< system is unusable.               */
-	LOG_CRITICAL,	/**< critical conditions.              */
-	LOG_READY,		/**< system is ready.              	   */
-	LOG_ERROR,		/**< error conditions.                 */
-	LOG_NOTICE,		/**< normal but significant condition. */
-	LOG_INFO,		/**< informational messages.           */
-	LOG_DEBUG,		/**< debug-level messages.             */
-}log_status_e;
-/**< log infomation.*/
-typedef struct
-{
-	UART_HandleTypeDef* log_huart;	/**< use this huart to send log.*/
-	log_status_e log_status;		/**< log status now.*/
-	uint16_t log_len;				/**< log len.but you must make this bigger than that you will send*/
-	uint8_t log_term;				/**< log task term.*/
-	uint8_t *log_buffer;			/**< the buffer you will send.*/
-}log_struct_t;
-extern log_struct_t log_info;
-void Log_Init(UART_HandleTypeDef* huart,uint16_t len,uint8_t term);
-void Log_Send(const char* format,...);
+//extern UART_HandleTypeDef huart3;  // 确保CubeMX已生成
+//#ifndef ASSERT
+//	#define ASSERT(x) do {while(!(x));} while(0)
+//#endif
+//#define LOG_WARN_LEN 	100
+//#define LOG_ERR_LEN  	128
+//#define LOG_WARN_TERM   20
+//#define LOG_ERR_TERM    10
+
+///**< status of log enum.*/
+//typedef enum
+//{
+//	LOG_EMERGENCY,	/**< system is unusable.               */
+//	LOG_CRITICAL,	/**< critical conditions.              */
+//	LOG_READY,		/**< system is ready.              	   */
+//	LOG_ERROR,		/**< error conditions.                 */
+//	LOG_NOTICE,		/**< normal but significant condition. */
+//	LOG_INFO,		/**< informational messages.           */
+//	LOG_DEBUG,		/**< debug-level messages.             */
+//}log_status_e;
+///**< log infomation.*/
+//typedef struct
+//{
+//	UART_HandleTypeDef* log_huart;	/**< use this huart to send log.*/
+//	log_status_e log_status;		/**< log status now.*/
+//	uint16_t log_len;				/**< log len.but you must make this bigger than that you will send*/
+//	uint8_t log_term;				/**< log task term.*/
+//	uint8_t *log_buffer;			/**< the buffer you will send.*/
+//}log_struct_t;
+//extern log_struct_t log_info;
+//void Log_Init(UART_HandleTypeDef* huart,uint16_t len,uint8_t term);
+//void Log_Send(const char* format,...);
 
 /*DATA_DEBUG_LEVEL为0U时，取消各种Log
  *                为1U时，使用Log打印日志
