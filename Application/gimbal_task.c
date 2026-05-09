@@ -46,7 +46,7 @@ static void gimbal_init(void)
     
     PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 12.8f, 0.00f, 18.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
     PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
-//	
+	
 //	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE); //无裁判系统
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //无裁判系统
 	
@@ -112,6 +112,7 @@ static void gimbal_pid_calc(void)
 //        if (gimbal.yaw_spd.ref > pull_back) {
 //            gimbal.yaw_spd.ref = pull_back;
 //        }
+//			gimbal.yaw_angle.ref = imu_data.yaw;  // 或者 imu_data.yaw + 允许的小偏移
 //    }
 //    else if (ecd <= YAW_ECD_LEFT) {
 //        // 超左限位
@@ -120,6 +121,8 @@ static void gimbal_pid_calc(void)
 //        if (gimbal.yaw_spd.ref < pull_back) {
 //            gimbal.yaw_spd.ref = pull_back;
 //        }
+//			gimbal.yaw_angle.ref = imu_data.yaw;  // 或者 imu_data.yaw + 允许的小偏移
+
 //    }
 	
 	gimbal.yaw_spd.fdb = imu_data.wz;

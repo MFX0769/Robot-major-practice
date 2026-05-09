@@ -359,26 +359,26 @@ void fly_led_status(void)
 	
 	if(remote_fusion.keyboard.bit.W || remote_fusion.channel.ch4 > 600) // ????????
     {	update_leds(RGB_NUM, OFF);
-		led_range_on(4, 12, GREEN);
+		led_range_on(4, 12, PURPLE);
 	}
 	else if(remote_fusion.keyboard.bit.D || remote_fusion.channel.ch3 > 600) 
 	{	update_leds(RGB_NUM, OFF);	
-		led_range_on(0, 8, GREEN);
+		led_range_on(0, 8, PURPLE);
 	}
 	else if(remote_fusion.keyboard.bit.S || remote_fusion.channel.ch4 < -600) 
 	{	update_leds(RGB_NUM, OFF);		
-		led_range_on(0, 4, GREEN);
-		led_range_on(11,15, GREEN);
+		led_range_on(0, 4, PURPLE);
+		led_range_on(11,16, PURPLE);
 	}
 	else if(remote_fusion.keyboard.bit.A || remote_fusion.channel.ch3 < -600) 
 	{	update_leds(RGB_NUM, OFF);	
-		led_range_on(9, 15, GREEN);
+		led_range_on(8, 16, PURPLE);
 	}
 	else if(remote_fusion.keyboard.bit.Q) 
 	{	update_leds(RGB_NUM, OFF);	
 		led_range_on(0, RGB_NUM, RED);
 	}
-	else led_double_flash(0, 15, GREEN, 600, 600);  // 0-7???????????????200ms??200ms
+	else led_double_flash(0, 16, PURPLE, 600, 600);  // 0-7???????????????200ms??200ms
 	
 	rgb_output_data();
 }

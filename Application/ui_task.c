@@ -14,12 +14,15 @@
 #include "prot_vision.h"      // 视觉数据
 #include "prot_rm_judge.h"    // 裁判系统数据
 #include "prot_remote_fusion.h"
+#include "shoot_task.h"
+#include "prot_dm_motor.h"
 /* ========== 外部变量声明 ========== */
 extern Taurus_imu_data_t     imu_data;
 extern robot_status_t        robot_status;
 extern game_status_t         Game_status;
 extern vision_t              vision;
-
+extern shoot_t               shoot;
+extern dm_motor_t 			 dm3507_motor;
 /* ========== 配置 ========== */
 #define UI_INIT_RETRY   30
 #define UI_TASK_PERIOD  10  // 10ms = 100Hz
@@ -36,6 +39,9 @@ static void ui_update(void)
 
     // 放大100倍转为整数（30.5° → 3050）
     ui_g_Ungroup_Pitch_Number->number = (int32_t)(pitch_deg * 100.0f);
+	
+	int8_t pitch_tem = dm3507_motor.t_rotor;
+	ui_g_Ungroup_pitch_temperature->number = pitch_tem;
     
     /* ----- 2. 视觉锁定椭圆 ----- */
     // 判断视觉锁定状态：aim_status == AIMING 且 online
@@ -50,10 +56,11 @@ static void ui_update(void)
     // else 保持白色
     
     ui_g_Ungroup_vision->color = color;
+	
+    ui_g_Ungroup_shoot_mode->number = shoot.stir_mode;
     
-    // 可选：根据目标位置调整椭圆中心（如果视觉有目标坐标）
-    // 注意：你的vision结构体没有直接的target_x/y，需要从其他字段计算或添加
-    // 如果有需要，可以在这里更新 start_x/start_y
+	ui_g_Ungroup_vision_trice_id->number = vision.trace_id;
+    
 	ui_update_g_Ungroup();
 
 }
