@@ -82,8 +82,7 @@ void mode_switch_task(void const *argu)
 		}
 		/*∑… ÷µ∆±‰ªØ*/
 			fly_led_status();
-		keyboard_scan(KB_V);
-		if(kb_status[KB_V] == KEY_RUN) {
+		if(key_scan_clear(KB_V)) {
 				dm_set_cmd(&dm3507_motor,DM_ENABLE_CMD);
 		}
 				wdg_user_set_bit(WDG_BIT_TASK_MODES);
