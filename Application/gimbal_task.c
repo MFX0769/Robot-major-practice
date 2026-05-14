@@ -28,7 +28,6 @@
 #include "prot_remote_fusion.h"
 gimbal_t gimbal;
 
-
 static void gimbal_init(void)
 {
 	scale.ch1 = RC_CH1_SCALE_IMU;//灵敏度
@@ -41,11 +40,11 @@ static void gimbal_init(void)
 //    PID_struct_init(&gimbal.yaw_angle.pid, 10000,2000.0f, 0.0f, 0.0f, 0.0f, 0,0,0,NONE_IMPROVE);
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 0.0f,0.0f, 0.00, 0, 0.0f, 0.0f, NONE_IMPROVE);
 	
-	PID_struct_init(&gimbal.pit_angle.pid,  280,80.0f, 22.8f, 0.021f, 14.0f, 0,0,0,NONE_IMPROVE);  //有裁判系统
+	PID_struct_init(&gimbal.pit_angle.pid,  280,50.0f, 21.8f, 0.021f, 15.0f, 0,0,0,NONE_IMPROVE);  //有裁判系统
     PID_struct_init(&gimbal.pit_spd.pid, 3, 1, 0.021,0.0, 0.01, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
     
-    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 12.8f, 0.00f, 18.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
-    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 185.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
+    PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 15.4f, 0.00f, 5.0f, 0,0,0,NONE_IMPROVE); //有裁判系统
+    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 198.0f,0.0f, 13.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //有裁判系统
 	
 //	PID_struct_init(&gimbal.yaw_angle.pid, 500,40.0f, 25.0f, 0.0f, 16.0f, 0,0,0,NONE_IMPROVE); //无裁判系统
 //    PID_struct_init(&gimbal.yaw_spd.pid, 25000, 10000.0f, 150.0f,0.0f, 10.00, 0, 0.0f, 0.0f, NONE_IMPROVE); //无裁判系统
@@ -56,6 +55,7 @@ static void gimbal_init(void)
 }
 
 float yaw_err;
+float pit_err;
 //float limit_err;
 
 static void gimbal_pid_calc(void)
@@ -70,7 +70,7 @@ static void gimbal_pid_calc(void)
     gimbal.pit_angle.fdb = imu_data.pitch;
     gimbal.pit_spd.ref = pid_calc(&gimbal.pit_angle.pid, gimbal.pit_angle.fdb, gimbal.pit_angle.ref);
 //	  gimbal.pit_spd.ref = -10;
-
+	pit_err = fabsf(gimbal.pit_angle.ref  - gimbal.pit_angle.fdb);
 //    gimbal.pit_spd.fdb = -gimbal_imu.wy - arm_cos_f32(yaw_err) * chassis_imu.wy;
     gimbal.pit_spd.fdb = imu_data.wy;
     gimbal.pit_output = pid_calc(&gimbal.pit_spd.pid, gimbal.pit_spd.fdb, gimbal.pit_spd.ref);
@@ -86,7 +86,15 @@ static void gimbal_pid_calc(void)
 //		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
 //	}
 	else{
-		pitch_motor.t_ref = gimbal.pit_output;
+		if(gimbal.pit_output<0)
+		{
+			pitch_motor.t_ref = gimbal.pit_output*1.15;
+		}
+		else
+		{
+			pitch_motor.t_ref = gimbal.pit_output*0.75;
+		}
+		
 		dm3507_motor.t_ref = gimbal.pit_output;
 	//	dm3507_motor.t_ref = 0;
 		dm_mit_control(&dm3507_motor);//！！！新增：调用协议中的控制函数，而不是在can发送任务中调用！！！
@@ -205,9 +213,10 @@ void gimbal_task(void const *argu)
 			}break;
 			default:break;
 		}
+		        taskEXIT_CRITICAL();
+
 		gimbal_pid_calc();
 //    	wdg_user_set_bit(WDG_BIT_TASK_GIMBAL);		
-        taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
 	}
 }

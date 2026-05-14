@@ -107,12 +107,6 @@ static void status_init(void) {
 ////    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);  //LED_A
 //}
 
-void dm_motor_online(void)
-{
-	if (dm3507_motor.err_code != 1) {
-	dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_3,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
-    }
-}
 
 void status_task(void const *argu) {
     status_init();
@@ -161,7 +155,6 @@ void status_task(void const *argu) {
 				
 //        taskEXIT_CRITICAL();
 
-		dm_motor_online();
 
         osDelay(30); // 决定LED time_cnt 单位，比任务最长的周期长两到三倍即可  
 //        osDelayUntil(&status_task_time,20);//必须使用绝对延时！否则会影响遥控器断联时间的判断！！！  2025年5月14日 2：22 好家伙改出石了，小于15就会，导致 lock_flag内八松掉之后马上变回0

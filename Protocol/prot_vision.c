@@ -5,7 +5,7 @@
 	*
   * @brief  视觉信息解算
 	*
-  *	@author
+  *	@author myh
   *
   */
 
@@ -106,16 +106,16 @@ void vision_data_handler(uint8_t *pVision_Data)
         //     vsn_drive.target_yaw_angle = gimbal.pid.yaw_angle_ref * 180.0f / PI;
 
        /* 4.3 保存视觉下发的误差门限（单位：弧度） */
-        vision.yaw_min_err = vision.rx[0].data.dis;   // �Ӿ��� dis ���ǻ���
-        vision.pit_min_err = vision.rx[0].data.dis2;  // �Ӿ��� dis2 ���ǻ���
+        vision.min_err = vision.rx[0].data.dis;  // �Ӿ��� dis2 ���ǻ���
+//        vision.pit_min_err = vision.rx[0].data.dis2;  // �Ӿ��� dis2 ���ǻ���
 
         /* 4.4 射击判定：PID 参考 vs 反馈，单位统一为弧度 */
-        float yaw_err = fabsf(gimbal.yaw_angle.ref - gimbal.yaw_angle.fdb);
-        float pit_err = fabsf(gimbal.pit_angle.ref  - gimbal.pit_angle.fdb);
+//        float vision_yaw_err = fabsf(gimbal.yaw_angle.ref - gimbal.yaw_angle.fdb);
+//        float vision_pit_err = fabsf(gimbal.pit_angle.ref  - gimbal.pit_angle.fdb);
 
-        if (yaw_err < vision.yaw_min_err &&
-            pit_err < vision.pit_min_err &&
-            (vision.rx[0].data.fire == 1 || vision.rx[0].data.fire == 2))
+        if (ABS(yaw_err) < vision.min_err && \
+            ABS(gimbal.pit_angle.fdb - vision.target_pit_angle) < vision.min_err && \
+            vision.rx[0].data.fire != 0)
         {
             vision.shoot_enable = 1;
         } else {
@@ -127,8 +127,8 @@ void vision_data_handler(uint8_t *pVision_Data)
     }
 
     /* 5. 调试标志位（与旧代码一致） */
-    vis_e[0] = (ABS(gimbal.yaw_angle.fdb- vision.target_yaw_angle * PI / 180.0f) < vision.yaw_min_err) ? 1 : 0;
-    vis_e[1] = (ABS(gimbal.pit_angle.fdb  - vision.target_pit_angle * PI / 180.0f) < vision.pit_min_err) ? 1 : 0;
+    vis_e[0] = (ABS(gimbal.yaw_angle.fdb- vision.target_yaw_angle * PI / 180.0f) < vision.min_err) ? 1 : 0;
+    vis_e[1] = (ABS(gimbal.pit_angle.fdb  - vision.target_pit_angle * PI / 180.0f) < vision.min_err) ? 1 : 0;
 
     /* 6. 首次丢失 */
     if (last_aim_status == AIMING && vision.aim_status == UNAIMING)
@@ -204,8 +204,8 @@ void vsn_gimbal_ref_calc(void)
 void Trace_ID_Select_OLD(RemoteFusion_Handle_t *remote_fusion)
 {
 	if(remote_fusion->keyboard.bit.Z)  vision_tx.data.trace_id = 7;  // W - 前哨站
-    if(remote_fusion->keyboard.bit.X)  vision_tx.data.trace_id = 4;  // Z - 前哨站前装甲
-    if(remote_fusion->keyboard.bit.C)  vision_tx.data.trace_id = 3;  // A - 左侧，前哨站前装甲 3号
+    if(remote_fusion->keyboard.bit.X)  vision_tx.data.trace_id = 2;  // Z - 前哨站前装甲
+    if(remote_fusion->keyboard.bit.C)  vision_tx.data.trace_id = 3;  // A - 步兵 3号
     if(remote_fusion->keyboard.bit.F)  vision_tx.data.trace_id = 1;  // D - 右侧，大符位，英雄
 //    if(remote_fusion->keyboard.bit.S)  vision_tx.data.trace_id = 2;  // S - 哨兵站，己方前哨站的攻击
 }

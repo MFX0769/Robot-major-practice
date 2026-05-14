@@ -13,6 +13,7 @@
 #include "prot_new_rc.h"
 #include "prot_remote_fusion.h"
 #include "prot_ws2812.h"
+#include "prot_dm_motor.h"
 static void unlock_init(void);
 static void sw1_mode_handler(void);
 static void rc_abnormal_proess(void);
@@ -81,7 +82,10 @@ void mode_switch_task(void const *argu)
 		}
 		/*∑… ÷µ∆±‰ªØ*/
 			fly_led_status();
-
+		keyboard_scan(KB_V);
+		if(kb_status[KB_V] == KEY_RUN) {
+				dm_set_cmd(&dm3507_motor,DM_ENABLE_CMD);
+		}
 				wdg_user_set_bit(WDG_BIT_TASK_MODES);
 		
 		
@@ -377,6 +381,10 @@ void fly_led_status(void)
 	else if(remote_fusion.keyboard.bit.Q) 
 	{	update_leds(RGB_NUM, OFF);	
 		led_range_on(0, RGB_NUM, RED);
+	}
+	else if(remote_fusion.keyboard.bit.E) 
+	{	update_leds(RGB_NUM, OFF);	
+		led_range_on(0, RGB_NUM, YELLOW);
 	}
 	else led_double_flash(0, 16, PURPLE, 600, 600);  // 0-7???????????????200ms??200ms
 	

@@ -55,6 +55,8 @@ void dm_motor_init(dm_motor_t *motor,uint8_t motor_type,prot_can_channel_e can_c
 	motor->motor_type = motor_type;
 	motor->zero_point = zero_point;
 	
+	dm_set_cmd(motor,DM_CLEAR_CMD);
+    HAL_Delay(10);
 	dm_set_cmd(motor,DM_ENABLE_CMD);
 	HAL_Delay(10);
 	dm_mit_set_para(motor,0,0,0,0,0);

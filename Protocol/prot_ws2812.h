@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define RGB_NUM 15
+#define RGB_NUM 16
 #define ZERO_NUM 50
 
 typedef struct
@@ -19,15 +19,15 @@ typedef struct
 } rgb_t;
 
 typedef enum {
-    OFF = 0,      // ÎÞÉ«/¹Ø±Õ
-    RED,          // ºìÉ«
-    GREEN,        // ÂÌÉ«
-    BLUE,         // À¶É«
-    YELLOW,       // »ÆÉ«
-    PURPLE,       // ×ÏÉ«
-    CYAN,         // µåÉ«/ÇàÉ«
-    WHITE,        // °×É«
-    MAX           // ÑÕÉ«×ÜÊý£¬ÓÃÓÚ±ß½ç¼ì²é
+    OFF = 0,      // ï¿½ï¿½É«/ï¿½Ø±ï¿½
+    RED,          // ï¿½ï¿½É«
+    GREEN,        // ï¿½ï¿½É«
+    BLUE,         // ï¿½ï¿½É«
+    YELLOW,       // ï¿½ï¿½É«
+    PURPLE,       // ï¿½ï¿½É«
+    CYAN,         // ï¿½ï¿½É«/ï¿½ï¿½É«
+    WHITE,        // ï¿½ï¿½É«
+    MAX           // ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ß½ï¿½ï¿½ï¿½
 }Color_t;
 
 extern rgb_t rgb;

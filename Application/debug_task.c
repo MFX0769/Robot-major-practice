@@ -41,7 +41,7 @@ extern float std;
 	
 float float_test;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 5; 
+uint8_t debug_wave = 9; 
 
 void log_scope_data_pkg(void)
 {
@@ -136,15 +136,19 @@ void log_scope_data_pkg(void)
             break;
         }
 		case 4: { 
-					log_scope_get_data(vision.rx_cnt);
-					log_scope_get_data(vision.target_pit_angle);
-					log_scope_get_data(vision.target_yaw_angle);
+//					log_scope_get_data(vision.target_pit_angle);
+						log_scope_get_data(gimbal.pit_angle.ref);
 			log_scope_get_data(gimbal.pit_angle.fdb);
-            log_scope_get_data(gimbal.yaw_angle.fdb);
-			log_scope_get_data(gimbal.yaw_spd.ref);
-            log_scope_get_data(gimbal.yaw_spd.fdb);
-            log_scope_get_data(yaw_motor.tx_current);
+			log_scope_get_data(gimbal.pit_spd.ref);
+            log_scope_get_data(gimbal.pit_spd.fdb);
+//			log_scope_get_data(vision.target_yaw_angle);
+			            log_scope_get_data(gimbal.yaw_angle.ref);
 
+            log_scope_get_data(gimbal.yaw_angle.fdb);
+
+						log_scope_get_data(dm3507_motor.t_rotor);		
+					log_scope_get_data(vision.rx[0].data.fire);
+			log_scope_get_data(vision.shoot_enable);
             break;
         }
 
@@ -214,11 +218,12 @@ void log_scope_data_pkg(void)
 //        }
 				
 				       case 9: { /*imu*/
-		  log_scope_get_data(remote_fusion.mouse.x);//裁判系统回传射速
-			log_scope_get_data(remote_fusion.mouse.y);//裁判系统回传射速
-		  log_scope_get_data(shoot.stir_mode);//裁判系统回传射速
-		  log_scope_get_data(remote_fusion.keyboard.key_code);//裁判系统回传射速
-			
+		  log_scope_get_data(remote_fusion.channel.ch1);//裁判系统回传射速
+		  log_scope_get_data(vtm_rc.cns);//裁判系统回传射速
+		log_scope_get_data(dm3507_motor.receive_cnt);
+	         log_scope_get_data(dm3507_motor.err_code);
+			log_scope_get_data(dr16_online_cnt);
+		log_scope_get_data(imu_data.pitch);
 
             break;
         }

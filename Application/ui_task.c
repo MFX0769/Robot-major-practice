@@ -57,9 +57,9 @@ static void ui_update(void)
     
     ui_g_Ungroup_vision->color = color;
 	
-    ui_g_Ungroup_shoot_mode->number = shoot.stir_mode;
+    ui_g_Ungroup_shoot_mode->number = dm3507_motor.err_code;
     
-	ui_g_Ungroup_vision_trice_id->number = vision.trace_id;
+	ui_g_Ungroup_vision_trice_id->number = vision_tx.data.trace_id;
     
 	ui_update_g_Ungroup();
 

@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#define VISION_DATA_LEN  28
+#define VISION_DATA_LEN  24
 
 /* �Ӿ���ģʽ */
 typedef enum {
@@ -46,8 +46,10 @@ typedef struct
 	uint32_t rx_repeat_cnt;
     uint32_t new_frame_flag;
     float target_yaw_angle, target_pit_angle;
-    float yaw_min_err;
-	float pit_min_err;
+	float min_err;
+
+//    float yaw_min_err;
+//	float pit_min_err;
     uint32_t shoot_enable;
 	uint8_t trace_id;
     uint8_t online;
@@ -59,7 +61,7 @@ typedef struct
             float yaw;
             float pit;
             float dis;
-						float dis2;
+//						float dis2;
             float fire;
             float pos;
             uint8_t empty;
@@ -119,6 +121,7 @@ typedef union {
 extern vision_t vision;
 extern vision_tx_t vision_tx;
 extern vision_mode_e vision_mode;
+
 /* ���� */
 void vision_data_handler(uint8_t *pVision_Data);   // ���ڻص�
 void vsn_gimbal_ref_calc(void);            // 1 ms ����
