@@ -74,7 +74,7 @@ void comm_usart_init(void);
 #define VTM_DATA_LEN    21     //放在遥控器解算的头文件里
 //#define DMA_TUCHUAN_LEN  1
 #define  DMA_JUDGE_LEN		150
-#define  DMA_VISION_LEN		28     //原23  2025年4月1
+#define  DMA_VISION_LEN		40     //原23  2025年4月1
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart);

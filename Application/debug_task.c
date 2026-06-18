@@ -41,7 +41,7 @@ extern float std;
 	
 float float_test;
 /* 用以选择打印的数据类型 */
-uint8_t debug_wave = 9; 
+uint8_t debug_wave = 3; 
 
 void log_scope_data_pkg(void)
 {
@@ -104,17 +104,17 @@ void log_scope_data_pkg(void)
             
 ////            log_scope_get_data(gimbal.yaw_angle.pid.dout);
 ////		
-			log_scope_get_data(yaw_motor.tx_current);
+//			log_scope_get_data(yaw_motor.tx_current);
             log_scope_get_data(gimbal.yaw_spd.ref);
             log_scope_get_data(gimbal.yaw_spd.fdb);
 //			log_scope_get_data(gimbal.yaw_spd.pid.pout);
 //			log_scope_get_data(vision.target_yaw_angle);
 //			log_scope_get_data(dm3507_motor.receive_cnt);
-			log_scope_get_data(dm3507_motor.err_code);
-								  
-            log_scope_get_data(gimbal.pit_angle.fdb);
-			log_scope_get_data(dm3507_motor.t_rotor);		
-            log_scope_get_data(dm3507_motor.t_ref);
+//			log_scope_get_data(dm3507_motor.err_code);
+//								  
+//            log_scope_get_data(gimbal.pit_angle.fdb);
+//			log_scope_get_data(dm3507_motor.t_rotor);		
+//            log_scope_get_data(dm3507_motor.t_ref);
 						
 //            log_scope_get_data(yaw_motor.ecd);
 ////            log_scope_get_data(gimbal.yaw_spd.pid.pos_out);

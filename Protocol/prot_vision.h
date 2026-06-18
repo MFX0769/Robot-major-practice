@@ -9,8 +9,10 @@
 #include <math.h>
 
 #define VISION_DATA_LEN  24
-
-/* �Ӿ���ģʽ */
+#define VISION_SP_RX_DATA_LEN 29
+#define VISION_SP_TX_DATA_LEN 44
+#define VISION_SP_FIRE_YAW_ERR 1.5f   // 度
+#define VISION_SP_FIRE_PIT_ERR 1.5f   // 度
 typedef enum {
     vMODE_AUTO        = 0,    /* ���� */
     vMODE_bENERGY     = 1,    /* ���������� */
@@ -45,11 +47,12 @@ typedef struct
     vision_aim_status_e aim_status;
 	uint32_t rx_repeat_cnt;
     uint32_t new_frame_flag;
+	uint32_t last_rx_tick;
     float target_yaw_angle, target_pit_angle;
 	float min_err;
 
-//    float yaw_min_err;
-//	float pit_min_err;
+    float yaw_min_err;
+	float pit_min_err;
     uint32_t shoot_enable;
 	uint8_t trace_id;
     uint8_t online;
@@ -60,6 +63,10 @@ typedef struct
         {
             float yaw;
             float pit;
+			float yaw_vel;
+			float yaw_acc;
+			float pit_vel;
+			float pit_acc;
             float dis;
 //						float dis2;
             float fire;
@@ -117,14 +124,61 @@ typedef union {
 /*==============================�´������=============================*/
 }__attribute__((packed)) vision_tx_t;
 
+
+
+/*---------------------新视觉结构体-------------------------------*/
+typedef enum
+{
+    VISION_SP_MODE_IDLE = 0,
+    VISION_SP_MODE_AUTO_AIM = 1,
+    VISION_SP_MODE_SMALL_BUFF = 2,
+    VISION_SP_MODE_BIG_BUFF = 3
+} vision_sp_mode_e;
+
+typedef enum {
+	VISION_SP_RX_MODE_NO_CONTROL = 0,
+    VISION_SP_RX_MODE_CONTROL        = 1,   
+    VISION_SP_RX_MODE_FIRE     = 2,   
+} VISION_SP_RX_MODE_e;
+
+typedef struct
+{
+    uint8_t head[2];
+    uint8_t mode;
+    uint8_t yaw[4];        // rad
+    uint8_t yaw_vel[4];    // rad/s
+    uint8_t yaw_acc[4];    // rad/s^2
+    uint8_t pitch[4];      // rad
+    uint8_t pitch_vel[4];  // rad/s
+    uint8_t pitch_acc[4];  // rad/s^2
+    uint8_t crc16[2];
+} vision_rx_msg_sp_t;
+
+typedef struct
+{
+    uint8_t head[2];
+    uint8_t mode;
+    uint8_t q[4][4];        // w, x, y, z
+    uint8_t yaw[4];         // rad
+    uint8_t yaw_vel[4];     // rad/s
+    uint8_t pitch[4];       // rad
+    uint8_t pitch_vel[4];   // rad/s
+    uint8_t bullet_speed[4];// m/s
+    uint8_t bullet_count[2];
+    uint8_t camp;
+    uint8_t crc16[2];
+} vision_tx_msg_sp_t;
+
 /* ȫ�ֱ��� */
 extern vision_t vision;
 extern vision_tx_t vision_tx;
 extern vision_mode_e vision_mode;
 
 /* ���� */
-void vision_data_handler(uint8_t *pVision_Data);   // ���ڻص�
+void vision_get_data_sp(uint8_t *data, uint32_t len);
+void vision_data_handler(uint8_t *pVision_Data,uint32_t len);   // ���ڻص�
 void vsn_gimbal_ref_calc(void);            // 1 ms ����
 void vision_output_data(void);
+void vision_output_data_sp(void);
 
 #endif 

@@ -11,6 +11,7 @@
 #define OLD_IMU 0
 #define TIMU_PALSTANCE_ID   0x017//
 #define TIMU_ANGLE_ID   	  0x018//0x002
+#define TIMU_ROL_ID   	  0x019//0x002
 
 extern int sys_us[2];
 extern int incement;
@@ -26,6 +27,7 @@ typedef struct
 	float cnt;
     float wy;
     float wz;
+	float wx;
     float az;
     float kal_az;
 	  float msg_cnt;

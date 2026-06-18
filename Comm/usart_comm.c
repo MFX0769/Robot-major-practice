@@ -222,7 +222,8 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
     else if(huart->Instance == USART10)	//VISION´®¿Ú
     {
 		  	vision.rx_cnt++;
-        vision_data_handler(dma_vision_buf);
+		uint32_t rx_len = DMA_VISION_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);
+        vision_data_handler(dma_vision_buf,rx_len);
 			  memset(dma_vision_buf, 0, DMA_VISION_LEN);
         HAL_UART_Receive_DMA(huart,dma_vision_buf,DMA_VISION_LEN);
     }

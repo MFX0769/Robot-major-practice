@@ -32,12 +32,13 @@ void Task_Vision_Send(void const *argu)
     {
         taskENTER_CRITICAL();
 
-        vision_output_data();
+//        vision_output_data();
+		vision_output_data_sp();
 //		usb_buf[1]++;
 //		HAL_UART_Transmit_DMA(&huart10,abc_buf,30);
 
         taskEXIT_CRITICAL();
 
-     osDelayUntil(&wake_time, 3);
+     osDelayUntil(&wake_time, 5);
     }
 }

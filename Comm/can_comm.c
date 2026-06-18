@@ -67,7 +67,7 @@ void comm_can_init(void)
 	  bsp_can3_filt_tbl.data[1]=0X017&0x7ff;
 	  bsp_can3_filt_tbl.data[2]=0X018&0x7ff;
 		bsp_can3_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can3_filt_tbl.data[4]=0x007&0x7ff;
+		bsp_can3_filt_tbl.data[4]=0x019&0x7ff;
 		bsp_can3_filt_tbl.data[5]=0x007&0x7ff;
 	
 
@@ -229,7 +229,12 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can3.CAN_RxBuffer.rx_data);
 			//		wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
 					break;
-				}				
+				}		
+			case TIMU_ROL_ID:
+				{
+					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can3.CAN_RxBuffer.rx_data);
+					break;
+				}
 			default:{break;}
 			}
 }

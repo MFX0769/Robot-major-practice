@@ -97,6 +97,6 @@ void shoot_task(void const *argu);
 void shoot_init(void);
 
 __SHOOT_TASK_EXT shoot_t shoot;    //发射器控制中心结构
-
+extern shoot_t shoot;
 extern fric_pid_t fric[2];
 #endif

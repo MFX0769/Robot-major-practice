@@ -84,7 +84,13 @@ void T_imu_calcu(uint32_t can_id,uint8_t * CAN_Rx_data)
 					memcpy(angle_buffer,CAN_Rx_data,8);
 					imu_data.pitch =  angle_buffer[0];  
 					imu_data.yaw   =  angle_buffer[1];
-				
+			}
+			break;
+			case TIMU_ROL_ID:			//½Ç¶È
+			{
+					memcpy(angle_buffer,CAN_Rx_data,8);
+					imu_data.roll =  angle_buffer[0];  
+					imu_data.wx   =  angle_buffer[1];
 			}
 			break;
     }

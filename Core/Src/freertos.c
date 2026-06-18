@@ -161,7 +161,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  VISION_send_queue = xQueueCreate(5, 30);          //哨兵 1 128 
+  VISION_send_queue = xQueueCreate(5, 44);          //哨兵 1 128 
   CAN1_Tx_queue     = xQueueCreate(15, sizeof(CanFrame_t));          
   CAN2_Tx_queue     = xQueueCreate(15, sizeof(CanFrame_t));          
   CAN3_Tx_queue     = xQueueCreate(15,sizeof(CanFrame_t));  
