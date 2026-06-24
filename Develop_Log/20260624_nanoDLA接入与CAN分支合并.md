@@ -207,3 +207,7 @@ if (wbus_rx_cnt > 0)
 - `Application/arm_task.c`：`arm_task_init()`改成默认调用`bsp_gpio_servo_power_off()`(不再无条件通电)；主循环每周期最前面加`if (ctrl_mode == REMOTER_MODE && wbus_rc.data.sw3) 通电 else 断电`——离开全局遥控模式或者SWD没打开，强制断电
 
 编译0错误1警告(跟改动无关的旧警告)。**只编译验证，没烧录确认**——用户当时不在车旁边，按要求跳过了烧录这一步，下次到车旁边需要补烧录验证这次的改动。
+
+**补烧录验证**：用户回到车旁边后补烧（wrote 92064 bytes一次成功）。`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长，无回归；`ctrl_mode=PROTECT_MODE`时`arm_yaw_motor.tx_current=0`，确认`(ctrl_mode==REMOTER_MODE && sw3)`这个门在非遥控模式下正确拦住了，不会通电。
+
+GDB读`arm_ctrl.state`时报"No symbol arm_ctrl in current context"，查了`rm_main.map`确认`arm_ctrl`确实链接进去了(在`arm_task_1.o(.bss)`里，被多处引用)，只是GDB对这个被Keil重命名过的目标文件(`arm_task_1.o`，每次build都会重命名，原因跟之前修的uvprojx重复文件条目有关，但没影响构建结果)里的符号解析有问题——纯GDB调试体验的小毛病，不是固件本身的bug，不影响实际运行。`arm_yaw_motor`(在prot_rm_motor.o里)读取正常。
