@@ -110,3 +110,19 @@ USART6(调试口)波特率确认为**921600**(不是115200)，`Core/Src/usart.c`
 又加了`case 12`：专门看SBUS遥控器，`ch1~ch8` + `sw1` + `wbus_rx_cnt` + `wbus_rx_freq`，`debug_wave`改成12。编译0/0，重烧（第一次"failed erasing sectors 0 to 0"没看到wrote确认行，怀疑没写进去，重启OpenOCD后重烧成功，wrote 89408 bytes），验证：`wbus_rx_cnt`1094→1611(5秒+517≈103Hz)，`imucnt`/`chassis_2006[0].receive_cnt`同步健康，`debug_wave`确认是12。
 
 **注意**：这一轮(case11/case12)两次flash都是先遇到"failed erasing sectors 0 to 0"且无wrote确认行，必须重启OpenOCD重试才成功写入——同一现象重复出现两次，值得记一下，以后看到这个报错不要假设烧录成功，必须用GDB读关键变量确认，不能只看telnet的输出表面正常。
+
+## mode_switch_task发现的真问题：SBUS是个孤岛，没有任何路径能驱动ctrl_mode
+检查`mode_switch_task.c`发现：主循环只有`if(remote_fusion.current_source==REMOTE_SOURCE_VTM)...else if(...==REMOTE_SOURCE_DR16)...`两个分支，`current_source`默认值是`REMOTE_SOURCE_NONE`，且全项目搜索`prot_remote_fusion.c/.h`没有任何SBUS相关代码——SBUS数据再正常，也没有路径能把`ctrl_mode`从初始的`PROTECT_MODE`切走。同时`chassis_task.c`里`REMOTER_MODE`分支本身也是空的(`vx_ref=vy_ref=wz_ref=0.0f`硬编码)，两边都要接。
+
+用户明确表示"有一点点破坏性也没关系，这代码就用这两天"，要求直接参考老代码(`RoboticMajor_Pratice_code`)接入，不用顾虑remote_fusion那套复杂逻辑。
+
+**改动**：
+- `Application/control_def.h`：新增`CHASSIS_SCALE_VX/VY/WZ`(0.0020f/0.0020f/0.0030f)、`MECANUM_L`(1.0f)，跟老代码完全一致的数值
+- `Application/mode_switch_task.c`：在主循环最前面加一个`if(wbus_rx_cnt > 0)`分支，绕开remote_fusion，直接用`wbus_rc.data.sw1`(0=下/1=中/2=上)映射`ctrl_mode`：上→`REMOTER_MODE`，中→`PROTECT_MODE`，下→`KEYBOARD_MODE`。原有VTM/DR16逻辑原样保留作为else分支（没删，只是现在用不上）
+- `Application/chassis_task.c`：`REMOTER_MODE`分支改成`vx_ref=wbus_rc.data.ch3*CHASSIS_SCALE_VX; vy_ref=wbus_rc.data.ch2*CHASSIS_SCALE_VY; wz_ref=wbus_rc.data.ch1*CHASSIS_SCALE_WZ;`，跟老代码`rc.ch3/ch2/ch1`映射一致；`chassis_mecanum_resolve`最后一个参数从硬编码`1.0f`改成`MECANUM_L`
+
+编译0错误(7个警告均为改动前已存在的无关警告：print_cnt未使用、arm_task的gpio隐式声明、vision的z未使用、gimbal单精度转双精度)。烧录(第一次又是"failed erasing sectors 0 to 0"无wrote确认行，重启OpenOCD后重烧成功，wrote 89536 bytes)。
+
+验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长。读到`ctrl_mode=KEYBOARD_MODE`、`wbus_rc.data.sw1=0`——拨杆当时在下位，正好对应`sw1==0→KEYBOARD_MODE`的映射，**证明SBUS驱动ctrl_mode这条链路已经真正跑通**。要测底盘摇杆响应，需要把拨杆拨到上位进入`REMOTER_MODE`才会真正用ch1/2/3驱动电机（目前KEYBOARD_MODE分支还是硬编码0）。
+
+**待办**：chassis_motor_pid[4]速度环PID仍未接入闭环（tx_current直接等于运动学解算输出），用户说"落地之后Kp给大一点点就行"，等实际能跑起来再调。

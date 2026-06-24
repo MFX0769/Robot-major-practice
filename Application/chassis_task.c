@@ -13,6 +13,7 @@
 #include "cmsis_os.h"
 #include "dbg_print.h"
 #include "config.h"
+#include "prot_sbus.h"
 #include <string.h>
 
 /* 外部电机变量 */
@@ -104,10 +105,10 @@ void chassis_task(void const *argu)
             
             case REMOTER_MODE:
             {
-                /* TODO: 接入遥控器控制 */
-                vx_ref = 0.0f;
-                vy_ref = 0.0f;
-                wz_ref = 0.0f;
+                /* SBUS直接驱动，参考RoboticMajor_Pratice_code的rc.ch1/2/3映射 */
+                vx_ref = wbus_rc.data.ch3 * CHASSIS_SCALE_VX;
+                vy_ref = wbus_rc.data.ch2 * CHASSIS_SCALE_VY;
+                wz_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_WZ;
             }break;
 
             case KEYBOARD_MODE:
@@ -129,7 +130,7 @@ void chassis_task(void const *argu)
         }
                 
         /* 运动学解算 */
-        chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, 1.0f);
+        chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, MECANUM_L);
         
         /* 赋值到电机结构体 (注意：左右顺序可能需要调整) */
         chassis_2006[0].tx_current = chassis_motor.motor[0];  /* 左前 */

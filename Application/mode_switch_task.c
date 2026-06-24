@@ -14,28 +14,29 @@
 #include "prot_remote_fusion.h"
 #include "prot_ws2812.h"
 #include "prot_dm_motor.h"
+#include "prot_sbus.h"
 static void unlock_init(void);
 static void sw1_mode_handler(void);
 static void rc_abnormal_proess(void);
  
-/* ÏµÍ³×´Ì¬»ú */
+/* ÏµÍ³×´Ì¬ï¿½ï¿½ */
 ctrl_mode_e ctrl_mode;
 
-/* ÊÓ¾õ×´Ì¬»ú */
+/* ï¿½Ó¾ï¿½×´Ì¬ï¿½ï¿½ */
 //vision_mode_e vision_mode;
 
-/*Ò£¿ØÆ÷ÉÏÒ»´ÎµÄÊı¾İ¡ª¡ªÓÃÓÚÒ»Ğ©±ßÑØ¼ì²â*/
+/*Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Îµï¿½ï¿½ï¿½ï¿½İ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ğ©ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½*/
 static uint8_t vtm_last_pause=0;
-/* ½âËø±êÖ¾ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ */
 uint8_t lock_flag = 0;
 
-/*Ò£¿ØÆ÷Ê§ÁªÇĞÍ¼´«±êÖ¾Î»*/
+/*Ò£ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Ö¾Î»*/
 uint8_t RC_FAIL_KEYBOARD_FLAG;
 
-/* PITËøËÀ¿ª¹Ø */
+/* PITï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 _gimbal_ctrl_ gimbal_ctrl_mode;
 
-/* ÏµÍ³Ä£Ê½ÇĞ»»ÈÎÎñº¯Êı */
+/* ÏµÍ³Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void mode_switch_task(void const *argu)
 {
 	ctrl_mode   = PROTECT_MODE;
@@ -46,20 +47,30 @@ void mode_switch_task(void const *argu)
     {
 //			if( Game_State.game_progress != 0)
 //				lock_flag = 1;
-			
+
+		if (wbus_rx_cnt > 0)  /* SBUSæœ‰æ•°æ®ï¼Œç›´æ¥æ‹¨æ†å†³å®šæ¨¡å¼ï¼Œä¸èµ°remote_fusionï¼ˆä¸´æ—¶æ–¹æ¡ˆï¼Œä»…ä¾›åº•ç›˜è”è°ƒç”¨ï¼‰ */
+		{
+			switch (wbus_rc.data.sw1)
+			{
+				case 2: ctrl_mode = REMOTER_MODE; break;   /* æ‹¨æ†ä¸Š */
+				case 1: ctrl_mode = PROTECT_MODE; break;   /* æ‹¨æ†ä¸­ */
+				case 0: ctrl_mode = KEYBOARD_MODE; break;  /* æ‹¨æ†ä¸‹ */
+				default: break;
+			}
+		}
 ////			#if NEW_RC
-		if(remote_fusion.current_source == REMOTE_SOURCE_VTM)
+		else if(remote_fusion.current_source == REMOTE_SOURCE_VTM)
 		{				
 			vtm_safe_lock();
 			
 			if( !lock_flag  )
 			{
-				vtm_unlock_init();  //½âËø²Ù×÷
+				vtm_unlock_init();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 	
-			else if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
+			else if( status.remote)//ï¿½ï¿½ï¿½ï¿½â²¦ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½imuï¿½ï¿½ï¿½
 			{
-				vtm_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
+				vtm_mode_handler();  //ï¿½ï¿½ï¿½ï¿½ï¿½ó²¦¸ï¿½ï¿½Ğ»ï¿½ÏµÍ³Ä£Ê½
 			}
 			
 		}
@@ -68,19 +79,19 @@ void mode_switch_task(void const *argu)
 		{
 			if( !lock_flag  )
 			{
-				unlock_init();  //½âËø²Ù×÷
+				unlock_init();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 				
-			if( status.remote)//Èç¹û²â²¦ÅÌÔòÉ¾µôimu¼ì²â
+			if( status.remote)//ï¿½ï¿½ï¿½ï¿½â²¦ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½imuï¿½ï¿½ï¿½
 			{
-				sw1_mode_handler();  //¸ù¾İ×ó²¦¸ËÇĞ»»ÏµÍ³Ä£Ê½
+				sw1_mode_handler();  //ï¿½ï¿½ï¿½ï¿½ï¿½ó²¦¸ï¿½ï¿½Ğ»ï¿½ÏµÍ³Ä£Ê½
 			}
 			else
 			{
-				rc_abnormal_proess();  //Ò£¿ØÆ÷Ê§Áª´¦Àí
+				rc_abnormal_proess();  //Ò£ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 		}
-		/*·ÉÊÖµÆ±ä»¯*/
+		/*ï¿½ï¿½ï¿½ÖµÆ±ä»¯*/
 			fly_led_status();
 		if(key_scan_clear(KB_V)) {
 				dm_set_cmd(&dm3507_motor,DM_ENABLE_CMD);
@@ -94,13 +105,13 @@ void mode_switch_task(void const *argu)
 
 
 
-/* Ò£¿ØÆ÷Ê§Áª´¦Àíº¯Êı */
+/* Ò£ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 static void rc_abnormal_proess(void)
 {
 
 	  if(status.remote)
 		{
-			return;//Ò£¿ØÆ÷ÓÅÏÈ¼¶×î¸ß£¬Èç¹ûÓĞÒ£¿ØÆ÷£¬¾ÍÎŞ¼üÅÌ½âËø
+			return;//Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ş¼ï¿½ï¿½Ì½ï¿½ï¿½ï¿½
 		}
     RC_FAIL_KEYBOARD_FLAG=1;
 
@@ -113,7 +124,7 @@ static void rc_abnormal_proess(void)
 //		rc.kb.key_code=Remote_Control.keyboard_value;
 //		
 //		
-//	shoot.firc_mode = FIRC_MODE_RUN;  //±£³Ö¿ªÆôÄ¦²ÁÂÖ
+//	shoot.firc_mode = FIRC_MODE_RUN;  //ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½ï¿½
 //	shoot.stir_mode = STIR_MODE_SERIES;
 //										
 //										
@@ -131,12 +142,12 @@ static void rc_abnormal_proess(void)
 
 }
 
-/* ÏµÍ³Ä£Ê½ÇĞ»»º¯Êı */
+/* ÏµÍ³Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½ */
 uint8_t vision_flag;
 ctrl_mode_e last_vision_flag ;
 
-/*===============================================¾ÉÒ£¿Ø£¨DT7£©´úÂë¿ªÊ¼===========================*/
-static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
+/*===============================================ï¿½ï¿½Ò£ï¿½Ø£ï¿½DT7ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ªÊ¼===========================*/
+static void sw1_mode_handler(void)  //ï¿½É²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÏµÍ³Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ÌºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	last_vision_flag = ctrl_mode;
     switch( remote_fusion.sw.sw1 )
@@ -145,7 +156,7 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
 			
         case RC_UP:
         {
-						if( remote_fusion.channel.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
+						if( remote_fusion.channel.ch4 <= -600 )//ï¿½ó²¦¸ï¿½ï¿½Â²ï¿½//ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½
 						{
 							ctrl_mode = VISION_MODE;
 											vision_mode = vMODE_AUTO;
@@ -153,7 +164,7 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
 
 						else
 						{
-										ctrl_mode = REMOTER_MODE;  //»ØÖĞ//Ò£¿ØÄ£Ê½
+										ctrl_mode = REMOTER_MODE;  //ï¿½ï¿½ï¿½ï¿½//Ò£ï¿½ï¿½Ä£Ê½
 						}
  
         }
@@ -171,13 +182,13 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
         case RC_DN:
         {
 
-						if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
+						if( remote_fusion.mouse.right == 1 )  //ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½×¡ï¿½ï¿½ï¿½Ó¾ï¿½
 						{
 							ctrl_mode = VISION_MODE;
 						}
 						else
 						{
-								ctrl_mode = KEYBOARD_MODE;  //¼üÅÌÄ£Ê½
+								ctrl_mode = KEYBOARD_MODE;  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 								vision_mode = vMODE_AUTO;
 						}			
         }
@@ -194,14 +205,14 @@ static void sw1_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌº
 	
 
 
-//2025Äê5ÔÂ16ÈÕÌí¼Ó ÓÃÓÚ½«Í¼´«Á´Â·µÄ½âËøÏà¹Ø²Ù×÷ÊÊÅä½øÀ´£¬ÕâÊÇÎÒÄ¿Ç°ÄÜÏëµ½µÄ¿ìËÙÍêÃÀ¼æÈİÍ¼´«Á´Â·µÄ×îºÃ·½·¨
-void Rc_Fail_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
+//2025ï¿½ï¿½5ï¿½ï¿½16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Â·ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ï¿½Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Ç°ï¿½ï¿½ï¿½ëµ½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½
+void Rc_Fail_mode_handler(void)  //ï¿½É²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÏµÍ³Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ÌºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½
 {
-if(remote_fusion.keyboard.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mode¹¦ÄÜ
+if(remote_fusion.keyboard.bit.CTRL)	//ï¿½ï¿½Ö¹ï¿½ó´¥£ï¿½Òªï¿½ï¿½×¡CTRLï¿½Å½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ»ï¿½ctrl modeï¿½ï¿½ï¿½ï¿½
 {
-	     if(remote_fusion.keyboard.bit.R)// r for remote µ«ÆäÊµ¼üÅÌÇĞ»»Ä£Ê½ÊÇÒ£¿ØÆ÷Ê§ÁªµÄÊ±ºò²ÅÓÃµÄ£¬ËùÒÔÕâÀïÆäÊµÃ»ÒâÒå£¬½ö±£Áô
+	     if(remote_fusion.keyboard.bit.R)// r for remote ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½Ğ»ï¿½Ä£Ê½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ÃµÄ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÃ»ï¿½ï¿½ï¿½å£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-						if( remote_fusion.channel.ch4 <= -600 )//×ó²¦¸ËÏÂ²¦//ÆÕÍ¨×ÔÃé
+						if( remote_fusion.channel.ch4 <= -600 )//ï¿½ó²¦¸ï¿½ï¿½Â²ï¿½//ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½
 						{
 							ctrl_mode = VISION_MODE;
 											vision_mode = vMODE_AUTO;
@@ -209,7 +220,7 @@ if(remote_fusion.keyboard.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mod
 
 						else
 						{
-										ctrl_mode = REMOTER_MODE;  //»ØÖĞ//Ò£¿ØÄ£Ê½
+										ctrl_mode = REMOTER_MODE;  //ï¿½ï¿½ï¿½ï¿½//Ò£ï¿½ï¿½Ä£Ê½
 						}
  
         }
@@ -224,13 +235,13 @@ if(remote_fusion.keyboard.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mod
 	     if(remote_fusion.keyboard.bit.B)//b for keyboard
         {
 
-						if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ
+						if( remote_fusion.mouse.right == 1 )  //ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½×¡ï¿½ï¿½ï¿½Ó¾ï¿½
 						{
 							ctrl_mode = VISION_MODE;
 						}
 						else
 						{
-								ctrl_mode = KEYBOARD_MODE;  //¼üÅÌÄ£Ê½
+								ctrl_mode = KEYBOARD_MODE;  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 								vision_mode = vMODE_AUTO;
 						}			
         }
@@ -239,14 +250,14 @@ if(remote_fusion.keyboard.bit.CTRL)	//·ÀÖ¹Îó´¥£¬Òª°´×¡CTRL²Å½øÈë¼üÅÌÇĞ»»ctrl mod
 
 
 
-/* ½âËøº¯Êı */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 static void unlock_init(void)
 {
-    if( remote_fusion.sw.sw1 == RC_MI && remote_fusion.sw.sw2 == RC_UP )//×ó²¦¸Ë¾ÓÖĞ£¬ÓÒ²¦¸ËÖÃÉÏ
+    if( remote_fusion.sw.sw1 == RC_MI && remote_fusion.sw.sw2 == RC_UP )//ï¿½ó²¦¸Ë¾ï¿½ï¿½Ğ£ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         if( remote_fusion.channel.ch4 <= -600 && remote_fusion.channel.ch3 >= 600 && remote_fusion.channel.ch1 <= -600 && remote_fusion.channel.ch2  <= -600 )
         {
-            lock_flag = 1;  //ÄÚ°Ë
+            lock_flag = 1;  //ï¿½Ú°ï¿½
         }
 		else  if( remote_fusion.channel.ch4 >= 600 && remote_fusion.channel.ch3 <= -600 && remote_fusion.channel.ch1 >= 600 && remote_fusion.channel.ch2 >= 600 )
         {
@@ -255,54 +266,54 @@ static void unlock_init(void)
         }
     }
 		
-		/*2025Äê5ÔÂ16ÈÕÌí¼Ó  Ò£¿ØÆ÷¶ÏÁªÊ±£¬ÈôÃ»ÓĞĞÂÒ£¿ØµÄ¿ØÖÆÂß¼­£¬ÓÖÃ»ÓĞ²ÃÅĞÏµÍ³¼üÊóÊı¾İµÄ»°£¬Ã»°ì·¨¿ØÖÆlock_flag¡£ ËùÒÔ£¬²ÃÅĞÏµÍ³¼üÊóÊı¾İ£¬±ØĞë£¬Í¬ÑùÄÜÊµÏÖÒ£¿ØÆ÷µÄÂß¼­*/
-		else if( remote_fusion.keyboard.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
+		/*2025ï¿½ï¿½5ï¿½ï¿½16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ØµÄ¿ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ğ²ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İµÄ»ï¿½ï¿½ï¿½Ã»ï¿½ì·¨ï¿½ï¿½ï¿½ï¿½lock_flagï¿½ï¿½ ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ë£¬Í¬ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½*/
+		else if( remote_fusion.keyboard.bit.Q  )//Q ï¿½ï¿½ EÍ¬Ê±ï¿½ï¿½ ï¿½àµ±ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½	  &&rc.kb.bit.E		
 		{
-            lock_flag = 1;  //ÄÚ°Ë
+            lock_flag = 1;  //ï¿½Ú°ï¿½
 		}
 		/**/
 	
 }
-/*===============================================¾ÉÒ£¿Ø£¨DT7£©´úÂë½áÊø===========================*/
+/*===============================================ï¿½ï¿½Ò£ï¿½Ø£ï¿½DT7ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½===========================*/
 
 
 
-///*===============================================ĞÂÒ£¿Ø£¨N3£©´úÂë¿ªÊ¼===========================*/
-void vtm_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
+///*===============================================ï¿½ï¿½Ò£ï¿½Ø£ï¿½N3ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ªÊ¼===========================*/
+void vtm_mode_handler(void)  //ï¿½É²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÏµÍ³Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ÌºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	  last_vision_flag = ctrl_mode;
 	
     switch(remote_fusion.sw.sw1)
     {
 			
-		  case RC_UP://×î×ó±ß Ò£¿ØÄ£Ê½
+		  case RC_UP://ï¿½ï¿½ï¿½ï¿½ï¿½ Ò£ï¿½ï¿½Ä£Ê½
 			{
-					if( remote_fusion.channel.ch4 <= -660 )//×ó²¦¸ËÏÂ²¦//×ÔÃé
+					if( remote_fusion.channel.ch4 <= -660 )//ï¿½ó²¦¸ï¿½ï¿½Â²ï¿½//ï¿½ï¿½ï¿½ï¿½
 					{
 						ctrl_mode = VISION_MODE;
 						vision_mode = vMODE_AUTO;
 					}				
 					else
 					{
-						ctrl_mode = REMOTER_MODE;  //»ØÖĞ//Ò£¿ØÄ£Ê½
+						ctrl_mode = REMOTER_MODE;  //ï¿½ï¿½ï¿½ï¿½//Ò£ï¿½ï¿½Ä£Ê½
 					}
 			}
 			break;
 				
-			case RC_MI://ÖĞ¼ä ±£»¤Ä£Ê½
+			case RC_MI://ï¿½Ğ¼ï¿½ ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 			{
 					ctrl_mode = PROTECT_MODE;		 
 			}break;
        
-			case RC_DN://×îÓÒ±ß ¼üÊóÄ£Ê½
+			case RC_DN://ï¿½ï¿½ï¿½Ò±ï¿½ ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 			{
-				if( remote_fusion.mouse.right == 1 )  //Êó±êÓÒ¼ü°´×¡¿ªÊÓ¾õ//Ä¬ÈÏ×ÔÃéÎŞÔ¤²â
+				if( remote_fusion.mouse.right == 1 )  //ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½×¡ï¿½ï¿½ï¿½Ó¾ï¿½//Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½
 				{
 					ctrl_mode = VISION_MODE;
 				}
 				else
 				{
-					ctrl_mode = KEYBOARD_MODE;  //¼üÅÌÄ£Ê½
+					ctrl_mode = KEYBOARD_MODE;  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 					vision_mode = vMODE_AUTO;
 				}			
 			}break;
@@ -317,16 +328,16 @@ void vtm_mode_handler(void)  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇĞ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
 
 }
 
-/* ½âËøº¯Êı */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void vtm_unlock_init(void)
 {
-	ctrl_mode = PROTECT_MODE;	//Èç¹û³ö²»È¥Õâ¸öº¯Êı£¬¾ÍÒ»Ö±PROTECT_MODE;	
+	ctrl_mode = PROTECT_MODE;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö±PROTECT_MODE;	
 	
-    if(remote_fusion.sw.sw1 == RC_MI)//Ä£Ê½ÇĞ»»¿ª¹Ø´òµ½×î×ó±ß ±£»¤Ä£Ê½
+    if(remote_fusion.sw.sw1 == RC_MI)//Ä£Ê½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä£Ê½
     {
         if( remote_fusion.channel.ch1 == -660 && remote_fusion.channel.ch3 == 660 && remote_fusion.channel.ch2 == -660 && remote_fusion.channel.ch4 == -660 )
         {
-            lock_flag = 1;  //ÄÚ°Ë
+            lock_flag = 1;  //ï¿½Ú°ï¿½
         }
         else if( remote_fusion.channel.ch1 == 660 && remote_fusion.channel.ch3 == -660 && remote_fusion.channel.ch2 == -660 && remote_fusion.channel.ch4== -660 )
         {
@@ -334,28 +345,28 @@ void vtm_unlock_init(void)
         }
     }
 
-		/*2025Äê5ÔÂ16ÈÕÌí¼Ó  Ò£¿ØÆ÷¶ÏÁªÊ±£¬ÈôÃ»ÓĞĞÂÒ£¿ØµÄ¿ØÖÆÂß¼­£¬ÓÖÃ»ÓĞ²ÃÅĞÏµÍ³¼üÊóÊı¾İµÄ»°£¬Ã»°ì·¨¿ØÖÆlock_flag¡£ ËùÒÔ£¬²ÃÅĞÏµÍ³¼üÊóÊı¾İ£¬±ØĞë£¬Í¬ÑùÄÜÊµÏÖÒ£¿ØÆ÷µÄÂß¼­*/
-		else if( remote_fusion.keyboard.bit.Q  )//Q ºÍ EÍ¬Ê±°´ Ïàµ±ÓÚÒ£¿ØÆ÷ÄÚ°Ë	  &&rc.kb.bit.E		
+		/*2025ï¿½ï¿½5ï¿½ï¿½16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ØµÄ¿ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ğ²ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İµÄ»ï¿½ï¿½ï¿½Ã»ï¿½ì·¨ï¿½ï¿½ï¿½ï¿½lock_flagï¿½ï¿½ ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ë£¬Í¬ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½*/
+		else if( remote_fusion.keyboard.bit.Q  )//Q ï¿½ï¿½ EÍ¬Ê±ï¿½ï¿½ ï¿½àµ±ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½	  &&rc.kb.bit.E		
 		{
-            lock_flag = 1;  //ÄÚ°Ë
+            lock_flag = 1;  //ï¿½Ú°ï¿½
 		}
 		/**/
 }
 
 
-/* Ò£¿ØÆ÷½ô¼±½ø±£»¤ */
+/* Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void vtm_safe_lock(void)
 {			
-	if( vtm_last_pause==0 && vtm_rc.pause==1)//ÔİÍ£°´¼ü±»°´ÏÂ
+	if( vtm_last_pause==0 && vtm_rc.pause==1)//ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
 		ctrl_mode=PROTECT_MODE;
-		lock_flag=0;//ĞèÒªÖØĞÂ½âËø		 
+		lock_flag=0;//ï¿½ï¿½Òªï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½		 
 	}
 	
 	vtm_last_pause=vtm_rc.pause;
 }
 
-/*===============================================ĞÂÒ£¿Ø£¨N3£©´úÂë½áÊø===========================*/
+/*===============================================ï¿½ï¿½Ò£ï¿½Ø£ï¿½N3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½===========================*/
 
 void fly_led_status(void)
 {

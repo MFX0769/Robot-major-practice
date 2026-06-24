@@ -18,9 +18,12 @@
 
 
 /*----------------------------- manipulator preference ----------------------------- */
+#define ARM_TASK_PERIOD    3       /* æœºæ¢°è‡‚ä»»åŠ¡å‘¨æœŸ (ms) */
+#define ARM_ENABLE         1       /* æœºæ¢°è‡‚ä½¿èƒ½: 1=å¯ç”¨, 0=ç¦ç”¨ */
+
 /* special function key and key status definition */
 // chassis control key (status) define
-#define KEY_CHASSIS_FIGHT       KB_C  //²Ù×÷ÊÖ²»ÓÃ
+#define KEY_CHASSIS_FIGHT       KB_C  //ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½
 #define FLAG_CHASSIS_FIGHT      kb_status[KEY_CHASSIS_FIGHT]
 
 #define KEY_CHASSIS_ROTATE      KB_F
@@ -49,25 +52,31 @@
 #define FLAG_VISION_SENTRY      kb_status[KEY_VISION_SENTRY]
 
 
-#define HIGH_SPEED	 5900 // 2025Äê5ÔÂ15ÈÕ ±ÈÈüÊµ¼ÊÉäËÙ21~23 5900
+#define HIGH_SPEED	 5900 // 2025ï¿½ï¿½5ï¿½ï¿½15ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½21~23 5900
 
 
 
 
 
-///* ²¦ÅÌÆµÂÊ */
-#define TRIGGER_PERIOD   70  //TRIGGER_PERIODÔ½´ó£¬ÉäÆµÔ½Âý£¬ÔÝ²»Ö§³ÖÖ±½Ó¼ÆËã£¬ÐèÒª¿¿Ç¹¹Ü²âËã
-								//80£¬25Äê¹úÈüÉäÆµ
-#define TRIGGER_SPEED    5//2025Äê4ÔÂ10ÈÕ ÔÚ´ËÈÕÆÚÖ®ºó£¬²¦µ¯ÅÌËÙ¶È²»ÔÙÓÉTRIGGER_SPEED¾ö¶¨£¬¶øÊÇÓÉTRIGGER_PERIOD¾ö¶¨
-//Á¬·¢Ê±¾É²¦ÅÌËÙ¶È6800£¬Ë«²ã7600   std£º7300   //2025Äê1ÔÂ20ÈÕ 7500
+///* ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ */
+#define TRIGGER_PERIOD   70  //TRIGGER_PERIODÔ½ï¿½ï¿½ï¿½ï¿½ÆµÔ½ï¿½ï¿½ï¿½ï¿½ï¿½Ý²ï¿½Ö§ï¿½ï¿½Ö±ï¿½Ó¼ï¿½ï¿½ã£¬ï¿½ï¿½Òªï¿½ï¿½Ç¹ï¿½Ü²ï¿½ï¿½ï¿½
+								//80ï¿½ï¿½25ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ
+#define TRIGGER_SPEED    5//2025ï¿½ï¿½4ï¿½ï¿½10ï¿½ï¿½ ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ó£¬²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È²ï¿½ï¿½ï¿½ï¿½ï¿½TRIGGER_SPEEDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½TRIGGER_PERIODï¿½ï¿½ï¿½ï¿½
+//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½É²ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½6800ï¿½ï¿½Ë«ï¿½ï¿½7600   stdï¿½ï¿½7300   //2025ï¿½ï¿½1ï¿½ï¿½20ï¿½ï¿½ 7500
 /*-----------------------------chassis---------------------------*/
-#define RC_CH4_SCALE    12     
+#define RC_CH4_SCALE    12
 #define RC_CH3_SCALE    12
+
+/* SBUSéº¦è½®åº•ç›˜é€Ÿåº¦æ˜ å°„ï¼Œå‚è€ƒRoboticMajor_Pratice_code */
+#define CHASSIS_SCALE_VX   0.0020f
+#define CHASSIS_SCALE_VY   0.0020f
+#define CHASSIS_SCALE_WZ   0.0030f
+#define MECANUM_L          1.0f
 
 /*-----------------------------gimbal----------------------------*/
 //IMU_MODE_SCALE
-#define RC_CH1_SCALE_IMU                0.0002f    //ÔÆÌ¨ÈÎÎñÆµÂÊ2msÊ± 0.0002f
-#define RC_CH2_SCALE_IMU                0.0002f 	// 0.00001f  µç»ú×÷Îª½Ç¶È·´À¡¡¢Á¦¾ØÄ£Ê½	ÔÆÌ¨ÈÎÎñÆµÂÊ2msÊ± 0.0002f
+#define RC_CH1_SCALE_IMU                0.0002f    //ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½2msÊ± 0.0002f
+#define RC_CH2_SCALE_IMU                0.0002f 	// 0.00001f  ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ç¶È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½	ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½2msÊ± 0.0002f
 #define RC_CH3_SCALE_IMU                0.00000000000000000000000001f // 
 
 //ECD_MODE_SCALE
@@ -76,11 +85,11 @@
 
 
 //KEYBOARD_MODE_SCALE
-#define KEYBOARD_SCALE_PIT          ( 0.0003f )    //ÔÆÌ¨ÈÎÎñÆµÂÊ2msÊ±0.0004f
-#define KEYBOARD_SCALE_YAW	        ( 0.0003f )		//ÔÆÌ¨ÈÎÎñÆµÂÊ2msÊ±0.0004f
+#define KEYBOARD_SCALE_PIT          ( 0.0003f )    //ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½2msÊ±0.0004f
+#define KEYBOARD_SCALE_YAW	        ( 0.0003f )		//ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½2msÊ±0.0004f
 #define KEYBOARD_SCALE_YAW_SUPPLY   ( -0.0003f )
 
-#define GIMBAL_PIT_CENTER_OFFSET    3400         //µç»ú±àÂëÆ÷ÖµµÄÏÞ·ù,»á±ÈÊµ¼ÊÐ¡Ò»µãµã£¬·ÀÖ¹´úÂë°Ñ»úÐµ´ø×ß
+#define GIMBAL_PIT_CENTER_OFFSET    3400         //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½Þ·ï¿½,ï¿½ï¿½ï¿½Êµï¿½ï¿½Ð¡Ò»ï¿½ï¿½ã£¬ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½Ñ»ï¿½Ðµï¿½ï¿½ï¿½ï¿½
 #define GIMBAL_PIT_MAX              1.7f
 #define GIMBAL_PIT_MIN              2.5f
 
@@ -91,7 +100,7 @@
 #define FIGHT_OFFSET_ERR            ( -1.0f * GIMBAL_YAW_BETWEEN_ECD / 8191 * 2 * PI )\
 
 
-#define IMU_feedback 1  //2025Èü¼¾Ã»ÓÐÎ¬»¤±àÂëÆ÷feedbackµÄ´úÂë£¬ÇëÎðÖ±½ÓÊ¹ÓÃ£¬IMU_feedbackÓ¦¸Ã±£³ÖÎª1 
+#define IMU_feedback 1  //2025ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½feedbackï¿½Ä´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ê¹ï¿½Ã£ï¿½IMU_feedbackÓ¦ï¿½Ã±ï¿½ï¿½ï¿½Îª1 
 
 #endif
 
