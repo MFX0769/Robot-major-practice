@@ -1,11 +1,12 @@
 #include "debug_task.h"
+#include "config.h"
 #include "cmsis_os.h"
 #include "usart.h"
 #include "DataScope_DP.h"
 #include "status_task.h"
 #include "prot_rm_judge.h"
 #include "data_log.h"
-/* ´ıÌí¼ÓÍ·ÎÄ¼ş */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ */
 #include "math.h"
 #include "pid.h"
 #include "prot_T_imu.h"
@@ -28,11 +29,12 @@
 #include "prot_dm_motor.h"
 #include "prot_rm_motor.h"
 #include "prot_remote_fusion.h"
+#include "prot_sbus.h"
 //#define DEBUG_TASK_ENABLE
 
 //#define ABS(x) ((x>0)? (x): (-(x)))
 
-//´ı´òÓ¡±äÁ¿
+//ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½
 extern pid_t pid_trigger_ecd;
 extern pid_t pid_trigger_spd;
 
@@ -40,13 +42,14 @@ extern float* last_imu_yaw_data;
 extern float std;
 	
 float float_test;
-/* ÓÃÒÔÑ¡Ôñ´òÓ¡µÄÊı¾İÀàĞÍ */
-uint8_t debug_wave = 3; 
+extern dji_motor_t chassis_2006[4];
+/* ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+uint8_t debug_wave = 11;
 
 void log_scope_data_pkg(void)
 {
     switch (debug_wave) {
-        case 1: { /* ²¦ÅÌ */
+        case 1: { /* ï¿½ï¿½ï¿½ï¿½ */
 //					log_scope_get_data(shoot.stir_mode);
 
 
@@ -68,7 +71,7 @@ void log_scope_data_pkg(void)
 
             break;
         }
-        case 2: { /* ÔÆÌ¨PIT PID IMU */
+        case 2: { /* ï¿½ï¿½Ì¨PIT PID IMU */
 
 						
 //			          log_scope_get_data(imu_data.pitch);
@@ -88,7 +91,7 @@ void log_scope_data_pkg(void)
 
             break;
         }
-        case 3: { /* ÔÆÌ¨YAW PID IMU*/
+        case 3: { /* ï¿½ï¿½Ì¨YAW PID IMU*/
 ////					 	log_scope_get_data(vision.target_yaw_angle);
 ////					 	log_scope_get_data(yaw_err);
 ////            log_scope_get_data(imu_data.yaw);
@@ -152,7 +155,7 @@ void log_scope_data_pkg(void)
             break;
         }
 
-        case 5: { /* Ä¦²ÁÂÖ */
+        case 5: { /* Ä¦ï¿½ï¿½ï¿½ï¿½ */
  
 			log_scope_get_data(fric[0].spd_ref);
             log_scope_get_data(fric[1].spd_ref);
@@ -162,7 +165,7 @@ void log_scope_data_pkg(void)
 			log_scope_get_data(fric_can_recive_cnt);
             break;
 				}
-        case 6: { /* ÍÓÂİÒÇ */
+        case 6: { /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
             log_scope_get_data(imu_data.pitch);
             log_scope_get_data(imu_data.yaw);
             log_scope_get_data(imu_data.wy);
@@ -172,10 +175,10 @@ void log_scope_data_pkg(void)
 			log_scope_get_data(imu_data.real_yaw);
             break;
         }
-		case 7: { /* ÈÈÁ¿²âÊÔÏà¹Ø */
+		case 7: { /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 					
-            log_scope_get_data(shoot.barrel.heat);   //µ±Ç°Ç¹¹Ü(ÀíÂÛ)ÈÈÁ¿
-            log_scope_get_data(shoot.barrel.heat_remain);   //µ±Ç°Ç¹¹Ü(ÀíÂÛ)Ê£ÓàÈÈÁ¿
+            log_scope_get_data(shoot.barrel.heat);   //ï¿½ï¿½Ç°Ç¹ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½
+            log_scope_get_data(shoot.barrel.heat_remain);   //ï¿½ï¿½Ç°Ç¹ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)Ê£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			log_scope_get_data(back_flag_tri);
 			log_scope_get_data(back_flag_cnt);
 			log_scope_get_data(back_flag);
@@ -183,8 +186,8 @@ void log_scope_data_pkg(void)
 			log_scope_get_data(dm3507_motor.err_code);	
             break;
         }
-//        case 8: { /*ÆäÓà´ı´òÓ¡*/
-//		  log_scope_get_data(Shoot_Data.bullet_speed);//²ÃÅĞÏµÍ³»Ø´«ÉäËÙ   
+//        case 8: { /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡*/
+//		  log_scope_get_data(Shoot_Data.bullet_speed);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½   
 //                log_scope_get_data(Shoot_Data.bullet_freq);
 //			     log_scope_get_data(Shoot_Data.bullet_speed);
 //			 log_scope_get_data(0.0);
@@ -205,7 +208,7 @@ void log_scope_data_pkg(void)
 //      log_scope_get_data(rc.ch2);
 //      log_scope_get_data(ABS(gimbal.pid.yaw_angle_fdb - vsn_drive.target_yaw_angle));
 //      log_scope_get_data(vsn_drive.yaw_min_err);
-//      log_scope_get_data(vsn_drive.shoot_enable);//2025Äê4ÔÂ23ÈÕ ÏÂÎç ÕâÈıĞĞÓëÊÓ¾õÓĞ¹ØµÄget data£¬»áµ¼ÖÂÊÓ¾õÄÇ±ßµÄÖ¡ÂÊÏÂ½µ£¨´Ó333ÏÂ½µµ½325 »ò 250£©
+//      log_scope_get_data(vsn_drive.shoot_enable);//2025ï¿½ï¿½4ï¿½ï¿½23ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½Ğ¹Øµï¿½get dataï¿½ï¿½ï¿½áµ¼ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½Ç±ßµï¿½Ö¡ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½333ï¿½Â½ï¿½ï¿½ï¿½325 ï¿½ï¿½ 250ï¿½ï¿½
 //					
 //					
 //				log_scope_get_data(moto_pit_4005.total_encoder*360/655350);
@@ -218,8 +221,8 @@ void log_scope_data_pkg(void)
 //        }
 				
 				       case 9: { /*imu*/
-		  log_scope_get_data(remote_fusion.channel.ch1);//²ÃÅĞÏµÍ³»Ø´«ÉäËÙ
-		  log_scope_get_data(vtm_rc.cns);//²ÃÅĞÏµÍ³»Ø´«ÉäËÙ
+		  log_scope_get_data(remote_fusion.channel.ch1);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½
+		  log_scope_get_data(vtm_rc.cns);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½
 		log_scope_get_data(dm3507_motor.receive_cnt);
 	         log_scope_get_data(dm3507_motor.err_code);
 			log_scope_get_data(dr16_online_cnt);
@@ -248,21 +251,33 @@ void log_scope_data_pkg(void)
         }
 							 
 				
+        case 11: { /* åº•ç›˜ç”µæœºecd + SBUSå››é€šé“ï¼Œå‚è€ƒD:\ä¾§case11(ç”µæœº)å¹¶åŠ ä¸Šé¥æ§å™¨ */
+            log_scope_get_data(chassis_2006[0].ecd);
+            log_scope_get_data(chassis_2006[1].ecd);
+            log_scope_get_data(chassis_2006[2].ecd);
+            log_scope_get_data(chassis_2006[3].ecd);
+            log_scope_get_data(wbus_rc.data.ch1);
+            log_scope_get_data(wbus_rc.data.ch2);
+            log_scope_get_data(wbus_rc.data.ch3);
+            log_scope_get_data(wbus_rc.data.ch4);
+            break;
+        }
         default: {
             break;
         }
     }
 }
 
-/* ´®¿ÚÉÏÎ»»úÊı¾İ·¢ËÍÈÎÎñ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½İ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void debug_task(void const* argu)
 {
     uint32_t thread_wake_time = osKernelSysTick();
     for(;;)
     {
         thread_wake_time = osKernelSysTick();
-//		log_printf("%.2f",imu_data.pitch);
-      log_scope_data_output();		
+#if DEBUG_VOFA_ENABLE
+        log_scope_data_output();
+#endif
             
         osDelayUntil(&thread_wake_time, 5);
     }

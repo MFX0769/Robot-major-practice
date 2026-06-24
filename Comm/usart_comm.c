@@ -173,6 +173,7 @@
 #include "prot_8irtraking.h"
 
 uint8_t dma_dbus_buf[DMA_DBUS_LEN];
+uint8_t dma_sbus_buf[DMA_SBUS_LEN];  /* SBUS遥控器，跟dma_dbus_buf是两个东西，不要混用 */
 uint8_t dma_new_rc_buf[VTM_DATA_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
 uint8_t dma_8ir_buf[DMA_8IR_LEN];  /* 8路灰度传感器缓冲区 */
@@ -182,9 +183,9 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		if(huart->Instance== USART1)			//SBUS遥控器
     {
 				wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-        sbus_callback_handler(dma_dbus_buf, DMA_DBUS_LEN);
-				memset(dma_dbus_buf, 0, DMA_DBUS_LEN);
-        HAL_UART_Receive_DMA(huart, dma_dbus_buf, DMA_DBUS_LEN);
+        sbus_callback_handler(dma_sbus_buf, DMA_SBUS_LEN);
+				memset(dma_sbus_buf, 0, DMA_SBUS_LEN);
+        HAL_UART_Receive_DMA(huart, dma_sbus_buf, DMA_SBUS_LEN);
     }
 		
 	 else if(huart->Instance==UART9)    
@@ -239,9 +240,9 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 */
 void USER_UART_Init()
 {
-    __HAL_UART_CLEAR_IDLEFLAG(&DBUS_HUART);
-    __HAL_UART_ENABLE_IT(&DBUS_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&DBUS_HUART, dma_dbus_buf, DMA_DBUS_LEN);
+    __HAL_UART_CLEAR_IDLEFLAG(&SBUS_HUART);
+    __HAL_UART_ENABLE_IT(&SBUS_HUART, UART_IT_IDLE);
+    HAL_UART_Receive_DMA(&SBUS_HUART, dma_sbus_buf, DMA_SBUS_LEN);
     
 	  __HAL_UART_CLEAR_IDLEFLAG(&NEW_RC_HUART);
     __HAL_UART_ENABLE_IT(&NEW_RC_HUART, UART_IT_IDLE);

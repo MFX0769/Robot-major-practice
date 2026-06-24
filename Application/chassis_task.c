@@ -12,6 +12,7 @@
 #include "can_comm.h"
 #include "cmsis_os.h"
 #include "dbg_print.h"
+#include "config.h"
 #include <string.h>
 
 /* 外部电机变量 */
@@ -77,7 +78,9 @@ void chassis_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     static uint32_t print_cnt = 0;
     chassis_init();
+#if DEBUG_TEXT_ENABLE
     dbg_print("[CHASSIS] Task started\r\n");
+#endif
     
     for(;;)
     {
@@ -140,11 +143,13 @@ void chassis_task(void const *argu)
         chassis_can_send();
         
         /* 每500次打印一次状态 */
+#if DEBUG_TEXT_ENABLE
         if (++print_cnt >= 500) {
             print_cnt = 0;
             dbg_print("[CHASSIS] mode=%d rx[3]=%d rpm=%d\r\n",
                      ctrl_mode, chassis_2006[3].receive_cnt, chassis_2006[3].speed_rpm);
         }
+#endif
         
         osDelayUntil(&mode_wake_time, CHASSIS_PERIOD);
     }

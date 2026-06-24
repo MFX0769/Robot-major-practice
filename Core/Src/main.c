@@ -160,10 +160,12 @@ int main(void)
 	shoot_init();
 	
 	/* 调试输出初始化 */
+#if DEBUG_TEXT_ENABLE
 	dbg_init();
 	dbg_print("=== Taurus Aerial Robot ===\r\n");
 	dbg_print("Build: %s %s\r\n", __DATE__, __TIME__);
 	dbg_print("SystemCoreClock: %d MHz\r\n", SystemCoreClock / 1000000);
+#endif
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
