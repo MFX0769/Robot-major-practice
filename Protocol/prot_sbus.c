@@ -78,6 +78,11 @@ void sbus_parse_frame(wbus_frame_u *rc_frame)
   else if (ch[5] >= SBUS_SW_UP_THR) rc_frame->data.sw1 = 0;    /* 拨杆最下 */
   else rc_frame->data.sw1 = 1;                                   /* 拨杆中间 */
 
+  /* 第二个拨杆(SWB/SWC)接在ch7(ch[6])，实测跟ch6同样的数值规律 */
+  if (ch[6] <= SBUS_SW_DOWN_THR) rc_frame->data.sw2 = 2;       /* 拨杆最上 */
+  else if (ch[6] >= SBUS_SW_UP_THR) rc_frame->data.sw2 = 0;    /* 拨杆最下 */
+  else rc_frame->data.sw2 = 1;                                   /* 拨杆中间 */
+
   /* 更新接收统计：帧计数与频率（用系统节拍计算，自上电/内核启动以来的平均） */
   static uint32_t last_tick = 0;
   uint32_t now_tick = osKernelSysTick();

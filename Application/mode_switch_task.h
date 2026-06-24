@@ -5,10 +5,10 @@
 
 typedef enum
 {
-    PROTECT_MODE,   //±£»¤Ä£Ê½
-    REMOTER_MODE,   //Ò£¿ØÄ£Ê½
-    KEYBOARD_MODE,  //¼üÅÌÄ£Ê½
-    VISION_MODE     //ÊÓ¾õÄ£Ê½(Êó±êÓÒ¼ü¿ªÆô)
+    PROTECT_MODE,   //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+    REMOTER_MODE,   //Ò£ï¿½ï¿½Ä£Ê½
+    KEYBOARD_MODE,  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+    VISION_MODE     //ï¿½Ó¾ï¿½Ä£Ê½(ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½ï¿½ï¿½)
 } ctrl_mode_e;
 
 typedef enum
@@ -20,9 +20,9 @@ typedef enum
 void mode_switch_task(void const *argu);
 void fly_led_status(void);
 
-void vtm_mode_handler(void); //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇÐ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢Éä
+void vtm_mode_handler(void); //ï¿½É²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÏµÍ³Ä£Ê½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ÌºÍ·ï¿½ï¿½ï¿½
 void vtm_unlock_init(void);
-void Rc_Fail_mode_handler(void);  //ÓÉ²¦¸Ë1¾ö¶¨ÏµÍ³Ä£Ê½ÇÐ»»£¬Ö÷ÒªÊÇÔÆÌ¨¡¢µ×ÅÌºÍ·¢ÉäÆ÷
+void Rc_Fail_mode_handler(void);  //ï¿½É²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ÏµÍ³Ä£Ê½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ÌºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½
 void vtm_safe_lock(void);
 extern uint8_t pit_init_flag; 
 extern uint8_t lock_flag;

@@ -172,3 +172,20 @@ if (wbus_rx_cnt > 0)
 编译0/0。烧录(wrote 92000 bytes，一次成功)。验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长，`ctrl_mode=PROTECT_MODE`时4个`tx_current`全部读到0——保护逻辑确认生效。
 
 **待办**：PID参数(500,100,5,0,1)是之前占位的初始值，从未针对真实电机调过，车架起来之后需要实测调整，按用户说的"先给Kp大一点点"开始试。
+
+## 巡线接入 + 全局模式与底盘模式拆分
+检查巡线链路发现三层问题都没打通：①`Protocol/prot_8irtraking.c`是一套自定义协议(0xAA/0x55帧头)，没法确认跟真实模块对不对，用户说上学期串口没跑通最后退回GPIO轮询——这次先假定协议是对的，用户自己后续核实；②`prot_8irtraking_get_data()`全项目没人调用，解析完的数据是个死胡同；③`ctrl_mode_e`里压根没有巡线模式，`line_track_pid`声明初始化了但从未调用。
+
+第一次尝试：直接给全局`ctrl_mode_e`加`LINE_TRAKING_MODE`，被用户叫停——**"全局的控制模式和底盘的要区分开！底盘就是 遥控器/巡线/静止(给机械臂调试)"**。全局`ctrl_mode`是给云台/视觉这些用的，底盘不该占用这个枚举。撤回这处改动。
+
+确认遥控器上还有一个独立的拨杆可以用：ch5~ch8分别对应拨杆A/B/C/D，之前确认的拨杆(驱动`sw1`/全局`ctrl_mode`)是ch6=SWB，还有ch7=SWC这个独立拨杆没用过，跟SWB同样的数值规律(最上raw~353、中间raw~1024)。
+
+**最终方案**：
+- `Application/chassis_task.h`新增独立的`chassis_mode_e`(`CHASSIS_STOP`/`CHASSIS_REMOTER`/`CHASSIS_LINE_TRACK`)，跟全局`ctrl_mode_e`完全分开
+- `Protocol/prot_sbus.c`给`wbus_rc.data.sw2`接上ch[6](ch7/SWC)的解码，跟sw1同样的阈值规律
+- `Application/chassis_task.c`：每个循环开头用`wbus_rc.data.sw2`直接算出`chassis_mode`(2=上→REMOTER，0=下→LINE_TRACK，其余→STOP)，主`switch`改成switch这个新变量，不再用全局`ctrl_mode`。`CHASSIS_LINE_TRACK`分支接入`prot_8irtraking_get_data()`，`vx_ref=0.5f`固定速度，`wz_ref=pid_calc(&line_track_pid, line_data->position, 0.0f)`(线在中间时target=0)，参考`RoboticMajor_Pratice_code`原样抄
+- 最后的保护判断从单纯`ctrl_mode==PROTECT_MODE`改成`(chassis_mode==CHASSIS_STOP) || (ctrl_mode==PROTECT_MODE)`——两个开关任何一个进入"停"的状态都强制`tx_current=0`，全局保护作为额外一层安全网保留，不是互相替代
+
+编译0错误13警告(全是改动前已存在的无关警告，chassis_task.c本身0警告)。烧录成功(wrote 92064 bytes)。验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长；读到`sw1=2`(SWB上)、`sw2=1`(SWC中位→`CHASSIS_STOP`)，4个`tx_current`全部确认为0——新架构跑通。
+
+**待办**：巡线协议本身还没经过实测验证(用户说"待会找")，巡线模式目前是代码层面接通了，但能不能真的巡线还要看协议对不对、模块实际数据。
