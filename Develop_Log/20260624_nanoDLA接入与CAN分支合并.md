@@ -159,3 +159,16 @@ if (wbus_rx_cnt > 0)
 `sbus_unlock_init()`改成单一组合：`ch1<=-600 && ch2>=600 && ch3<=-600 && ch4>=600`，删掉之前没验证过的另一个分支。编译0/0，烧录成功(wrote 91840 bytes)。
 
 **实测验证完整链路成功**：用户做内八手势(拨杆中位)，日志显示`lock=0→1`；随后拨杆打上位(`sw1=2`)，`lock=1`保持，`mode`从0(`PROTECT_MODE`)变成1(`REMOTER_MODE`)——SBUS→解锁→模式切换全链路打通。下一步是摇杆数值在`REMOTER_MODE`下实际驱动`chassis_2006[].tx_current`，待实测rpm响应。
+
+## 接入轮速闭环PID + PROTECT_MODE强制清零保护
+用户明确要求"开环测是指把车架起来调PID"——不是继续开环，是真的要接闭环；并且明确要求"最终发送给2006的电流，一定要受到mode的保护，PROTECT MODE发0这个逻辑一定要写清楚"。
+
+`Application/chassis_task.c`改动：
+- 删掉`chassis_motor_pid[4]`头上"未接入计算"的TODO注释
+- 麦轮解算后，按`chassis_2006[]`下标(左前/左后/右前/右后)重新排列运动学目标到`target_rpm[4]`数组(保留原来motor[1]/motor[2]对应右前/左后的换位关系)
+- 4个轮子分别跑`pid_calc(&chassis_motor_pid[i], chassis_2006[i].speed_rpm, target_rpm[i])`(反馈在前，目标在后，跟pid.h签名一致)
+- **最后一步显式写保护**：`chassis_2006[i].tx_current = (ctrl_mode == PROTECT_MODE) ? 0 : (int16_t)pid_out;`——不管PID算出什么，PROTECT_MODE一律强制0，不依赖"target是0所以PID输出也该是0"这种间接假设(PID有积分项，target=0不代表输出立刻是0)
+
+编译0/0。烧录(wrote 92000 bytes，一次成功)。验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长，`ctrl_mode=PROTECT_MODE`时4个`tx_current`全部读到0——保护逻辑确认生效。
+
+**待办**：PID参数(500,100,5,0,1)是之前占位的初始值，从未针对真实电机调过，车架起来之后需要实测调整，按用户说的"先给Kp大一点点"开始试。

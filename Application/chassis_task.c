@@ -22,10 +22,7 @@ extern dji_motor_t chassis_2006[4];
 /* 底盘电机结构体 */
 chassis_motor_t chassis_motor;
 
-/* 底盘电机速度环PID */
-/* TODO(2026-06-23): 已声明+初始化，但未接入计算——当前 chassis_mecanum_resolve()
- * 算出的速度目标直接当 tx_current 发送，没有闭环。等IMU/底盘联调有空再接上
- * （需要电机实际转速反馈 -> PID_calc -> tx_current）。 */
+/* 底盘电机速度环PID，按chassis_2006[]的下标(左前/左后/右前/右后) */
 static pid_t chassis_motor_pid[4];
 
 /* 线位跟踪模式 - 转向PID */
@@ -131,13 +128,22 @@ void chassis_task(void const *argu)
                 
         /* 运动学解算 */
         chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, MECANUM_L);
-        
-        /* 赋值到电机结构体 (注意：左右顺序可能需要调整) */
-        chassis_2006[0].tx_current = chassis_motor.motor[0];  /* 左前 */
-        chassis_2006[1].tx_current = chassis_motor.motor[2];  /* 左后 */
-        chassis_2006[2].tx_current = chassis_motor.motor[1];  /* 右前 */
-        chassis_2006[3].tx_current = chassis_motor.motor[3];  /* 右后 */
-        
+
+        /* chassis_2006[]下标(左前/左后/右前/右后) 对应的运动学目标 (注意：左右顺序可能需要调整) */
+        float target_rpm[4] = {
+            (float)chassis_motor.motor[0],  /* 左前 */
+            (float)chassis_motor.motor[2],  /* 左后 */
+            (float)chassis_motor.motor[1],  /* 右前 */
+            (float)chassis_motor.motor[3],  /* 右后 */
+        };
+
+        /* 速度环PID闭环，最后用ctrl_mode强制保护：PROTECT_MODE无条件发0，不管PID算出什么 */
+        for (int i = 0; i < 4; i++)
+        {
+            float pid_out = pid_calc(&chassis_motor_pid[i], chassis_2006[i].speed_rpm, target_rpm[i]);
+            chassis_2006[i].tx_current = (ctrl_mode == PROTECT_MODE) ? 0 : (int16_t)pid_out;
+        }
+
         taskEXIT_CRITICAL();
         
         /* 通过队列发送电机电流 */
