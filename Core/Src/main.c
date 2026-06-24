@@ -33,6 +33,7 @@
 #include "can_comm.h"
 #include "usart_comm.h"
 #include "shoot_task.h"
+#include "dbg_print.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,13 +54,15 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+TIM_HandleTypeDef htim2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
+void MX_TIM2_Init(void);
+void MX_UART5_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -68,6 +71,43 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
+
+/**
+  * @brief TIM2 Initialization Function (PWM for Servo)
+  * @param None
+  * @retval None
+  */
+void MX_TIM2_Init(void)
+{
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 83;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 19999;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 1500;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
 
 /**
   * @brief  The application entry point.
@@ -106,6 +146,7 @@ int main(void)
   MX_FDCAN2_Init();
   MX_FDCAN3_Init();
   MX_IWDG1_Init();
+  MX_TIM2_Init();
   MX_UART9_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
@@ -116,8 +157,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	USER_UART_Init();
 	comm_can_init();
-//	comm_usart_init();
 	shoot_init();
+	
+	/* 调试输出初始化 */
+	dbg_init();
+	dbg_print("=== Taurus Aerial Robot ===\r\n");
+	dbg_print("Build: %s %s\r\n", __DATE__, __TIME__);
+	dbg_print("SystemCoreClock: %d MHz\r\n", SystemCoreClock / 1000000);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */

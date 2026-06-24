@@ -63,17 +63,15 @@ void comm_usart_init(void);
 
 /*---------------------------------------------分界线------------------------*/
 #define 	DBUS_HUART    huart1
-#define   JUDGE_HUART   huart2
 #define   NEW_RC_HUART  huart9
-//#define 	TUCHUAN_HUART		huart5		//因最新陀螺仪使用CAN，暂时无用
+#define 	TUCHUAN_HUART		huart2		//8路灰度传感器
 #define DEBUG_HUART	huart6 
 #define LOG_HUART huart3
 #define   VISION_HUART	huart10
 
 #define  DMA_DBUS_LEN			18
 #define VTM_DATA_LEN    21     //放在遥控器解算的头文件里
-//#define DMA_TUCHUAN_LEN  1
-#define  DMA_JUDGE_LEN		150
+#define DMA_8IR_LEN      32     //8路灰度传感器
 #define  DMA_VISION_LEN		40     //原23  2025年4月1
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);

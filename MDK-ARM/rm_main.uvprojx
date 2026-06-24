@@ -10,7 +10,7 @@
       <TargetName>rm_main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\keil5</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_PWR_LDO_SUPPLY,USE_HAL_DRIVER,STM32H723xx,ARM_MATH_CM7,__FPU_PRESENT=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System;../UI</IncludePath>
+              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System;../UI;../Tool/debug</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -947,6 +947,36 @@
               <FileType>5</FileType>
               <FilePath>..\Application\log_task.h</FilePath>
             </File>
+            <File>
+              <FileName>chassis_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\chassis_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>chassis_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\chassis_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>arm_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\arm_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\arm_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>arm_ik.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\arm_ik.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_ik.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\arm_ik.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1072,6 +1102,66 @@
               <FileType>5</FileType>
               <FilePath>..\Protocol\prot_remote_fusion.h</FilePath>
             </File>
+            <File>
+              <FileName>prot_sbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_sbus.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_sbus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_sbus.h</FilePath>
+            </File>
+            <File>
+              <FileName>prot_8irtraking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_8irtraking.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_8irtraking.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_8irtraking.h</FilePath>
+            </File>
+            <File>
+              <FileName>prot_servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_servo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_servo.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application</GroupName>
+          <Files>
+            <File>
+              <FileName>arm_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\arm_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\arm_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>arm_ik.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\arm_ik.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_ik.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\arm_ik.h</FilePath>
+            </File>
+            <File>
+              <FileName>control_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Application\control_def.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1132,6 +1222,26 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\bsp.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\bsp_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Bsp\bsp_pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\bsp_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gpio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Bsp\bsp_gpio.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1171,6 +1281,21 @@
         </Group>
         <Group>
           <GroupName>Driver</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Debug</GroupName>
+          <Files>
+            <File>
+              <FileName>dbg_print.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Tool\debug\dbg_print.c</FilePath>
+            </File>
+            <File>
+              <FileName>dbg_print.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Tool\debug\dbg_print.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Math</GroupName>

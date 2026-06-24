@@ -28,7 +28,7 @@
 ////uint8_t Uart4_Rx_Buff[USART4_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart4 */
 ////uint8_t Uart10_Rx_Buff[USART5_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart5 */
 ////uint8_t Uart6_Rx_Buff[USART6_RX_BUFFER_SIZE];     /*!< Receive buffer for Uart6 */
-///*н╙й╡ц╢╢сиоцФуБжж╠ДЁиобцФуБжждьё© йгрРн╙иоцФдгжжй╧сцkeil╣дdebug║╙║╙watch╣дй╠╨Р╩АЁЖож©╢╡╩╣╫йЩ╬щ╣дгИ©Жё╛©╫╢Ракр╩обai╥╒ожж╩йгwatch╡╩╣╫ё╛йЩ╬щйгсп╣д║ён╙ак╥юж╧╨СпЬ╣Вйт╣дй╠╨РЦбакё╛╧й╫Б╬ЖуБ╦Ж©╢╡╩╣╫╣днйлБхГобё╛╬ълЕгИ©ЖгК╪Ш©╙╥╒хуж╬ё╛╢С╦етз2025дЙ10тб18ху*/
+///*н╙й╡ц╢О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ж╠О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ьёО©╫ О©╫О©╫О©╫О©╫н╙О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫й╧О©╫О©╫keilО©╫О©╫debugО©╫О©╫О©╫О©╫watchО©╫О©╫й╠О©╫О©╫О©╫О©╫О©╫ж©О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫щ╣О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╩О©╫О©╫aiО©╫О©╫О©╫О©╫ж╩О©╫О©╫watchО©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫п╣д║О©╫н╙О©╫к╥О©╫ж╧О©╫О©╫О©╫О©╫О©╫О©╫О©╫т╣О©╫й╠О©╫О©╫О©╫О©╫О©╫кёО©╫О©╫й╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫бёО©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ж╬О©╫О©╫О©╫О©╫О©╫О©╫О©╫2025О©╫О©╫10О©╫О©╫18О©╫О©╫*/
 //volatile uint8_t Uart1_Rx_Buff[USART1_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 //volatile uint8_t Uart2_Rx_Buff[USART2_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
 //volatile uint8_t Uart3_Rx_Buff[USART3_RX_BUFFER_SIZE] __attribute__((section(".RAM_D1")));
@@ -62,7 +62,7 @@
 
 
 ///**
-//* @brief  ╢╝©зйЩ╬щ╥╒кмхннЯ 
+//* @brief  О©╫О©╫О©╫О©╫О©╫О©╫О©╫щ╥О©╫О©╫О©╫О©╫О©╫О©╫О©╫ 
 //* @param  None.
 //* @return None.
 //*/
@@ -153,9 +153,9 @@
 
 
 ///**
-//* @brief  USART10╣джп╤о╩ь╣В╨╞йЩ     U10вН©╙й╪╪ф╩╝йг╦Ьйс╬У╣дё╛ож╦дйс╬Ум╗пен╙usb
-//* @param  uint8_t *buf  ╫сйу╩╨ЁЕйЩвИж╦уК
-//* @param  uint16_t len  ╫сйу╩╨ЁЕйЩвИЁ╓╤х
+//* @brief  USART10О©╫О©╫О©╫п╤о╩ь╣О©╫О©╫О©╫О©╫О©╫     U10О©╫Н©╙й╪О©╫ф╩О©╫О©╫г╦О©╫О©╫с╬О©╫О©╫дёО©╫О©╫ж╦О©╫О©╫с╬О©╫м╗О©╫О©╫н╙usb
+//* @param  uint8_t *buf  О©╫О©╫О©╫у╩О©╫О©╫О©╫О©╫О©╫О©╫О©╫ж╦О©╫О©╫
+//* @param  uint16_t len  О©╫О©╫О©╫у╩О©╫О©╫О©╫О©╫О©╫О©╫ИЁ╓О©╫О©╫
 //* @retval None
 //*/
 //static uint32_t User_USART10_RxCpltCallback(uint8_t *buf, uint16_t len)
@@ -166,22 +166,23 @@
 //	return 0;
 //}
 
-/*------------------------------------╡╩м╛╟Ф╠╬╢╝©з╫сйу╥ж╫Гоъ-----------------------------*/
+/*------------------------------------Д╦╡Е▐ёФ■╤Е▐▒Ф▌╔Е▐ё-----------------------------*/
 #include "usart_comm.h"
 #include "status_task.h"
-uint8_t	dma_judge_buf[DMA_JUDGE_LEN];
+#include "prot_sbus.h"
+#include "prot_8irtraking.h"
+
 uint8_t dma_dbus_buf[DMA_DBUS_LEN];
 uint8_t dma_new_rc_buf[VTM_DATA_LEN];
-//uint8_t dma_tuchuan_buf[DMA_TUCHUAN_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
-//uint8_t dma_A3_buf[DMA_A3_LEN];
+uint8_t dma_8ir_buf[DMA_8IR_LEN];  /* 8Х╥╞Г│╟Е╨╕Д╪═Ф└÷Е≥╗Г╪⌠Е├╡Е▄╨ */
 
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
-		if(huart->Instance== USART1)			//DBUS╢╝©з
+		if(huart->Instance== USART1)			//SBUSИ│╔Ф▌╖Е≥╗
     {
 				wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-        rc_callback_handler(&rc,dma_dbus_buf);
+        sbus_callback_handler(dma_dbus_buf, DMA_DBUS_LEN);
 				memset(dma_dbus_buf, 0, DMA_DBUS_LEN);
         HAL_UART_Receive_DMA(huart, dma_dbus_buf, DMA_DBUS_LEN);
     }
@@ -196,30 +197,15 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		}
 		
 				
-	 else if(huart->Instance==UART5)    //пбм╪╢╚╢╝©з
+    else if(huart->Instance== USART2)    //8Х╥╞Г│╟Е╨╕Д╪═Ф└÷Е≥╗
 		{
-////			  wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-////        new_rc_callback_handler(&new_rc_data,dma_new_rc_buf);
-//				memset(dma_new_rc_buf, 0, DMA_NEW_RC_LEN);
-//    HAL_UART_Receive_DMA(&TUCHUAN_HUART, dma_tuchuan_buf, DMA_TUCHUAN_LEN);
+				prot_8irtraking_on_receive(dma_8ir_buf, sizeof(dma_8ir_buf));
+				memset(dma_8ir_buf, 0, sizeof(dma_8ir_buf));
+				HAL_UART_Receive_DMA(huart, dma_8ir_buf, sizeof(dma_8ir_buf));
 		}
-		
-		
-
-    else if(huart->Instance== USART2)	//JUDGE╢╝©з
-    {
-        Judge_Read_Data(dma_judge_buf);
-			  memset(dma_judge_buf, 0, DMA_JUDGE_LEN);
-        HAL_UART_Receive_DMA(huart, dma_judge_buf, DMA_JUDGE_LEN);
-		
-//		wdg_user_set_bit(WDG_BIT_BSP_REMOTE);
-//				vtm_callback_handler(dma_new_rc_buf);
-//				memset(dma_new_rc_buf, 0, VTM_DATA_LEN);
-//				HAL_UART_Receive_DMA(huart, dma_new_rc_buf, VTM_DATA_LEN);
-    }
    
 	
-    else if(huart->Instance == USART10)	//VISION╢╝©з
+    else if(huart->Instance == USART10)	//VISIONО©╫О©╫О©╫О©╫
     {
 		  	vision.rx_cnt++;
 		uint32_t rx_len = DMA_VISION_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);
@@ -230,26 +216,26 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 }
 
 /**
-  * @brief ╢╝©з©уопжп╤о   в╒ё╨пХтзit.cжпц©╦Ж╢╝©з╣джп╤ожп╣Всц╦ц╨╞йЩ
+  * @brief О©╫О©╫О©╫з©О©╫О©╫О©╫О©╫п╤О©╫   в╒О©╫О©╫О©╫О©╫О©╫О©╫it.cО©╫О©╫ц©О©╫О©╫О©╫О©╫О©╫з╣О©╫О©╫п╤О©╫О©╫п╣О©╫О©╫ц╦ц╨О©╫О©╫О©╫
   * @param UART_HandleTypeDef *huart
-  * @retval нч
+  * @retval О©╫О©╫
   */
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-    if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE)) //еп╤ойг╥Яйг©уопжп╤о
+    if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE)) //О©╫п╤О©╫О©╫г╥О©╫О©╫г©О©╫О©╫О©╫О©╫п╤О©╫
     {
-        __HAL_UART_CLEAR_IDLEFLAG(huart);                     //гЕЁЩ©уопжп╤о╠Йж╬ё╗╥ЯтР╩Ар╩ж╠╡╩╤о╫ЬхКжп╤оё╘
-			HAL_UART_AbortReceive(huart);						//╫Ж╧ь╠у╫сйужп╤о
-//        HAL_UART_DMAStop(huart);															//мёж╧╠╬╢нDMAткйД
-        USER_UART_IDLECallback(huart);                     //╣Всц╢╝©з╧╕дэ╩ь╣В╨╞йЩ
+        __HAL_UART_CLEAR_IDLEFLAG(huart);                     //О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫п╤о╠О©╫ж╬О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╩ж╠О©╫О©╫О©╫о╫О©╫О©╫О©╫О©╫п╤оёО©╫
+			HAL_UART_AbortReceive(huart);						//О©╫О©╫О©╫ь╠у╫О©╫О©╫О©╫О©╫п╤О©╫
+//        HAL_UART_DMAStop(huart);															//мёж╧О©╫О©╫О©╫О©╫DMAО©╫О©╫О©╫О©╫
+        USER_UART_IDLECallback(huart);                     //О©╫О©╫О©╫ц╢О©╫О©╫з╧О©╫О©╫э╩ь╣О©╫О©╫О©╫О©╫О©╫
     }
 }
 
 
 /**
-* @brief  ╢╝©зЁУй╪╩╞:й╧дэ╢╝©з©уопжп╤о,©╙фТ╢╝©зDMA╫сйу
-* @param  нч
-* @retval нч
+* @brief  О©╫О©╫О©╫зЁО©╫й╪О©╫О©╫:й╧О©╫э╢О©╫О©╫з©О©╫О©╫О©╫О©╫п╤О©╫,О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫DMAО©╫О©╫О©╫О©╫
+* @param  О©╫О©╫
+* @retval О©╫О©╫
 */
 void USER_UART_Init()
 {
@@ -259,20 +245,17 @@ void USER_UART_Init()
     
 	  __HAL_UART_CLEAR_IDLEFLAG(&NEW_RC_HUART);
     __HAL_UART_ENABLE_IT(&NEW_RC_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, VTM_DATA_LEN);//м╪╢╚а╢б╥
-//		  __HAL_UART_CLEAR_IDLEFLAG(&TUCHUAN_HUART);
-//    __HAL_UART_ENABLE_IT(&TUCHUAN_HUART, UART_IT_IDLE);
-//    HAL_UART_Receive_DMA(&TUCHUAN_HUART, dma_tuchuan_buf, DMA_TUCHUAN_LEN);
-	
-    __HAL_UART_CLEAR_IDLEFLAG(&JUDGE_HUART);
-    __HAL_UART_ENABLE_IT(&JUDGE_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&JUDGE_HUART, dma_judge_buf, DMA_JUDGE_LEN);
-	judge_init(&JUDGE_HUART);
-	
+    HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, VTM_DATA_LEN);//м╪О©╫О©╫О©╫О©╫б╥
+
     __HAL_UART_CLEAR_IDLEFLAG(&VISION_HUART);
     __HAL_UART_ENABLE_IT(&VISION_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&VISION_HUART,dma_vision_buf,DMA_VISION_LEN);
+
+    /* USART2: 8Х╥╞Г│╟Е╨╕Д╪═Ф└÷Е≥╗ */
+    __HAL_UART_CLEAR_IDLEFLAG(&TUCHUAN_HUART);
+    __HAL_UART_ENABLE_IT(&TUCHUAN_HUART, UART_IT_IDLE);
+    HAL_UART_Receive_DMA(&TUCHUAN_HUART, dma_8ir_buf, sizeof(dma_8ir_buf));
+
 	log_init(&DEBUG_HUART);
-//	AirRobot_Log_Init();
 }
 
