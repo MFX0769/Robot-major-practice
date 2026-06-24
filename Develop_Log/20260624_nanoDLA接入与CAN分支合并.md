@@ -104,3 +104,9 @@ USART1波特率/校验/数据位配置本身是对的（100000, 9bit=8data+偶�
 然后把`DEBUG_TEXT_ENABLE`改成0，`DEBUG_VOFA_ENABLE`改成1，在`Application/debug_task.c`新增`case 11`：参考D:\侧已有的case 11(只有`chassis_2006[0..3].ecd`)，在此基础上加上4路SBUS通道(`wbus_rc.data.ch1~ch4`)，`debug_wave`默认值改成11。新增`#include "prot_sbus.h"`和本地`extern dji_motor_t chassis_2006[4];`(项目里chassis_2006没有统一头文件声明，各文件都是各自extern，沿用此惯例)。
 
 编译0错误0警告，烧录验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部按正常速率增长，`debug_wave`读出来确认是11。VOFA这条链路理论上已通，待用户实际用VOFA软件连USART6确认波形显示正常。
+
+USART6(调试口)波特率确认为**921600**(不是115200)，`Core/Src/usart.c`里`MX_USART6_UART_Init`留了TODO注释"验证921600波特率稳定性，无线15cm距离下测试VOFA+波形传输"——这个高波特率本来就是配合VOFA+无线调试设计的，但稳定性从未实测验证过，如果VOFA波形丢包/乱码要回头看这条。
+
+又加了`case 12`：专门看SBUS遥控器，`ch1~ch8` + `sw1` + `wbus_rx_cnt` + `wbus_rx_freq`，`debug_wave`改成12。编译0/0，重烧（第一次"failed erasing sectors 0 to 0"没看到wrote确认行，怀疑没写进去，重启OpenOCD后重烧成功，wrote 89408 bytes），验证：`wbus_rx_cnt`1094→1611(5秒+517≈103Hz)，`imucnt`/`chassis_2006[0].receive_cnt`同步健康，`debug_wave`确认是12。
+
+**注意**：这一轮(case11/case12)两次flash都是先遇到"failed erasing sectors 0 to 0"且无wrote确认行，必须重启OpenOCD重试才成功写入——同一现象重复出现两次，值得记一下，以后看到这个报错不要假设烧录成功，必须用GDB读关键变量确认，不能只看telnet的输出表面正常。

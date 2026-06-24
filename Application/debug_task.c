@@ -44,7 +44,7 @@ extern float std;
 float float_test;
 extern dji_motor_t chassis_2006[4];
 /* ����ѡ���ӡ���������� */
-uint8_t debug_wave = 11;
+uint8_t debug_wave = 12;
 
 void log_scope_data_pkg(void)
 {
@@ -260,6 +260,20 @@ void log_scope_data_pkg(void)
             log_scope_get_data(wbus_rc.data.ch2);
             log_scope_get_data(wbus_rc.data.ch3);
             log_scope_get_data(wbus_rc.data.ch4);
+            break;
+        }
+        case 12: { /* 专看SBUS遥控器通道 */
+            log_scope_get_data(wbus_rc.data.ch1);
+            log_scope_get_data(wbus_rc.data.ch2);
+            log_scope_get_data(wbus_rc.data.ch3);
+            log_scope_get_data(wbus_rc.data.ch4);
+            log_scope_get_data(wbus_rc.data.ch5);
+            log_scope_get_data(wbus_rc.data.ch6);
+            log_scope_get_data(wbus_rc.data.ch7);
+            log_scope_get_data(wbus_rc.data.ch8);
+            log_scope_get_data(wbus_rc.data.sw1);
+            log_scope_get_data(wbus_rx_cnt);
+            log_scope_get_data(wbus_rx_freq);
             break;
         }
         default: {
