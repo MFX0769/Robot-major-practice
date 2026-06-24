@@ -24,7 +24,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 arm_ctrl_t arm_ctrl;
-
+float test_angle;
 /* Private function prototypes -----------------------------------------------*/
 static void arm_task_main_loop(void);
 
@@ -54,6 +54,11 @@ void arm_yaw_pid_init(void)
 /* ========================= Yaw PID计算 ========================= */
 void arm_yaw_pid_calc(void)
 {
+    /* --- 双重保险①：保护模式下目标跟随反馈，error=0，PID不会累积/不会主动输出 --- */
+    if (ctrl_mode == PROTECT_MODE) {
+        arm_ctrl.target.yaw = (float)arm_yaw_motor.ecd * ECD_TO_DEG;
+    }
+
     /* --- 位置环 --- */
     /* fdb: ecd转角度 (0~8192 -> 0~360度) */
     arm_ctrl.yaw.angle_fdb = (float)arm_yaw_motor.ecd * ECD_TO_DEG;
@@ -83,6 +88,18 @@ void arm_yaw_pid_calc(void)
         arm_ctrl.yaw.output = arm_ctrl.yaw.current_limit;
     if (arm_ctrl.yaw.output < -arm_ctrl.yaw.current_limit)
         arm_ctrl.yaw.output = -arm_ctrl.yaw.current_limit;
+
+    /* --- ECD硬限位回拉 (参考gimbal_task.c的YAW_ECD_LEFT/RIGHT模式，超出限位时用回拉力覆盖PID输出) --- */
+    if (arm_yaw_motor.ecd >= ARM_YAW_ECD_RIGHT) {
+        arm_ctrl.yaw.output = -(float)(arm_yaw_motor.ecd - ARM_YAW_ECD_RIGHT) * ARM_YAW_LIMIT_KP;
+    } else if (arm_yaw_motor.ecd <= ARM_YAW_ECD_LEFT) {
+        arm_ctrl.yaw.output = (float)(ARM_YAW_ECD_LEFT - arm_yaw_motor.ecd) * ARM_YAW_LIMIT_KP;
+    }
+
+    /* --- 双重保险②：发送前再强制清零，不管前面算出什么 --- */
+    if (ctrl_mode == PROTECT_MODE) {
+        arm_ctrl.yaw.output = 0.0f;
+    }
 
     /* --- 输出到电机 --- */
     arm_yaw_motor.tx_current = (int16_t)arm_ctrl.yaw.output;
@@ -262,6 +279,20 @@ void arm_task(void)
             bsp_gpio_servo_power_off();
         }
 
+        /* ---------- 标定测试模式：SWD(sw3)打上时，ch3(左摇杆竖)直接映射肩关节角度，方便watch读数标定位置 ----------
+           跳过正常状态机/yaw PID，只测这一个舵机；sw3松开恢复正常逻辑。
+           ch3=0时角度=0(当前位置)；±90是占位缩放系数，实际限幅待用户实测后再给 */
+        if (ctrl_mode == REMOTER_MODE && wbus_rc.data.sw3)
+        {
+             test_angle = ((float)wbus_rc.data.ch3 / 660.0f) * 90.0f;
+            if (test_angle > 90.0f)  test_angle = 90.0f;
+            if (test_angle < -90.0f) test_angle = -90.0f;
+            servo_set_angle(SERVO_SHOULDER, test_angle);
+            ARM_DBG("[ARM TEST] ch3=%d shoulder_angle=%.1f\r\n", wbus_rc.data.ch3, test_angle);
+            osDelay(ARM_TASK_PERIOD);
+            continue;
+        }
+
         /* ---------- 视觉输入更新 ---------- */
         arm_vision_update();
 
@@ -355,7 +386,7 @@ void arm_task(void)
             servo_set_angle(SERVO_GRIPPER, arm_ctrl.current.gripper);
         }
 
-        /* ---------- Yaw PID计算 (每周期) ---------- */
+        /* ---------- Yaw PID计算 (每周期，PROTECT_MODE的双重保险在函数内部) ---------- */
         if (arm_ctrl.state != ARM_ERROR) {
             arm_yaw_pid_calc();
         }

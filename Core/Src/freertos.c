@@ -247,10 +247,9 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
 	status_task_t = osThreadCreate(osThread(statusTask),NULL);
 	
-#if ARM_ENABLE
+
 	osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 512);
 	arm_task_t = osThreadCreate(osThread(armTask), NULL);
-#endif
 
 	osThreadDef(chassisTask, chassis_task, osPriorityNormal, 0, 256);
 	chassis_task_t = osThreadCreate(osThread(chassisTask), NULL);

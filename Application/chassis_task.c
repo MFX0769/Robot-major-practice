@@ -42,8 +42,10 @@ static void chassis_init(void)
         PID_struct_init(&chassis_motor_pid[i], 8000, 1600.0f, 5.0f, 0.0f, 1.0f, 0, 0, 0, NONE_IMPROVE);
     }
     
-    /* 线位跟踪PID初始化 */
-    PID_struct_init(&line_track_pid, 300, 50.0f, 0.5f, 0.0f, 0.0f, 0, 0, 0, NONE_IMPROVE);
+    /* 线位跟踪PID初始化：maxout=1500跟遥控满转量级接近(ch4满偏×CHASSIS_SCALE_WZ≈2640)，
+       kp=-15配合position最大±100，kp*error正好打满maxout；负号是实测确认过的纠偏方向，
+       原来外部乘的-150系数已经去掉，方向信息挪到这里 */
+    PID_struct_init(&line_track_pid, 150000, 150.0f, -60.0f, 0.0f, -50.0f, 0, 0, 0, NONE_IMPROVE);
 }
 
 /**
@@ -124,8 +126,10 @@ void chassis_task(void const *argu)
 
             case CHASSIS_LINE_TRACK:
             {
-                /* 巡线模式：前进速度固定，转向由线位反馈PID控制，参考RoboticMajor_Pratice_code */
-                vx_ref = 0.5f;
+                /* 巡线模式：前进速度固定，转向由线位反馈PID控制，参考RoboticMajor_Pratice_code。
+                   老代码vx_ref=0.5f配CHASSIS_SCALE_VX=0.0020f，当前项目CHASSIS_SCALE_VX=3.0f(是老代码1500倍)，
+                   按比例同步放大：0.5f*1500=750.0f，维持跟老代码同样的相对强度 */
+                vx_ref = 750.0f;
                 vy_ref = 0.0f;
 
                 /* 线位PID计算：fdb=线位置(-100~100附近)，ref=0(线在中间) */

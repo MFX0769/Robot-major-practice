@@ -31,22 +31,28 @@ static int parse_value(const char *p, const char *key, int *val)
     return 0;
 }
 
+/* 搬运自RoboticMajor_Pratice_code的Application/irtraking_task.c：等距对称权重+加权平均+归一化到±100。
+   实际只有digital[1]~digital[6](X2~X7)接了传感器，digital[0]/[7](X1/X8)未接，权重设0占位 */
 static void compute_position(void)
 {
-    int32_t sum = 0;
-    int32_t weight = 0;
-    for (int i = 0; i < PROT_8IR_NUM_SENSORS; i++) {
-        if (s_data.digital[i]) {
-            sum += (i - 3) * 25;
-            weight++;
+    static const float weights[8] = {0.0f, -3.5f, -1.5f, -0.5f, 0.5f, 1.5f, 3.5f, 0.0f};
+    float weighted_sum = 0.0f;
+    float sensor_sum = 0.0f;
+
+    for (int i = 1; i <= 6; i++) {
+        /* 实测极性：digital=0是黑线，digital=1是白色/没在线上(2026-06-25确认)，这里取反才是"压在线上" */
+        if (!s_data.digital[i]) {
+            weighted_sum += weights[i];
+            sensor_sum += 1.0f;
         }
     }
-    if (weight == 0) {
+
+    if (sensor_sum < 0.5f) {
         s_data.state = 0;
         s_data.position = 0;
     } else {
         s_data.state = 1;
-        s_data.position = (int16_t)(sum / weight);
+        s_data.position = (int16_t)(weighted_sum / sensor_sum * 100.0f / 2.5f);
     }
 }
 
