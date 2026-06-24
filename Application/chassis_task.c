@@ -77,10 +77,16 @@ void chassis_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     static uint32_t print_cnt = 0;
     chassis_init();
+
+    /* 巡线模块上电默认不发数据，只有收到使能命令才会持续上报(手册确认)，这里只需发一次。
+       只用digital(位置解算只看digital[])，对应手册$0,0,1#/厂商demo的send_control_data(0,0,1) */
+    prot_8irtraking_init();
+    prot_8irtraking_cmd_read(0, 1);
+
 #if DEBUG_TEXT_ENABLE
     dbg_print("[CHASSIS] Task started\r\n");
 #endif
-    
+
     for(;;)
     {
         mode_wake_time = osKernelSysTick();
@@ -178,6 +184,12 @@ void chassis_task(void const *argu)
                          j, chassis_2006[j].tx_current, chassis_2006[j].speed_rpm,
                          chassis_2006[j].send_cnt, chassis_2006[j].receive_cnt);
             }
+            dbg_print("  [8IR] state=%d pos=%d digital=%d%d%d%d%d%d%d%d\r\n",
+                     line_data ? line_data->state : -1, line_data ? line_data->position : 0,
+                     line_data ? line_data->digital[0] : 0, line_data ? line_data->digital[1] : 0,
+                     line_data ? line_data->digital[2] : 0, line_data ? line_data->digital[3] : 0,
+                     line_data ? line_data->digital[4] : 0, line_data ? line_data->digital[5] : 0,
+                     line_data ? line_data->digital[6] : 0, line_data ? line_data->digital[7] : 0);
         }
 #endif
         
