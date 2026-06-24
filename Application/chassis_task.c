@@ -39,7 +39,7 @@ static void chassis_init(void)
     /* 4个电机速度环PID初始化 */
     for(int i = 0; i < 4; i++)
     {
-        PID_struct_init(&chassis_motor_pid[i], 500, 100.0f, 5.0f, 0.0f, 1.0f, 0, 0, 0, NONE_IMPROVE);
+        PID_struct_init(&chassis_motor_pid[i], 8000, 1600.0f, 5.0f, 0.0f, 1.0f, 0, 0, 0, NONE_IMPROVE);
     }
     
     /* 线位跟踪PID初始化 */
@@ -112,10 +112,11 @@ void chassis_task(void const *argu)
 
             case CHASSIS_REMOTER:
             {
-                /* SBUS直接驱动，参考RoboticMajor_Pratice_code的rc.ch1/2/3映射 */
-                vx_ref = wbus_rc.data.ch3 * CHASSIS_SCALE_VX;
-                vy_ref = wbus_rc.data.ch2 * CHASSIS_SCALE_VY;
-                wz_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_WZ;
+                /* SBUS直接驱动：左摇杆(ch4横)控yaw，右摇杆(ch1横/ch2竖)控前后左右，实测映射见prot_sbus.h
+                   ch2是"下=正"，往前推摇杆是负值，跟vx>0=前进的解算约定相反，这里取负号修正 */
+                vx_ref = -wbus_rc.data.ch2 * CHASSIS_SCALE_VX;
+                vy_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_VY;
+                wz_ref = wbus_rc.data.ch4 * CHASSIS_SCALE_WZ;
             }break;
 
             case CHASSIS_LINE_TRACK:
@@ -136,12 +137,13 @@ void chassis_task(void const *argu)
         /* 运动学解算 */
         chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, MECANUM_L);
 
-        /* chassis_2006[]下标(左前/左后/右前/右后) 对应的运动学目标 (注意：左右顺序可能需要调整) */
+        /* chassis_2006[]下标(左前/左后/右前/右后) 对应的运动学目标
+           右边两个轮子(右前/右后)需要反向 */
         float target_rpm[4] = {
-            (float)chassis_motor.motor[0],  /* 左前 */
-            (float)chassis_motor.motor[2],  /* 左后 */
-            (float)chassis_motor.motor[1],  /* 右前 */
-            (float)chassis_motor.motor[3],  /* 右后 */
+            (float)chassis_motor.motor[0],   /* 左前 */
+            (float)chassis_motor.motor[2],   /* 左后 */
+            -(float)chassis_motor.motor[1],  /* 右前 (反向) */
+            -(float)chassis_motor.motor[3],  /* 右后 (反向) */
         };
 
         /* 速度环PID闭环，最后强制保护：底盘静止或全局保护模式，无条件发0，不管PID算出什么 */
@@ -149,7 +151,14 @@ void chassis_task(void const *argu)
         for (int i = 0; i < 4; i++)
         {
             float pid_out = pid_calc(&chassis_motor_pid[i], chassis_2006[i].speed_rpm, target_rpm[i]);
-            chassis_2006[i].tx_current = force_zero ? 0 : (int16_t)pid_out;
+            if (force_zero)
+            {
+                chassis_2006[i].tx_current = 0;
+            }
+            else
+            {
+                chassis_2006[i].tx_current = (int16_t)pid_out;
+            }
         }
 
         taskEXIT_CRITICAL();
@@ -161,10 +170,14 @@ void chassis_task(void const *argu)
 #if DEBUG_TEXT_ENABLE
         if (++print_cnt >= 500) {
             print_cnt = 0;
-            dbg_print("[CHASSIS] mode=%d chmode=%d lock=%d sw1=%d sw2=%d ch1=%d ch2=%d ch3=%d ch4=%d rx[3]=%d rpm=%d\r\n",
+            dbg_print("[CHASSIS] mode=%d chmode=%d lock=%d sw1=%d sw2=%d ch1=%d ch2=%d ch3=%d ch4=%d\r\n",
                      ctrl_mode, chassis_mode, lock_flag, wbus_rc.data.sw1, wbus_rc.data.sw2,
-                     wbus_rc.data.ch1, wbus_rc.data.ch2, wbus_rc.data.ch3, wbus_rc.data.ch4,
-                     chassis_2006[3].receive_cnt, chassis_2006[3].speed_rpm);
+                     wbus_rc.data.ch1, wbus_rc.data.ch2, wbus_rc.data.ch3, wbus_rc.data.ch4);
+            for (int j = 0; j < 4; j++) {
+                dbg_print("  [%d] tx=%d rpm=%d send=%d recv=%d\r\n",
+                         j, chassis_2006[j].tx_current, chassis_2006[j].speed_rpm,
+                         chassis_2006[j].send_cnt, chassis_2006[j].receive_cnt);
+            }
         }
 #endif
         

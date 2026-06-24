@@ -41,6 +41,8 @@
 #include "judge_comm.h"
 #include "ui_task.h"
 #include "log_task.h"
+#include "arm_task.h"
+#include "chassis_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -78,6 +80,8 @@ osThreadId status_task_t;
 osThreadId debug_task_t;
 osThreadId ui_task_t;
 osThreadId log_task_t;
+osThreadId arm_task_t;
+osThreadId chassis_task_t;
 
 //osThreadId judge_send_task_t;
 
@@ -220,8 +224,9 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
     gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 
-  osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
-    shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
+  /* 临时禁用shoot_task，避免trigger_motor(0x203)跟chassis_2006[2](右前)的CAN1 id冲突 */
+  // osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
+  //   shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
 
   osThreadDef(visionsendTask, Task_Vision_Send,osPriorityAboveNormal, 0, 128);
     vision_send_task_t = osThreadCreate(osThread(visionsendTask), NULL);
@@ -241,6 +246,14 @@ void MX_FREERTOS_Init(void) {
 /**************************Low priority task**************************/
 	osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
 	status_task_t = osThreadCreate(osThread(statusTask),NULL);
+	
+#if ARM_ENABLE
+	osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 512);
+	arm_task_t = osThreadCreate(osThread(armTask), NULL);
+#endif
+
+	osThreadDef(chassisTask, chassis_task, osPriorityNormal, 0, 256);
+	chassis_task_t = osThreadCreate(osThread(chassisTask), NULL);
 	
   taskEXIT_CRITICAL();
   /* USER CODE END RTOS_THREADS */

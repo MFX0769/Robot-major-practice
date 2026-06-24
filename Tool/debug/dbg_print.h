@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
-/* 调试输出串口 (USART6) */
-#define DBG_HUART huart6
+/* 调试输出串口 (USART2，原USART6，调试改接U2) */
+#define DBG_HUART huart2
 
 /* 使能/禁用调试输出 */
 #define DBG_ENABLE  1

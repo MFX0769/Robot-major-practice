@@ -20,6 +20,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "can_comm.h"
+#include "dbg_print.h"
+#include "config.h"
 
 /* Private define ------------------------------------------------------------*/
 #define TX_RETRY_MAX       5      // CAN等邮箱：总等待 ≈5ms
@@ -29,6 +31,11 @@
 uint32_t trigger_can_receive_cnt=0;
 uint32_t fric_can_recive_cnt = 0;
 uint32_t yaw_can_receive_cnt = 0;
+
+/* 外部电机变量 */
+extern dji_motor_t chassis_2006[4];
+extern dji_motor_t arm_yaw_motor;
+extern dji_motor_t trigger_motor;
 /*-----------------------------���˹��������?-----------------------------------*/
 
 /* Private type --------------------------------------------------------------*/
@@ -48,27 +55,36 @@ extern QueueHandle_t CAN3_Tx_queue;
 void comm_can_init(void)
 {
 	  /*-----------�û��ڴ��޸Ĺ��������ݣ����?10�����򣬵�������bsp�ļ���ģ�?--------*/
-    bsp_can1_filt_tbl.count = 2;//CAN1һ�����˶��������˹���
+    bsp_can1_filt_tbl.count = 5;
 	  bsp_can1_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can1_filt_tbl.data[1]=0x201&0x7ff;
-	  bsp_can1_filt_tbl.data[2]=0x202&0x7ff;
+	  bsp_can1_filt_tbl.data[1]=0x017&0x7ff;  // IMU 角速度
+	  bsp_can1_filt_tbl.data[2]=0x018&0x7ff;  // IMU 角度
 		bsp_can1_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can1_filt_tbl.data[4]=0x203&0x7ff;
-		bsp_can1_filt_tbl.data[5]=0x203&0x7ff;
-	bsp_can2_filt_tbl.count = 2;//CAN2һ�����˶��������˹���
+		bsp_can1_filt_tbl.data[4]=0x019&0x7ff;  // IMU roll
+		bsp_can1_filt_tbl.data[5]=0x019&0x7ff;
+		bsp_can1_filt_tbl.data[6]=FLT_DUAL;
+		bsp_can1_filt_tbl.data[7]=0x201&0x7ff;  // 右后底盘
+		bsp_can1_filt_tbl.data[8]=0x202&0x7ff;  // 左后底盘
+		bsp_can1_filt_tbl.data[9]=FLT_DUAL;
+		bsp_can1_filt_tbl.data[10]=0x203&0x7ff;  // 右前底盘
+		bsp_can1_filt_tbl.data[11]=0x204&0x7ff;  // 左前底盘
+		bsp_can1_filt_tbl.data[12]=FLT_DUAL;
+		bsp_can1_filt_tbl.data[13]=0x207&0x7ff;
+		bsp_can1_filt_tbl.data[14]=0x207&0x7ff;
+	bsp_can2_filt_tbl.count = 2;
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can2_filt_tbl.data[1]=0x017&0x7ff;
-	  bsp_can2_filt_tbl.data[2]=0x018&0x7ff;
+	  bsp_can2_filt_tbl.data[1]=0x206&0x7ff;  // yaw 6020
+	  bsp_can2_filt_tbl.data[2]=0x206&0x7ff;
 		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can2_filt_tbl.data[4]=0x206&0x7ff;
-		bsp_can2_filt_tbl.data[5]=0x206&0x7ff;
-    bsp_can3_filt_tbl.count = 2;//CAN3һ�����˶��������˹���
+		bsp_can2_filt_tbl.data[4]=0x208&0x7ff;  // 机械臂底座 6020
+		bsp_can2_filt_tbl.data[5]=0x208&0x7ff;
+    bsp_can3_filt_tbl.count = 2;
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
-	  bsp_can3_filt_tbl.data[1]=0X017&0x7ff;
-	  bsp_can3_filt_tbl.data[2]=0X018&0x7ff;
+	  bsp_can3_filt_tbl.data[1]=0x201&0x7ff;  // 右后底盘
+	  bsp_can3_filt_tbl.data[2]=0x202&0x7ff;  // 左后底盘
 		bsp_can3_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can3_filt_tbl.data[4]=0x019&0x7ff;
-		bsp_can3_filt_tbl.data[5]=0x007&0x7ff;
+		bsp_can3_filt_tbl.data[4]=0x203&0x7ff;  // 右前底盘
+		bsp_can3_filt_tbl.data[5]=0x204&0x7ff;  // 左前底盘
 	
 
 	  /*�ٵ��ú�������ʼ��*/
@@ -83,8 +99,17 @@ void comm_can_init(void)
     // dji_motor_init(&trigger_motor, DJI_2006_MOTOR,CAN_CHANNEL_1, 0x207, 82.8);
 
     // dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_2, 0x206, 1.0f);
+    /* 机械臂底座 6020 初始化 */
+    dji_motor_init(&arm_yaw_motor, DJI_6020_MOTOR, CAN_CHANNEL_2, CAN_ARM_YAW_MOTOR_ID, 1.0f);
 	// dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
     // dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
+
+    /* 底盘2006电机初始化（全在 CAN1） */
+    dji_motor_init(&chassis_2006[0], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_LEFT_FRONT_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+    dji_motor_init(&chassis_2006[1], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_LEFT_BACK_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+    dji_motor_init(&chassis_2006[2], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_RIGHT_FRONT_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+    dji_motor_init(&chassis_2006[3], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_RIGHT_BACK_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+    dji_motor_init(&trigger_motor, DJI_2006_MOTOR, CAN_CHANNEL_1, 0x207, 82.8f);
 }
     
 
@@ -101,28 +126,6 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 	
 	switch(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier)
 			{
-				case CAN_3508_FRIC_L_ID :
-				case CAN_3508_FRIC_R_ID :
-				{
-					fric_can_recive_cnt++;
-					static uint8_t i;
-					i = bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier - CAN_3508_FRIC_L_ID ;
-					dji_motor_get_single_data(&fric_motor[i],bsp_user_can1.CAN_RxBuffer.rx_data);
-					switch (i)
-					{
-//						case 0: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO1); break;
-//						case 1: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO2); break;
-						default: break;
-					}
-					break;
-				}
-				case CAN_YAW_MOTOR_ID:
-				{
-					
-					dji_motor_get_single_data(&yaw_motor,bsp_user_can1.CAN_RxBuffer.rx_data);
-//					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
-			break;
-				}
 				case TIMU_PALSTANCE_ID:
 				{
 					T_imu_calcu(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can1.CAN_RxBuffer.rx_data);
@@ -131,18 +134,31 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 				case TIMU_ANGLE_ID:
 				{
 					T_imu_calcu(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can1.CAN_RxBuffer.rx_data);
-//					wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
 					break;
 				}
-				case CAN_TRIGGER_MOTOR1_ID :
+			case TIMU_ROL_ID:
 				{
-					trigger_can_receive_cnt++;
-					dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);   
+					T_imu_calcu(bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can1.CAN_RxBuffer.rx_data);
 					break;
 				}
-				case DM_3507_RECEIVE_ID:
+			case CHA_LEFT_FRONT_2006:
+			case CHA_LEFT_BACK_2006:
+			case CHA_RIGHT_FRONT_2006:
+			case CHA_RIGHT_BACK_2006:
 				{
-					dm_get_single_data(&dm3507_motor,bsp_user_can1.CAN_RxBuffer.rx_data);
+					uint32_t id = bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier;
+					uint8_t idx;
+					if      (id == CHA_LEFT_FRONT_2006) idx = 0;
+					else if (id == CHA_LEFT_BACK_2006)  idx = 1;
+					else if (id == CHA_RIGHT_FRONT_2006) idx = 2;
+					else if (id == CHA_RIGHT_BACK_2006)  idx = 3;
+					else break;  /* 未知 CAN ID，不应到达 */
+					dji_motor_get_single_data(&chassis_2006[idx], bsp_user_can1.CAN_RxBuffer.rx_data);
+					break;
+				}
+			case 0x207:
+				{
+					dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);
 					break;
 				}
 				default:break;
@@ -151,58 +167,16 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 
 void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 {
-//    switch (CAN_RxBuffer_t->rxHeader->Identifier)
-//    {
-//    case constant expression:{
-
-//    }break;
-//    
-//    default:{break;}
-//    }
 	switch(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier)
 			{
-				case CAN_3508_FRIC_L_ID :
-				case CAN_3508_FRIC_R_ID :
-				{
-					fric_can_recive_cnt++;
-					static uint8_t i;
-					i = bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier - CAN_3508_FRIC_L_ID ;
-					dji_motor_get_single_data(&fric_motor[i],bsp_user_can2.CAN_RxBuffer.rx_data);
-					switch (i)
-					{
-//						case 0: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO1); break;
-//						case 1: wdg_user_set_bit(WDG_BIT_BSP_FRIC_MOTO2); break;
-						default: break;
-					}
-					break;
-				}
-				case DM_3507_RECEIVE_ID:
-				{
-					dm_get_single_data(&dm3507_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
-					break;
-				}
 				case CAN_YAW_MOTOR_ID:
 				{
-					
-					dji_motor_get_single_data(&yaw_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
-//					wdg_user_set_bit(WDG_BIT_BSP_GIMBAL_YAW);
+					dji_motor_get_single_data(&yaw_motor, bsp_user_can2.CAN_RxBuffer.rx_data);
 					break;
 				}
-//				case CAN_J4310_MOTOR_ID:
-//				{
-//					dm_get_single_data(&pitch_motor,bsp_user_can2.CAN_RxBuffer.rx_data);
-////					encoder_J4310_get(&motor_dm4310_pitch,rx_fifo0_data);
-//					break;
-//				}
-				case TIMU_PALSTANCE_ID:
+			case CAN_ARM_YAW_MOTOR_ID:
 				{
-					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can2.CAN_RxBuffer.rx_data);
-					break;
-				}
-				case TIMU_ANGLE_ID:
-				{
-					T_imu_calcu(bsp_user_can2.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can2.CAN_RxBuffer.rx_data);
-//					wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
+					dji_motor_get_single_data(&arm_yaw_motor, bsp_user_can2.CAN_RxBuffer.rx_data);
 					break;
 				}
 				default:break;
@@ -214,25 +188,19 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 {
 		switch(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier)
 			{
-			case DM_3507_RECEIVE_ID:
+			case CHA_LEFT_FRONT_2006:
+			case CHA_LEFT_BACK_2006:
+			case CHA_RIGHT_FRONT_2006:
+			case CHA_RIGHT_BACK_2006:
 				{
-					dm_get_single_data(&dm3507_motor,bsp_user_can3.CAN_RxBuffer.rx_data);
-					break;
-				} 
-			case TIMU_PALSTANCE_ID:
-				{
-					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier, bsp_user_can3.CAN_RxBuffer.rx_data);
-					break;
-				}
-			case TIMU_ANGLE_ID:
-				{
-					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can3.CAN_RxBuffer.rx_data);
-			//		wdg_user_set_bit(WDG_BIT_BSP_IMU_ANGLE);
-					break;
-				}		
-			case TIMU_ROL_ID:
-				{
-					T_imu_calcu(bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier,bsp_user_can3.CAN_RxBuffer.rx_data);
+					uint32_t id = bsp_user_can3.CAN_RxBuffer.rxHeader.Identifier;
+					uint8_t idx;
+					if      (id == CHA_LEFT_FRONT_2006) idx = 0;
+					else if (id == CHA_LEFT_BACK_2006)  idx = 1;
+					else if (id == CHA_RIGHT_FRONT_2006) idx = 2;
+					else if (id == CHA_RIGHT_BACK_2006)  idx = 3;
+					else break;
+					dji_motor_get_single_data(&chassis_2006[idx], bsp_user_can3.CAN_RxBuffer.rx_data);
 					break;
 				}
 			default:{break;}
@@ -240,14 +208,16 @@ void User_CAN3_RxCpltCallback(CAN_RxBuffer_t* buf)
 }
 
 
+/*-----------------------------底盘电机发送函数-----------------------------------*/
+void chassis_can_send(void)
+{
+    /* 走标准dji_send_current/dji_motor_fill_data路径，跟arm_yaw_motor等其它电机一致：
+       打包按各自can_id自动定位字节偏移，send_cnt由dji_motor_fill_data统一维护，
+       4个电机can_id都<0x205，自动合并发送同一个0x200帧 */
+    dji_send_current(&chassis_2006[0], &chassis_2006[1], &chassis_2006[2], &chassis_2006[3]);
+}
 
-/*-----------------------------CAN���Ͳ��֣����з��ͽӿ�����н��շ�������? CAN Send function (queue send interface)-----------------------------------*/
 
-/**
-* @brief  
-* @param  None.
-* @return None.
-*/
 void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
 {
     CanFrame_t msg = {0};
@@ -264,7 +234,9 @@ void Prot_CAN1_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc)
 
     if (ret != pdPASS)
     {
-        // ��ѡ����֡����
+#if DEBUG_TEXT_ENABLE
+        dbg_print("[CAN1TX] queue full, dropped id=0x%03X\r\n", (unsigned int)id);
+#endif
     }
 }
 
@@ -359,7 +331,9 @@ void Task_CAN1Transmit(void const *arg)
                     retry++;
                 } else {
                     // 其他错误（ERROR/INVALID_PARAM 等），直接丢或日志
-                    // can_tx_error_cnt++;
+#if DEBUG_TEXT_ENABLE
+                    dbg_print("[CAN1TX] bsp error id=0x%03X status=%d\r\n", (unsigned int)msg.ID, (int)status);
+#endif
                     break;
                 }
             } while (retry < TX_RETRY_MAX);
@@ -367,7 +341,9 @@ void Task_CAN1Transmit(void const *arg)
         /*------------如果实在是太忙了就不等了------------*/
             if (retry >= TX_RETRY_MAX) {
                 // 超时丢帧（统计丢帧率，必要时报警或通知上层降频）
-                // can_tx_drop_cnt++;
+#if DEBUG_TEXT_ENABLE
+                dbg_print("[CAN1TX] retry exhausted, dropped id=0x%03X\r\n", (unsigned int)msg.ID);
+#endif
             }
 
         }

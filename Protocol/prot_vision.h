@@ -13,6 +13,11 @@
 #define VISION_SP_TX_DATA_LEN 44
 #define VISION_SP_FIRE_YAW_ERR 1.5f   // 度
 #define VISION_SP_FIRE_PIT_ERR 1.5f   // 度
+
+/* 采摘水果视觉协议帧定义 */
+#define VISION_SOF       0xAA
+#define VISION_EOF       0xBB
+#define VISION_FRUIT_DATA_LEN  7
 typedef enum {
     vMODE_AUTO        = 0,    /* ���� */
     vMODE_bENERGY     = 1,    /* ���������� */
@@ -169,10 +174,20 @@ typedef struct
     uint8_t crc16[2];
 } vision_tx_msg_sp_t;
 
+/* 采摘水果视觉数据结构 */
+typedef struct {
+    uint8_t flag;          /* 目标检测标志 */
+    int16_t x_dis;         /* X方向像素差值 (有符号) */
+    int16_t y_dis;         /* Y方向像素差值 (有符号) */
+    uint32_t rec_cnt;      /* 接收计数器 */
+    uint8_t target_type;   /* 目标类型 (扩展用) */
+} vision_fruit_msg_t;
+
 /* ȫ�ֱ��� */
 extern vision_t vision;
 extern vision_tx_t vision_tx;
 extern vision_mode_e vision_mode;
+extern vision_fruit_msg_t vision_fruit;
 
 /* ���� */
 void vision_get_data_sp(uint8_t *data, uint32_t len);
@@ -180,5 +195,6 @@ void vision_data_handler(uint8_t *pVision_Data,uint32_t len);   // ���ڻص
 void vsn_gimbal_ref_calc(void);            // 1 ms ����
 void vision_output_data(void);
 void vision_output_data_sp(void);
+void vision_fruit_getData(uint8_t *buff);
 
 #endif 

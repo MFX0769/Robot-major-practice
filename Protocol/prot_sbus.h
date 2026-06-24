@@ -2,6 +2,13 @@
  * prot_sbus.h
  * WBUS/SBUS 最小解析头文件
  * - 提供最小化的帧解析与接收统计（rx_cnt, rx_freq）
+ *
+ * 摇杆通道实测映射(2026-06-24)：
+ *   ch3 = 左摇杆 竖   (下=负)
+ *   ch4 = 左摇杆 横   (左=负)
+ *   ch1 = 右摇杆 横   (左=负)
+ *   ch2 = 右摇杆 竖   (下=正)
+ *   ch5~ch8 = 拨杆 A/B/C/D (sw1=ch6/SWB, sw2=ch7/SWC, sw3=ch8/SWD)
  */
 
 #ifndef __PROT_SBUS_H__

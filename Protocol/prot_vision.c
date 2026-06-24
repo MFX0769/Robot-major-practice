@@ -28,6 +28,7 @@
 #include "usart.h"
 #include "prot_remote_fusion.h"
 #include "shoot_task.h"
+#include "arm_task.h"
 /* Private define ------------------------------------------------------------*/
 #ifndef ABS
 #define ABS(x)  ((x)>0?(x):-(x))
@@ -46,6 +47,7 @@
 vision_t vision;
 vision_tx_t vision_tx;
 vision_mode_e vision_mode;
+vision_fruit_msg_t vision_fruit;
 /*调试数值*/
 uint8_t vis_e[2];
 uint32_t cnt_time;
@@ -68,6 +70,12 @@ void vision_data_handler(uint8_t *pVision_Data,uint32_t len)
 	/*新旧视觉切换判断*/
 	 if (len >= 2 && pVision_Data[0] == 'S' && pVision_Data[1] == 'P') {
         vision_get_data_sp(pVision_Data, len);
+        return;
+    }
+
+    /* 采摘水果视觉协议 */
+    if (len >= VISION_FRUIT_DATA_LEN && pVision_Data[0] == VISION_SOF) {
+        vision_fruit_getData(pVision_Data);
         return;
     }
 
@@ -246,8 +254,8 @@ void vision_output_data(void)
 	Trace_ID_Select_OLD(&remote_fusion);
 //    vision_tx.data.trace_id      = vision.trace_id;         // 来自视觉包
 
-    /* 4. 串口DMA 发出 */
-    HAL_UART_Transmit_DMA(&huart10, vision_tx.buff, 25);
+    /* 4. 串口DMA 发出 (视觉改接U6) */
+    HAL_UART_Transmit_DMA(&huart6, vision_tx.buff, 25);
 	vision.tx_cnt++;
 //    /* 4. 使用usb 发出 */
 //    if (xQueueSend(VISION_send_queue,vision_tx.buff, 10) == pdTRUE) 
@@ -474,10 +482,61 @@ void vision_output_data_sp(void)
     }
      Append_CRC16_Check_Sum((uint8_t *)&vision_tx_msg_sp, sizeof(vision_tx_msg_sp));
 
-    HAL_UART_Transmit_DMA(&huart10, (uint8_t *)&vision_tx_msg_sp, VISION_SP_TX_DATA_LEN);
+    HAL_UART_Transmit_DMA(&huart6, (uint8_t *)&vision_tx_msg_sp, VISION_SP_TX_DATA_LEN);  /* 视觉改接U6 */
 	
 //	if (xQueueSend(VISION_send_queue, &vision_tx_msg_sp, 10) == pdTRUE) {
 //    vision.tx_cnt++;
 //	}
+}
+
+/**
+* @brief  采摘水果视觉数据解析
+* @param  buff: 接收到的数据缓冲区
+* @retval None
+*/
+void vision_fruit_getData(uint8_t *buff)
+{
+    if(buff[0] == VISION_SOF && buff[VISION_FRUIT_DATA_LEN-1] == VISION_EOF)
+    {
+        vision_fruit.flag = buff[5];
+        if(vision_fruit.flag)
+        {
+            vision_fruit.x_dis = (int16_t)((buff[1] << 8) | buff[2]);
+            vision_fruit.y_dis = (int16_t)((buff[3] << 8) | buff[4]);
+            vision_fruit.rec_cnt++;
+            
+            /* ============================================
+             * 临时视觉限幅 (相机像素坐标差)
+             * 相机分辨率: 320x240, 输出的是 Δx, Δy
+             * 此限幅值为临时值，后续与视觉联调时再调整
+             * ============================================ */
+            float x = (float)vision_fruit.x_dis;
+            float y = (float)vision_fruit.y_dis;
+            
+            /* 限幅: ±160 (X), ±120 (Y) */
+            if (x > 160.0f)  x = 160.0f;
+            if (x < -160.0f) x = -160.0f;
+            if (y > 120.0f)  y = 120.0f;
+            if (y < -120.0f) y = -120.0f;
+            
+            /* TODO: 添加工作空间检查，确保目标位置在机械臂可达范围内 */
+            /* 工作空间: L1+L2=300mm，需要检查 sqrt(x²+y²) <= 300 */
+            float distance = sqrtf(x*x + y*y);
+            if (distance > 300.0f) {
+                /* 超出工作空间，按比例缩放到边界 */
+                float scale = 300.0f / distance;
+                x *= scale;
+                y *= scale;
+            }
+            
+            float z = 0.0f;  /* Z轴默认值，后续可由视觉提供 */
+            
+            /* 调用机械臂视觉回调函数 */
+            extern void arm_vision_callback(void);
+            arm_vision_callback();
+        }
+        else
+            return;
+    }
 }
 

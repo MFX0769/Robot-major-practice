@@ -65,15 +65,15 @@ void comm_usart_init(void);
 #define 	DBUS_HUART    huart1   //真正DBUS协议用(若以后切回/换硬件)
 #define 	SBUS_HUART    huart1   //当前USART1实际接的是SBUS接收机，跟DBUS_HUART是同一个硬件口
 #define   NEW_RC_HUART  huart9
-#define 	TUCHUAN_HUART		huart2		//8路灰度传感器
-#define DEBUG_HUART	huart6 
+#define 	TUCHUAN_HUART		huart10		//8路灰度传感器(循迹模块改接U10)
+#define DEBUG_HUART	huart2 //调试改接U2
 #define LOG_HUART huart3
-#define   VISION_HUART	huart10
+#define   VISION_HUART	huart6 //视觉改接U6
 
 #define  DMA_DBUS_LEN			18     //保留给真正的DBUS协议(rc_callback_handler)，跟D:\侧一致
 #define  DMA_SBUS_LEN			36     //SBUS一帧25字节(SBUS_FRAME_SIZE)，留余量。现在USART1实际跑SBUS，要用这个，不是DMA_DBUS_LEN
 #define VTM_DATA_LEN    21     //放在遥控器解算的头文件里
-#define DMA_8IR_LEN      32     //8路灰度传感器
+#define DMA_8IR_LEN      128    //8路灰度传感器 (ASCII文本帧，最大~80字节)
 #define  DMA_VISION_LEN		40     //原23  2025年4月1
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);

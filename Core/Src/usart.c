@@ -140,10 +140,11 @@ void MX_USART2_UART_Init(void)
   /* USER CODE END USART2_Init 0 */
 
   /* USER CODE BEGIN USART2_Init 1 */
-
+  /* TODO: 验证921600波特率稳定性，无线15cm距离下测试VOFA+波形传输 */
+  /*       当前配置：轮询发送+禁用FIFO，如遇丢包考虑启用TX FIFO */
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 921600;  /* 调试改接U2，沿用原U6的921600波特率 */
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -228,11 +229,10 @@ void MX_USART6_UART_Init(void)
   /* USER CODE END USART6_Init 0 */
 
   /* USER CODE BEGIN USART6_Init 1 */
-  /* TODO: 验证921600波特率稳定性，无线15cm距离下测试VOFA+波形传输 */
-  /*       当前配置：轮询发送+禁用FIFO，如遇丢包考虑启用TX FIFO */
+  /* 视觉改接U6，沿用原U10的115200波特率(921600/VOFA+的TODO已随调试迁到U2) */
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 921600;
+  huart6.Init.BaudRate = 115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;

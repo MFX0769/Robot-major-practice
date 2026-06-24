@@ -67,10 +67,10 @@
 #define RC_CH4_SCALE    12
 #define RC_CH3_SCALE    12
 
-/* SBUS麦轮底盘速度映射，参考RoboticMajor_Pratice_code */
-#define CHASSIS_SCALE_VX   0.0020f
-#define CHASSIS_SCALE_VY   0.0020f
-#define CHASSIS_SCALE_WZ   0.0030f
+/* SBUS麦轮底盘速度映射：摇杆满偏(~670)*SCALE=target_rpm，要跟实测电流-转速量级匹配(几千rpm)，不能太小 */
+#define CHASSIS_SCALE_VX   3.0f
+#define CHASSIS_SCALE_VY   3.0f
+#define CHASSIS_SCALE_WZ   4.0f
 #define MECANUM_L          1.0f
 
 /*-----------------------------gimbal----------------------------*/

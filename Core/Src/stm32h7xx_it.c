@@ -541,7 +541,21 @@ void UART9_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles USART10 global interrupt.
+  * @brief This function handles UART5 interrupt.
+  */
+void UART5_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART5_IRQn 0 */
+
+  /* USER CODE END UART5_IRQn 0 */
+  HAL_UART_IRQHandler(&huart5);
+  /* USER CODE BEGIN UART5_IRQn 1 */
+  USER_UART_IRQHandler(&huart5);
+  /* USER CODE END UART5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART10 interrupt.
   */
 void USART10_IRQHandler(void)
 {

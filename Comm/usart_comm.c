@@ -198,7 +198,7 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		}
 		
 				
-    else if(huart->Instance== USART2)    //8路灰度传感器
+    else if(huart->Instance== USART10)    //循迹模块改接U10,8路灰度传感器
 		{
 				prot_8irtraking_on_receive(dma_8ir_buf, sizeof(dma_8ir_buf));
 				memset(dma_8ir_buf, 0, sizeof(dma_8ir_buf));
@@ -206,7 +206,7 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		}
    
 	
-    else if(huart->Instance == USART10)	//VISION����
+    else if(huart->Instance == USART6)	//视觉改接U6,VISION����
     {
 		  	vision.rx_cnt++;
 		uint32_t rx_len = DMA_VISION_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);

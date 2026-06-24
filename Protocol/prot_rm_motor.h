@@ -38,6 +38,12 @@
 #define DJI_3508_ORIGINAL_REDUCTION_RATIO 19.2f
 #define DJI_6020_ORIGINAL_REDUCTION_RATIO 1
 
+//底盘2006电机CAN ID
+#define CHA_LEFT_FRONT_2006   0x204
+#define CHA_LEFT_BACK_2006    0x202
+#define CHA_RIGHT_FRONT_2006  0x203
+#define CHA_RIGHT_BACK_2006   0x201
+
 typedef struct
 {
     uint32_t id;
@@ -77,6 +83,7 @@ typedef struct
 extern dji_motor_t fric_motor[2];
 extern dji_motor_t driver_motor[2];
 extern dji_motor_t pit_motor, yaw_motor;
+extern dji_motor_t arm_yaw_motor;
 extern dji_motor_t trigger_motor;
 
 void dji_motor_init(dji_motor_t *motor, uint8_t motor_type, prot_can_channel_e prot_can_channel, uint32_t id, float reduction_ratio);

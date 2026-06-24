@@ -13,7 +13,9 @@
 // ȫ�ֱ�������
 dji_motor_t fric_motor[2];
 dji_motor_t pit_motor, yaw_motor;
+dji_motor_t arm_yaw_motor;
 dji_motor_t trigger_motor;
+dji_motor_t chassis_2006[4];
 
 can_std_msg_t motor_msg[CAN_CHANNEL_NUM][5];
 

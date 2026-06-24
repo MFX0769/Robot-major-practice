@@ -49,16 +49,17 @@ extern "C" {
 
 typedef enum
 {
-    CAN_3508_FRIC_L_ID       = 0x201,
-    CAN_3508_FRIC_R_ID       = 0x202,
-    CAN_TRIGGER_MOTOR1_ID = 0x203,
-	
-    CAN_YAW_MOTOR_ID      = 0x206,//2025��1��17�� �۲췢��Ŀǰ
-    CAN_J4310_MOTOR_ID      = 0x016,
-	
-	CAN_J4310_ID=0X06,//J4310�������֡ID   
-	CAN_MG4005_T_ID=0x147 ,//2025��1��6�գ�Ԥ����pit���MG4005��idΪ0x07�����������뿪�ص���ֵ �༴motorId��   �� 0x140(���ҹ涨) + 0x07 
-	CAN_MG4005_R_ID=0x187,//2025��1��10�� �����ҹ涨��CAN����id��0x180+id���ٵģ���ʵ����0x140  
+    /* 底盘2006电机ID */
+    CAN_CHASSIS_LF_ID     = 0x204,  // 左前
+    CAN_CHASSIS_LB_ID     = 0x202,  // 左后
+    CAN_CHASSIS_RF_ID     = 0x203,  // 右前
+    CAN_CHASSIS_RB_ID     = 0x201,  // 右后
+    
+    /* Yaw 6020电机ID */
+    CAN_YAW_MOTOR_ID      = 0x206,
+    
+    /* 机械臂底座 6020 电机ID */
+    CAN_ARM_YAW_MOTOR_ID  = 0x208,
 
 } can_msg_id_e;
 
@@ -73,6 +74,7 @@ void Prot_CAN3_Send_Frame(uint32_t id, const uint8_t *data, uint8_t dlc);
 void Task_CAN1Transmit(void const *arg);
 void Task_CAN2Transmit(void const *arg);
 void Task_CAN3Transmit(void const *arg);
+void chassis_can_send(void);
 
 extern uint32_t trigger_can_receive_cnt;
 extern uint32_t fric_can_recive_cnt;
