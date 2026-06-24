@@ -189,3 +189,21 @@ if (wbus_rx_cnt > 0)
 编译0错误13警告(全是改动前已存在的无关警告，chassis_task.c本身0警告)。烧录成功(wrote 92064 bytes)。验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长；读到`sw1=2`(SWB上)、`sw2=1`(SWC中位→`CHASSIS_STOP`)，4个`tx_current`全部确认为0——新架构跑通。
 
 **待办**：巡线协议本身还没经过实测验证(用户说"待会找")，巡线模式目前是代码层面接通了，但能不能真的巡线还要看协议对不对、模块实际数据。
+
+## 检查机械臂任务完成度，发现yaw闭环操作错电机的严重bug
+通读`arm_task.c`/`.h`、`bsp_pwm.c`、`bsp_gpio.c`，结构本身是完整的（状态机IDLE/READY/MOVING/GRIP/RELEASE/HOME/ERROR，IK，PWM双定时器输出，舵机供电GPIO控制都不是空壳，是真实现）。但发现一个之前没人发现的严重bug：
+
+`Comm/can_comm.c`的CAN2接收回调里，云台的`yaw_motor`和机械臂的`arm_yaw_motor`是两个不同CAN ID(`CAN_YAW_MOTOR_ID`/`CAN_ARM_YAW_MOTOR_ID`)对应的两个不同全局变量，分得很清楚。但`arm_task.c`里所有yaw控制代码（`arm_yaw_pid_calc()`等）从头到尾用的是`yaw_motor`（云台的），不是`arm_yaw_motor`（机械臂真正初始化好的那个）——反馈读错了电机，电流也发给了云台电机，机械臂自己的`arm_yaw_motor`从来没被任何代码碰过。如果云台yaw电机也在CAN2上工作，机械臂任务会去抢占控制它。
+
+修复：`arm_task.c`里全部`yaw_motor`替换成`arm_yaw_motor`(8处)，确认无误（grep过没有`arm_arm_yaw_motor`这种双重替换错误）。
+
+另外发现`arm_task_init()`无条件调用`bsp_gpio_servo_power_on()`，跟用户之前的决定("舵机断电，这个先不接了")矛盾——只要`ARM_ENABLE=1`开机就会去使能舵机供电，不管物理上接没接。
+
+用户决定：继电器供电单独用一个两档拨杆控制，跟其他模式无关；并且要求"只有遥控模式下才听SWD"。确认两档拨杆是**SWD(ch8)**(SWA/ch5和SWD/ch8整个会话都没动过，用户直接确认是SWD)。
+
+实现：
+- `Protocol/prot_sbus.h`新增`sw3`字段(给`wbus_rc_data`)，专门给SWD用；顺便把`sw1`/`sw2`的注释改清楚对应SWB/SWC，不再写"备用"
+- `Protocol/prot_sbus.c`：`sw3`用`ch[7]`(ch8)按`SBUS_CH_MID`简单二分(两档没有中位，不需要三档阈值)
+- `Application/arm_task.c`：`arm_task_init()`改成默认调用`bsp_gpio_servo_power_off()`(不再无条件通电)；主循环每周期最前面加`if (ctrl_mode == REMOTER_MODE && wbus_rc.data.sw3) 通电 else 断电`——离开全局遥控模式或者SWD没打开，强制断电
+
+编译0错误1警告(跟改动无关的旧警告)。**只编译验证，没烧录确认**——用户当时不在车旁边，按要求跳过了烧录这一步，下次到车旁边需要补烧录验证这次的改动。
