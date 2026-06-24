@@ -147,9 +147,10 @@ void chassis_task(void const *argu)
 #if DEBUG_TEXT_ENABLE
         if (++print_cnt >= 500) {
             print_cnt = 0;
-            dbg_print("[CHASSIS] mode=%d lock=%d sw1=%d ch1=%d ch2=%d ch3=%d ch4=%d rx[3]=%d rpm=%d\r\n",
+            dbg_print("[CHASSIS] mode=%d lock=%d sw1=%d ch1=%d ch2=%d ch3=%d ch4=%d ch5=%d ch6=%d ch7=%d ch8=%d rx[3]=%d rpm=%d\r\n",
                      ctrl_mode, lock_flag, wbus_rc.data.sw1,
                      wbus_rc.data.ch1, wbus_rc.data.ch2, wbus_rc.data.ch3, wbus_rc.data.ch4,
+                     wbus_rc.data.ch5, wbus_rc.data.ch6, wbus_rc.data.ch7, wbus_rc.data.ch8,
                      chassis_2006[3].receive_cnt, chassis_2006[3].speed_rpm);
         }
 #endif

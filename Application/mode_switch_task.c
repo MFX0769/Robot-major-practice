@@ -280,18 +280,16 @@ static void unlock_init(void)
 
 }
 
-/* SBUS解锁手势：拨杆中位 + 摇杆打对角极限组合，模仿unlock_init() */
+/* SBUS解锁手势：拨杆中位 + 内八(左摇杆右下+右摇杆左下)，实测组合
+   左摇杆右下: ch3<=-600, ch4>=600；右摇杆左下: ch1<=-600, ch2>=600 */
 static void sbus_unlock_init(void)
 {
     if (wbus_rc.data.sw1 == 1)  /* 拨杆中位 */
     {
-        if (wbus_rc.data.ch4 <= -600 && wbus_rc.data.ch3 >= 600 && wbus_rc.data.ch1 <= -600 && wbus_rc.data.ch2 <= -600)
+        if (wbus_rc.data.ch1 <= -600 && wbus_rc.data.ch2 >= 600 &&
+            wbus_rc.data.ch3 <= -600 && wbus_rc.data.ch4 >= 600)
         {
             lock_flag = 1;  /* 解锁 */
-        }
-        else if (wbus_rc.data.ch4 >= 600 && wbus_rc.data.ch3 <= -600 && wbus_rc.data.ch1 >= 600 && wbus_rc.data.ch2 >= 600)
-        {
-            lock_flag = 2;
         }
     }
 }
