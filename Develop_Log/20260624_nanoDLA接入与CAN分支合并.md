@@ -126,3 +126,25 @@ USART6(调试口)波特率确认为**921600**(不是115200)，`Core/Src/usart.c`
 验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长。读到`ctrl_mode=KEYBOARD_MODE`、`wbus_rc.data.sw1=0`——拨杆当时在下位，正好对应`sw1==0→KEYBOARD_MODE`的映射，**证明SBUS驱动ctrl_mode这条链路已经真正跑通**。要测底盘摇杆响应，需要把拨杆拨到上位进入`REMOTER_MODE`才会真正用ch1/2/3驱动电机（目前KEYBOARD_MODE分支还是硬编码0）。
 
 **待办**：chassis_motor_pid[4]速度环PID仍未接入闭环（tx_current直接等于运动学解算输出），用户说"落地之后Kp给大一点点就行"，等实际能跑起来再调。
+
+## dbg_print打印摇杆/lock_flag/模式 + 给SBUS补上解锁手势
+切回`DEBUG_TEXT_ENABLE=1`/`DEBUG_VOFA_ENABLE=0`，`chassis_task.c`原有周期打印(每500周期一次)扩展成：
+```
+[CHASSIS] mode=%d lock=%d sw1=%d ch1=%d ch2=%d ch3=%d ch4=%d rx[3]=%d rpm=%d
+```
+
+用户问"现在扣一下摇杆，就有lock_flag=1的吗？"——查证：`unlock_init()`(DR16)/`vtm_unlock_init()`(VTM)里确实有"摇杆四通道打对角极限组合才解锁"的逻辑，但我之前加的SBUS分支(`if(wbus_rx_cnt>0){直接用sw1映射ctrl_mode}`)完全绕开了这两个函数，根本不会调用，所以SBUS路径下lock_flag会一直停在初始值0，不会被任何操作置1。
+
+用户要求"模仿他们的，给SBUS加上"——在`mode_switch_task.c`新增`sbus_unlock_init()`，直接照抄`unlock_init()`的判断逻辑(拨杆sw1中位 + ch1~ch4打对角极限组合，`ch4<=-600&&ch3>=600&&ch1<=-600&&ch2<=-600`解锁为1，反向组合解锁为2)，并把SBUS分支改成：
+```c
+if (wbus_rx_cnt > 0)
+{
+    if (!lock_flag) sbus_unlock_init();
+    else switch(wbus_rc.data.sw1) { ... 原映射 ... }
+}
+```
+未解锁前`sw1`不会驱动`ctrl_mode`。
+
+编译0/0。烧录(wrote 91840 bytes，一次成功没有failed erasing)。验证：`wbus_rx_cnt`/`imucnt`/`chassis_2006[0].receive_cnt`全部正常增长；`lock_flag=0`、`ctrl_mode=PROTECT_MODE`(初始值)——因为没做解锁手势，`sw1`分支根本没进去，**确认这个安全门生效**。
+
+要解锁：拨杆sw1打中位，同时摇杆四通道打到对角极限组合(`ch4<=-600 && ch3>=600 && ch1<=-600 && ch2<=-600`，或反过来`ch4>=600 && ch3<=-600 && ch1>=600 && ch2>=600`)。

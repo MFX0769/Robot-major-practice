@@ -7,8 +7,8 @@
  *   DEBUG_VOFA_ENABLE = 1 : VOFA+ 波形输出 (log_scope_data_output)
  * 两者不能同时为1
  *=============================================================*/
-#define DEBUG_TEXT_ENABLE   0
-#define DEBUG_VOFA_ENABLE   1
+#define DEBUG_TEXT_ENABLE   1
+#define DEBUG_VOFA_ENABLE   0
 
 #if DEBUG_TEXT_ENABLE && DEBUG_VOFA_ENABLE
   #error "DEBUG_TEXT_ENABLE 和 DEBUG_VOFA_ENABLE 不能同时使能 (共用USART6)"

@@ -18,6 +18,7 @@
 static void unlock_init(void);
 static void sw1_mode_handler(void);
 static void rc_abnormal_proess(void);
+static void sbus_unlock_init(void);
  
 /* ϵͳ״̬�� */
 ctrl_mode_e ctrl_mode;
@@ -50,7 +51,11 @@ void mode_switch_task(void const *argu)
 
 		if (wbus_rx_cnt > 0)  /* SBUS有数据，直接拨杆决定模式，不走remote_fusion（临时方案，仅供底盘联调用） */
 		{
-			switch (wbus_rc.data.sw1)
+			if (!lock_flag)
+			{
+				sbus_unlock_init();  /* 未解锁前，sw1不会驱动ctrl_mode */
+			}
+			else switch (wbus_rc.data.sw1)
 			{
 				case 2: ctrl_mode = REMOTER_MODE; break;   /* 拨杆上 */
 				case 1: ctrl_mode = PROTECT_MODE; break;   /* 拨杆中 */
@@ -272,7 +277,23 @@ static void unlock_init(void)
             lock_flag = 1;  //�ڰ�
 		}
 		/**/
-	
+
+}
+
+/* SBUS解锁手势：拨杆中位 + 摇杆打对角极限组合，模仿unlock_init() */
+static void sbus_unlock_init(void)
+{
+    if (wbus_rc.data.sw1 == 1)  /* 拨杆中位 */
+    {
+        if (wbus_rc.data.ch4 <= -600 && wbus_rc.data.ch3 >= 600 && wbus_rc.data.ch1 <= -600 && wbus_rc.data.ch2 <= -600)
+        {
+            lock_flag = 1;  /* 解锁 */
+        }
+        else if (wbus_rc.data.ch4 >= 600 && wbus_rc.data.ch3 <= -600 && wbus_rc.data.ch1 >= 600 && wbus_rc.data.ch2 >= 600)
+        {
+            lock_flag = 2;
+        }
+    }
 }
 /*===============================================��ң�أ�DT7���������===========================*/
 
