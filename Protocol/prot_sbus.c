@@ -83,6 +83,9 @@ void sbus_parse_frame(wbus_frame_u *rc_frame)
   else if (ch[6] >= SBUS_SW_UP_THR) rc_frame->data.sw2 = 0;    /* 拨杆最下 */
   else rc_frame->data.sw2 = 1;                                   /* 拨杆中间 */
 
+  /* SWD(ch8/ch[7])：两档开关，没有中位，按中点简单二分 */
+  rc_frame->data.sw3 = (ch[7] <= SBUS_CH_MID) ? 1 : 0;
+
   /* 更新接收统计：帧计数与频率（用系统节拍计算，自上电/内核启动以来的平均） */
   static uint32_t last_tick = 0;
   uint32_t now_tick = osKernelSysTick();
