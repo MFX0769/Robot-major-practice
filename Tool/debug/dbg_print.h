@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
-/* 调试输出串口 (USART2，原USART6，调试改接U2) */
-#define DBG_HUART huart2
+/* 调试输出串口 (U2引脚已改GPIO给8IR用，调试改回U6，跟VOFA共用，互斥使能见config.h) */
+#define DBG_HUART huart6
 
 /* 使能/禁用调试输出 */
 #define DBG_ENABLE  1

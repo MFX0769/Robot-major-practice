@@ -2,19 +2,20 @@
 #include "usart.h"
 #include "usart_comm.h"
 
-static prot_8irtraking_data_t s_data;
+prot_8irtraking_data_t s_data;  /* 改成全局变量(去掉static)，方便Keil watch实时刷新查看，参考wbus_rc的做法 */
 
 void prot_8irtraking_init(void)
 {
     memset(&s_data, 0, sizeof(s_data));
 }
 
-void prot_8irtraking_cmd_read(uint8_t analog_en, uint8_t digital_en)
+int prot_8irtraking_cmd_read(uint8_t analog_en, uint8_t digital_en)
 {
     uint8_t buf[16];
     int n = snprintf((char*)buf, sizeof(buf), "$0,%d,%d#", analog_en ? 1 : 0, digital_en ? 1 : 0);
     if (n > 0)
-        HAL_UART_Transmit(&TUCHUAN_HUART, buf, n, 100);
+        return (int)HAL_UART_Transmit(&TUCHUAN_HUART, buf, n, 100);
+    return -1;
 }
 
 static int parse_value(const char *p, const char *key, int *val)
@@ -49,15 +50,37 @@ static void compute_position(void)
     }
 }
 
+/* 改用纯GPIO直接读数字量(手册方式1)，不再走USART协议。
+   实测接线(X7->X2，2026-06-25)：
+   X7=U2_T(PA2)  X6=U2_R(PA3)  X5=U3_T(PB10)
+   X4=U3_R(PB11) X3=U10_R(PE2) X2=U10_T(PE3)  X1/X8未接 */
+void prot_8irtraking_poll_gpio(void)
+{
+    s_data.digital[1] = (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_3)  == GPIO_PIN_SET) ? 1 : 0;  /* X2 */
+    s_data.digital[2] = (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2)  == GPIO_PIN_SET) ? 1 : 0;  /* X3 */
+    s_data.digital[3] = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_11) == GPIO_PIN_SET) ? 1 : 0;  /* X4 */
+    s_data.digital[4] = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10) == GPIO_PIN_SET) ? 1 : 0;  /* X5 */
+    s_data.digital[5] = (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3)  == GPIO_PIN_SET) ? 1 : 0;  /* X6 */
+    s_data.digital[6] = (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2)  == GPIO_PIN_SET) ? 1 : 0;  /* X7 */
+
+    compute_position();
+}
+
 void prot_8irtraking_on_receive(const uint8_t *buf, uint16_t len)
 {
+    s_data.rx_cnt++;
+
     if (!buf || len < 8) return;
 
     const uint8_t *p = buf;
     const uint8_t *end = buf + len;
 
     while (p < end - 7) {
-        if (*p != '$') { p++; continue; }
+        if (*p != '$') 
+				{ 
+					p++; 	
+					continue; 
+				}
 
         const uint8_t *tail = (const uint8_t*)memchr(p + 1, '#', (size_t)(end - p - 1));
         if (!tail) break;

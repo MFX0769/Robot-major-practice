@@ -15,6 +15,7 @@
 #include "prot_vision.h"
 
 #include "prot_TriggerMotor.h"
+#include "prot_8irtraking.h"
 #include "shoot_task.h"
 #include "bsp_can.h"
 #include "pid.h"
@@ -44,7 +45,7 @@ extern float std;
 float float_test;
 extern dji_motor_t chassis_2006[4];
 /* ����ѡ���ӡ���������� */
-uint8_t debug_wave = 12;
+uint8_t debug_wave = 13;
 
 void log_scope_data_pkg(void)
 {
@@ -274,6 +275,12 @@ void log_scope_data_pkg(void)
             log_scope_get_data(wbus_rc.data.sw1);
             log_scope_get_data(wbus_rx_cnt);
             log_scope_get_data(wbus_rx_freq);
+            break;
+        }
+        case 13: { /* 巡线模块算出来的线位置 */
+            const prot_8irtraking_data_t *line_data = prot_8irtraking_get_data();
+            log_scope_get_data(line_data->state);
+            log_scope_get_data(line_data->position);
             break;
         }
         default: {

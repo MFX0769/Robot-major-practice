@@ -176,7 +176,7 @@ uint8_t dma_dbus_buf[DMA_DBUS_LEN];
 uint8_t dma_sbus_buf[DMA_SBUS_LEN];  /* SBUS遥控器，跟dma_dbus_buf是两个东西，不要混用 */
 uint8_t dma_new_rc_buf[VTM_DATA_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
-uint8_t dma_8ir_buf[DMA_8IR_LEN];  /* 8路灰度传感器缓冲区 */
+uint8_t dma_8ir_buf[30];  /* 8路灰度传感器缓冲区 */
 
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
@@ -200,9 +200,9 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 				
     else if(huart->Instance== USART10)    //循迹模块改接U10,8路灰度传感器
 		{
-				prot_8irtraking_on_receive(dma_8ir_buf, sizeof(dma_8ir_buf));
-				memset(dma_8ir_buf, 0, sizeof(dma_8ir_buf));
-				HAL_UART_Receive_DMA(huart, dma_8ir_buf, sizeof(dma_8ir_buf));
+//				prot_8irtraking_on_receive(dma_8ir_buf, 30);
+//				memset(dma_8ir_buf, 0, sizeof(dma_8ir_buf));
+				HAL_UART_Receive_DMA(huart, dma_8ir_buf, 30);
 		}
    
 	
@@ -248,15 +248,14 @@ void USER_UART_Init()
     __HAL_UART_ENABLE_IT(&NEW_RC_HUART, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&NEW_RC_HUART, dma_new_rc_buf, VTM_DATA_LEN);//ͼ����·
 
-    __HAL_UART_CLEAR_IDLEFLAG(&VISION_HUART);
-    __HAL_UART_ENABLE_IT(&VISION_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&VISION_HUART,dma_vision_buf,DMA_VISION_LEN);
+    /* USART6的RX方向DMA(hdma_usart6_rx)从未配置，IDLE回调走到USART6分支会野指针解引用触发HardFault。
+       视觉模块还没接，先不开IDLE中断/不收数据，只保留VOFA的TX输出。等补上RX DMA配置后再恢复 */
+//    __HAL_UART_CLEAR_IDLEFLAG(&VISION_HUART);
+//    __HAL_UART_ENABLE_IT(&VISION_HUART, UART_IT_IDLE);
+//    HAL_UART_Receive_DMA(&VISION_HUART,dma_vision_buf,DMA_VISION_LEN);
 
-    /* USART2: 8路灰度传感器 */
-    __HAL_UART_CLEAR_IDLEFLAG(&TUCHUAN_HUART);
-    __HAL_UART_ENABLE_IT(&TUCHUAN_HUART, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&TUCHUAN_HUART, dma_8ir_buf, sizeof(dma_8ir_buf));
+    /* 8路灰度传感器已改用纯GPIO读取，USART10不再初始化，这里不能再调用 */
 
-	log_init(&DEBUG_HUART);
+	log_init(&huart6);  /* VOFA改用U6 */
 }
 

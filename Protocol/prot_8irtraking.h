@@ -11,11 +11,15 @@ typedef struct {
     uint16_t analog[8];
     uint8_t state;
     int16_t position;
+    uint32_t rx_cnt;  /* on_receive()被调用次数，用来确认USART10的IDLE回调是否真的进过 */
 } prot_8irtraking_data_t;
 
+extern prot_8irtraking_data_t s_data;
+
 void prot_8irtraking_init(void);
-void prot_8irtraking_cmd_read(uint8_t analog_en, uint8_t digital_en);
+int prot_8irtraking_cmd_read(uint8_t analog_en, uint8_t digital_en);
 void prot_8irtraking_on_receive(const uint8_t *buf, uint16_t len);
+void prot_8irtraking_poll_gpio(void);
 const prot_8irtraking_data_t *prot_8irtraking_get_data(void);
 
 #endif

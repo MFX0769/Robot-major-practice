@@ -149,10 +149,8 @@ int main(void)
   MX_TIM2_Init();
   MX_UART9_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_USART3_UART_Init();
+  /* USART2/USART3/USART10改成纯GPIO读8路灰度传感器数字量，不再走UART协议 */
   MX_USART6_UART_Init();
-  MX_USART10_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 	USER_UART_Init();
