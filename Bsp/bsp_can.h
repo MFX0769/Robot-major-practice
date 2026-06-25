@@ -124,5 +124,6 @@ void bsp_can_init(bsp_user_can_t *canx, void (*pFunc)(CAN_RxBuffer_t*));       /
 // HAL_StatusTypeDef bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
 bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
 
+extern uint32_t can1_tx_ok_cnt;
 
 #endif

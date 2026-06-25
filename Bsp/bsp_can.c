@@ -29,6 +29,8 @@ static const FDCAN_TxHeaderTypeDef default_tx_header = {
 };
 //FDCAN_TxHeaderTypeDef tx_message; //CAN发送报文头，改成局部变量，防止多任务并发调用时有 race condition 风险（一个任务改 ID，另一个任务发错）
 
+uint32_t can1_tx_ok_cnt = 0;
+
 
 FDCAN_RxHeaderTypeDef rx_fifo0_message, rx_fifo1_message;
 
@@ -227,7 +229,7 @@ bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint
 
     switch (hal_ret)
     {
-        case HAL_OK: return BSP_CAN_OK;
+        case HAL_OK: { if (can_periph == CAN_CHANNEL_1) can1_tx_ok_cnt++; return BSP_CAN_OK; }
         case HAL_ERROR: return BSP_CAN_ERROR;
         case HAL_BUSY: return BSP_CAN_LINE_BUSY;
         default: break;

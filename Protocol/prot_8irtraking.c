@@ -32,10 +32,10 @@ static int parse_value(const char *p, const char *key, int *val)
 }
 
 /* 搬运自RoboticMajor_Pratice_code的Application/irtraking_task.c：等距对称权重+加权平均+归一化到±100。
-   实际只有digital[1]~digital[6](X2~X7)接了传感器，digital[0]/[7](X1/X8)未接，权重设0占位 */
+   实际只有digital[1]~digital[6](X2~X7)接了传感器，digital[0]/[7](X1/X8)未接，权重设0占位 */ 	
 static void compute_position(void)
 {
-    static const float weights[8] = {0.0f, -3.5f, -1.5f, -0.5f, 0.5f, 1.5f, 3.5f, 0.0f};
+    static const float weights[8] = {0.0f, -4.0f, -2.0f, -0.5f, 0.5f, 2.0f, 4.0f, 0.0f};
     float weighted_sum = 0.0f;
     float sensor_sum = 0.0f;
 

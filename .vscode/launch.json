@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex-Debug: OpenOCD",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "executable": "C:/temp/build/rm_main.axf",
+            "device": "STM32H723VGTx",
+            "configFiles": [
+                "C:/OpenOCD/xpack-openocd-0.12.0-5/openocd/scripts/interface/cmsis-dap.cfg",
+                "C:/OpenOCD/xpack-openocd-0.12.0-5/openocd/scripts/target/stm32h7x.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/Tool/debug/STM32H723.svd",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw",
+            "gdbPath": "D:/GNUARM/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/arm-none-eabi-gdb.exe",
+            "postLaunchCommands": [
+                "monitor reset halt",
+                "load"
+            ],
+            "preLaunchTask": ""
+        },
+        {
+            "name": "Cortex-Debug: Attach",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "openocd",
+            "executable": "C:/temp/build/rm_main.axf",
+            "device": "STM32H723VGTx",
+            "configFiles": [
+                "C:/OpenOCD/xpack-openocd-0.12.0-5/openocd/scripts/interface/cmsis-dap.cfg",
+                "C:/OpenOCD/xpack-openocd-0.12.0-5/openocd/scripts/target/stm32h7x.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/Tool/debug/STM32H723.svd",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw",
+            "gdbPath": "D:/GNUARM/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/arm-none-eabi-gdb.exe"
+        }
+    ]
+}

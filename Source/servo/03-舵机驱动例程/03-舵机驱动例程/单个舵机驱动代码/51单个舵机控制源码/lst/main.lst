@@ -1,0 +1,140 @@
+C51 COMPILER V9.00   MAIN                                                                  05/27/2021 09:48:59 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\obj\main.obj
+COMPILER INVOKED BY: D:\Program Files\Keil\C51\BIN\C51.EXE src\main.c LARGE BROWSE ORDER INCDIR(.\inc) DEBUG OBJECTEXTEN
+                    -D PRINT(.\lst\main.lst) TABS(2) OBJECT(.\obj\main.obj)
+
+line level    source
+
+   1          /*
+   2          单片机：STC15W4K61S4/IAP15W4K61S4 内部晶振：22.1184  
+   3          */
+   4          #include "stc15.h"
+   5          
+   6          //舵机 IO 口定义 用P0的8个IO测试
+   7          sbit dj0 = P0^0;
+   8          sbit dj1 = P0^1;
+   9          sbit dj2 = P0^2;
+  10          sbit dj3 = P0^3;
+  11          sbit dj4 = P0^4;
+  12          sbit dj5 = P0^5;
+  13          sbit dj6 = P0^6;
+  14          sbit dj7 = P0^7;
+  15          
+  16          void delay_ms(unsigned int t);    //简单的延时
+  17          
+  18          void dj_io_init(void);        //舵机 IO 初始化
+  19          void dj_io_set(u8 index, u8 level); //舵机 IO 电平设置
+  20          void timer1_init(void);       //舵机 定时器初始化
+  21          void timer1_reset(int t_us);    //舵机 定时器初值重装
+  22          
+  23          //舵机脉冲数组
+  24          int duoji_pulse[8] = {1500,1500,1500,1500,1500,1500,1500,1500} , i;
+  25          
+  26          void main(void) {
+  27   1        //IO初始化
+  28   1        dj_io_init();
+  29   1        //舵机定时器初始化
+  30   1        timer1_init();
+  31   1          while (1) {
+  32   2          for(i=0;i<8;i++) {
+  33   3            duoji_pulse[i] = 1000;//循环把8个舵机位置设定到1000
+  34   3          }
+  35   2          delay_ms(1000);
+  36   2          for(i=0;i<8;i++) {
+  37   3            duoji_pulse[i] = 2000;//循环把8个舵机位置设定到2000
+  38   3          }
+  39   2          delay_ms(1000);
+  40   2        }
+  41   1      }
+  42          
+  43          void dj_io_init(void) {
+  44   1        //设置标准IO
+  45   1        P0M1=0x00;                 
+  46   1        P0M0=0x00;
+  47   1      }
+  48          
+  49          void dj_io_set(u8 index, u8 level) {
+  50   1        switch(index) {
+  51   2          case 0:dj0 = level;break;
+  52   2          case 1:dj1 = level;break;
+  53   2          case 2:dj2 = level;break;
+  54   2          case 3:dj3 = level;break;
+C51 COMPILER V9.00   MAIN                                                                  05/27/2021 09:48:59 PAGE 2   
+
+  55   2          case 4:dj4 = level;break;
+  56   2          case 5:dj5 = level;break;
+  57   2          case 6:dj6 = level;break;
+  58   2          case 7:dj7 = level;break;
+  59   2          default:break;
+  60   2        }
+  61   1      }
+  62          
+  63          void delay_ms(unsigned int t) {
+  64   1        int t1;
+  65   1        while(t--) {
+  66   2          t1 = 3000;
+  67   2          while(t1--);
+  68   2        }
+  69   1      }
+  70          
+  71          void timer1_init(void) {
+  72   1        AUXR |= 0x40;   //定时器时钟1T模式
+  73   1        TMOD &= 0x0F;   //设置定时器模式
+  74   1        TMOD |= 0x10;   //设置定时器模式
+  75   1        TL1 = 0x00;     //设置定时初值
+  76   1        TH1 = 0x28;     //设置定时初值
+  77   1        TF1 = 0;      //清除TF1标志
+  78   1        TR1 = 1;      //定时器1开始计时
+  79   1        ET1 = 1;      //定时器0开始计时
+  80   1        EA  = 1;      //总开关
+  81   1      }
+  82          
+  83          
+  84          void timer1_reset(int t_us) {
+  85   1        //本来应该x22.1184 但由于单片机用的内部晶振，有一定误差，调整到下面这个值 
+             -频率差不多50HZ
+  86   1        TL1 = (int)(65536-20.4184*t_us);
+  87   1        TH1 = (int)(65536-20.4184*t_us) >> 8;
+  88   1      }
+  89          
+  90          void T1_IRQ(void) interrupt 3 {
+  91   1        static volatile u8 flag = 0;
+  92   1        static volatile u8 duoji_index1 = 0;
+  93   1        int temp;
+  94   1      
+  95   1        if(duoji_index1 == 8) {
+  96   2          duoji_index1 = 0;
+  97   2        }
+  98   1        
+  99   1        if(!flag) {
+ 100   2          timer1_reset((unsigned int)(duoji_pulse[duoji_index1]));
+ 101   2          dj_io_set(duoji_index1, 1);
+ 102   2        } else {
+ 103   2          temp = 2500 - (unsigned int)(duoji_pulse[duoji_index1]);
+ 104   2          if(temp < 20)temp = 20;
+ 105   2          timer1_reset(temp);
+ 106   2          dj_io_set(duoji_index1, 0);
+ 107   2          duoji_index1 ++;
+ 108   2        }
+ 109   1        flag = !flag;
+ 110   1      }
+ 111          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    533    ----
+C51 COMPILER V9.00   MAIN                                                                  05/27/2021 09:48:59 PAGE 3   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     20       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

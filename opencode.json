@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "edit": "allow",
+    "bash": {
+      "git *": "allow",
+      "python *": "allow",
+      "powershell *": "allow",
+      "echo *": "allow",
+      "dir *": "allow",
+      "type *": "allow",
+      "tail *": "allow",
+      "npm *": "allow",
+      "node *": "allow",
+      "*": "allow"
+    },
+    "task": "allow",
+    "skill": "allow",
+    "lsp": "allow",
+    "question": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "external_directory": "allow",
+    "doom_loop": "ask"
+  },
+  "command": {
+    "status": {
+      "description": "查看项目工作状态",
+      "template": "查看当前项目状态：\n1. 运行 `git status` 看工作区改动\n2. 运行 `git log --oneline -5` 看最近提交\n3. 查看今日日记：`type daily.md`\n汇总输出当前分支、改动文件、最近活动。"
+    },
+    "daily": {
+      "description": "打开今日日记",
+      "template": "读取并显示 daily.md 的内容，找到今天的日期条目，准备开始记录。"
+    }
+  },
+  "compaction": {
+    "auto": true,
+    "reserved": 10000
+  },
+  "mcp": {
+    "codegraph": {
+      "type": "local",
+      "command": ["codegraph", "serve", "--mcp"],
+      "enabled": false
+    },
+    "memory": {
+      "type": "local",
+      "command": ["C:\\Users\\huawei\\AppData\\Local\\Programs\\Python\\Python314\\python.exe", "D:\\Life_Log\\devlog\\mcp_memory_bridge.py"],
+      "env": {
+        "MEMORY_API": "http://localhost:8000"
+      }
+    }
+  }
+}

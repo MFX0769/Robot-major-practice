@@ -1,0 +1,2 @@
+[2024-07-15 11:44:Program Success:51FF6B067165555053330187 C:\Users\xbrobot\Desktop\项目资料\00-总线舵机集合\总线舵机资料包\03-控制例程\STM32\01-舵机ID号修改\obj\OUTPUT\KSP-32.hex
+[2024-07-15 11:44:Program Success:51FF6B067165555053330187 C:\Users\xbrobot\Desktop\项目资料\00-总线舵机集合\总线舵机资料包\03-控制例程\STM32\01-舵机ID号修改\obj\OUTPUT\KSP-32.hex

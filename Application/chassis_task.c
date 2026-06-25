@@ -1,7 +1,7 @@
 /**
   * @file    chassis_task.c
-  * @brief   底盘控制任务 (麦克纳姆轮)
-  * @note    参考 RoboticMajor_Pratice_code
+  * @brief   底盘控制任务 (麦克纳姆�?
+  * @note    参�?RoboticMajor_Pratice_code
   */
 
 #include "chassis_task.h"
@@ -20,32 +20,30 @@
 /* 外部电机变量 */
 extern dji_motor_t chassis_2006[4];
 
-/* 底盘电机结构体 */
+/* 底盘电机结构�?*/
 chassis_motor_t chassis_motor;
 
-/* 底盘电机速度环PID，按chassis_2006[]的下标(左前/左后/右前/右后) */
+/* 底盘电机速度环PID，按chassis_2006[]的下�?左前/左后/右前/右后) */
 static pid_t chassis_motor_pid[4];
 
 /* 线位跟踪模式 - 转向PID */
 static pid_t line_track_pid;
+static uint16_t turn_hold = 0;
 
 /**
-  * @brief  底盘参数初始化
-  */
+  * @brief  底盘参数初始�?  */
 static void chassis_init(void)
 {
     memset(&chassis_motor, 0, sizeof(chassis_motor_t));
     
-    /* 4个电机速度环PID初始化 */
+    /* 4个电机速度环PID初始�?*/
     for(int i = 0; i < 4; i++)
     {
         PID_struct_init(&chassis_motor_pid[i], 8000, 1600.0f, 5.0f, 0.0f, 1.0f, 0, 0, 0, NONE_IMPROVE);
     }
     
-    /* 线位跟踪PID初始化：maxout=1500跟遥控满转量级接近(ch4满偏×CHASSIS_SCALE_WZ≈2640)，
-       kp=-15配合position最大±100，kp*error正好打满maxout；负号是实测确认过的纠偏方向，
-       原来外部乘的-150系数已经去掉，方向信息挪到这里 */
-    PID_struct_init(&line_track_pid, 150000, 150.0f, -60.0f, 0.0f, -50.0f, 0, 0, 0, NONE_IMPROVE);
+    /* 线位跟踪PID初始化：maxout=1500跟遥控满转量级接�?ch4满偏×CHASSIS_SCALE_WZ�?640)�?       kp=-15配合position最大�?00，kp*error正好打满maxout；负号是实测确认过的纠偏方向�?       原来外部乘的-150系数已经去掉，方向信息挪到这�?*/
+    PID_struct_init(&line_track_pid, 150000, 150.0f, -50.0f, 0.0f, 0.0f, 0, 0, 0, NONE_IMPROVE);
 }
 
 /**
@@ -95,12 +93,17 @@ void chassis_task(void const *argu)
         const prot_8irtraking_data_t *line_data = prot_8irtraking_get_data();
 
         /* 底盘专用模式：由第二个拨杆sw2(ch7)直接驱动，跟全局ctrl_mode是独立的两个概念 */
+        static chassis_mode_e prev_mode = CHASSIS_STOP;
         chassis_mode_e chassis_mode;
         switch (wbus_rc.data.sw2)
         {
-            case 2:  chassis_mode = CHASSIS_REMOTER;    break;  /* 拨杆最上 */
-            case 0:  chassis_mode = CHASSIS_LINE_TRACK; break;  /* 拨杆最下 */
-            default: chassis_mode = CHASSIS_STOP;       break;  /* 拨杆中间 */
+            case 2:  chassis_mode = CHASSIS_REMOTER;    break;
+            case 0:  chassis_mode = CHASSIS_LINE_TRACK; break;
+            default: chassis_mode = CHASSIS_STOP;       break;
+        }
+        if (chassis_mode != prev_mode) {
+            turn_hold = 0;
+            prev_mode = chassis_mode;
         }
 
         taskENTER_CRITICAL();
@@ -117,35 +120,58 @@ void chassis_task(void const *argu)
 
             case CHASSIS_REMOTER:
             {
-                /* SBUS直接驱动：左摇杆(ch4横)控yaw，右摇杆(ch1横/ch2竖)控前后左右，实测映射见prot_sbus.h
-                   ch2是"下=正"，往前推摇杆是负值，跟vx>0=前进的解算约定相反，这里取负号修正 */
-                vx_ref = -wbus_rc.data.ch2 * CHASSIS_SCALE_VX;
-                vy_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_VY;
-                wz_ref = wbus_rc.data.ch4 * CHASSIS_SCALE_WZ;
+                /* 手动调臂模式：底盘禁止 */
+                if (wbus_rc.data.sw1 == 0 && wbus_rc.data.sw3) {
+                    vx_ref = vy_ref = wz_ref = 0.0f;
+                } else {
+                    vx_ref = -wbus_rc.data.ch2 * CHASSIS_SCALE_VX;
+                    vy_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_VY;
+                    wz_ref = wbus_rc.data.ch4 * CHASSIS_SCALE_WZ;
+                }
             }break;
 
             case CHASSIS_LINE_TRACK:
             {
-                /* 巡线模式：前进速度固定，转向由线位反馈PID控制，参考RoboticMajor_Pratice_code。
-                   老代码vx_ref=0.5f配CHASSIS_SCALE_VX=0.0020f，当前项目CHASSIS_SCALE_VX=3.0f(是老代码1500倍)，
-                   按比例同步放大：0.5f*1500=750.0f，维持跟老代码同样的相对强度 */
-                vx_ref = 750.0f;
+                vx_ref = 1200.0f;
                 vy_ref = 0.0f;
 
-                /* 线位PID计算：fdb=线位置(-100~100附近)，ref=0(线在中间) */
-                if (line_data != NULL && line_data->state)
+                if (turn_hold > 0) {
+                    turn_hold--;
+                    vx_ref = 350.0f;
+                    wz_ref = -450.0f;
+                } else if (line_data != NULL && line_data->state)
                 {
-                    wz_ref = pid_calc(&line_track_pid, (float)line_data->position, 0.0f);
+                    static uint8_t was_on = 0;
+                    static uint8_t debounce = 0;
+                    static uint16_t track_time = 0;
+                    if (track_time < 0xFFFF) track_time++;
+                    uint8_t cnt_on_black = 0;
+                    for (uint8_t i = 0; i < 8; i++)
+                        if (line_data->digital[i]) cnt_on_black++;
+                    if (!was_on) {
+                        if (cnt_on_black >= 5 && track_time > 200) { debounce++; if (debounce >= 5) { was_on = 1; debounce = 0; } }
+                        else debounce = 0;
+                    } else {
+                        if (cnt_on_black <= 2) was_on = 0;
+                    }
+                    if (was_on) {
+                        turn_hold = 158;
+                        vx_ref = 300.0f;
+                        wz_ref = -450.0f;
+                    } else {
+                        wz_ref = pid_calc(&line_track_pid, (float)line_data->position, 0.0f);
+                        wz_ref += wbus_rc.data.ch4 * CHASSIS_SCALE_WZ;
+                    }
                 }
             }break;
             default:break;
         }
 
-        /* 运动学解算 */
+        /* 运动学解�?*/
         chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, MECANUM_L);
 
         /* chassis_2006[]下标(左前/左后/右前/右后) 对应的运动学目标
-           右边两个轮子(右前/右后)需要反向 */
+           右边两个轮子(右前/右后)需要反�?*/
         float target_rpm[4] = {
             (float)chassis_motor.motor[0],   /* 左前 */
             (float)chassis_motor.motor[2],   /* 左后 */
@@ -153,7 +179,7 @@ void chassis_task(void const *argu)
             -(float)chassis_motor.motor[3],  /* 右后 (反向) */
         };
 
-        /* 速度环PID闭环，最后强制保护：底盘静止或全局保护模式，无条件发0，不管PID算出什么 */
+        /* 速度环PID闭环，最后强制保护：底盘静止或全局保护模式，无条件�?，不管PID算出什�?*/
         uint8_t force_zero = (chassis_mode == CHASSIS_STOP) || (ctrl_mode == PROTECT_MODE);
         for (int i = 0; i < 4; i++)
         {
@@ -170,10 +196,12 @@ void chassis_task(void const *argu)
 
         taskEXIT_CRITICAL();
         
-        /* 通过队列发送电机电流 */
-        chassis_can_send();
+        /* 通过队列发送电机电�?*/
+        static uint8_t skip = 0;
+        if (++skip % 4 == 0)
+            chassis_can_send();
         
-        /* 每500次打印一次状态 */
+        /* �?00次打印一次状�?*/
 #if DEBUG_TEXT_ENABLE
         if (++print_cnt >= 500) {
             print_cnt = 0;
@@ -196,3 +224,12 @@ void chassis_task(void const *argu)
         osDelayUntil(&mode_wake_time, CHASSIS_PERIOD);
     }
 }
+
+
+
+
+
+
+
+
+

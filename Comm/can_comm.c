@@ -70,14 +70,11 @@ void comm_can_init(void)
 		bsp_can1_filt_tbl.data[11]=0x204&0x7ff;  // 左前底盘
 		bsp_can1_filt_tbl.data[12]=FLT_DUAL;
 		bsp_can1_filt_tbl.data[13]=0x207&0x7ff;
-		bsp_can1_filt_tbl.data[14]=0x207&0x7ff;
-	bsp_can2_filt_tbl.count = 2;
+		bsp_can1_filt_tbl.data[14]=0x208&0x7ff;
+	bsp_can2_filt_tbl.count = 1;
 	  bsp_can2_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can2_filt_tbl.data[1]=0x206&0x7ff;  // yaw 6020
 	  bsp_can2_filt_tbl.data[2]=0x206&0x7ff;
-		bsp_can2_filt_tbl.data[3]=FLT_DUAL;
-		bsp_can2_filt_tbl.data[4]=0x208&0x7ff;  // 机械臂底座 6020
-		bsp_can2_filt_tbl.data[5]=0x208&0x7ff;
     bsp_can3_filt_tbl.count = 2;
 	  bsp_can3_filt_tbl.data[0]=FLT_DUAL;
 	  bsp_can3_filt_tbl.data[1]=0x201&0x7ff;  // 右后底盘
@@ -100,7 +97,7 @@ void comm_can_init(void)
 
     // dji_motor_init(&yaw_motor, DJI_6020_MOTOR,CAN_CHANNEL_2, 0x206, 1.0f);
     /* 机械臂底座 6020 初始化 */
-    dji_motor_init(&arm_yaw_motor, DJI_6020_MOTOR, CAN_CHANNEL_2, CAN_ARM_YAW_MOTOR_ID, 1.0f);
+    dji_motor_init(&arm_yaw_motor, DJI_6020_MOTOR, CAN_CHANNEL_1, CAN_ARM_YAW_MOTOR_ID, 1.0f);
 	// dm_motor_init(&pitch_motor,DM4310,PROT_CAN_CHANNEL_2,DM_PITCH_RECEIVE_ID,DM_PITCH_SEND_ID,DM_4310_RATIO,DM_PITCH_OFFSET);
     // dm_motor_init(&dm3507_motor,DM3507,PROT_CAN_CHANNEL_2,DM_3507_RECEIVE_ID,DM_3507_SEND_ID,DM_3507_RATIO,DM_3507_OFFEST);
 
@@ -157,8 +154,13 @@ void User_CAN1_RxCpltCallback(CAN_RxBuffer_t* buf)
 					break;
 				}
 			case 0x207:
+			case 0x208:
 				{
-					dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);
+					uint32_t id = bsp_user_can1.CAN_RxBuffer.rxHeader.Identifier;
+					if (id == 0x207)
+						dji_motor_get_single_data(&trigger_motor, bsp_user_can1.CAN_RxBuffer.rx_data);
+					else
+						dji_motor_get_single_data(&arm_yaw_motor, bsp_user_can1.CAN_RxBuffer.rx_data);
 					break;
 				}
 				default:break;
@@ -172,11 +174,6 @@ void User_CAN2_RxCpltCallback(CAN_RxBuffer_t* buf)
 				case CAN_YAW_MOTOR_ID:
 				{
 					dji_motor_get_single_data(&yaw_motor, bsp_user_can2.CAN_RxBuffer.rx_data);
-					break;
-				}
-			case CAN_ARM_YAW_MOTOR_ID:
-				{
-					dji_motor_get_single_data(&arm_yaw_motor, bsp_user_can2.CAN_RxBuffer.rx_data);
 					break;
 				}
 				default:break;

@@ -1,0 +1,13 @@
+".\obj\delay.obj",
+".\obj\global.obj",
+".\obj\io.obj",
+".\obj\main.obj",
+".\obj\ps2.obj",
+".\obj\pwm.obj",
+".\obj\timer.obj",
+".\obj\uart.obj",
+".\obj\w25q64.obj",
+".\obj\spi.obj",
+".\obj\adc.obj" 
+TO ".\obj\20170718" 
+PRINT(".\lst\20170718.m51")

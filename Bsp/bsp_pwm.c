@@ -21,7 +21,7 @@ void bsp_pwm_init(void)
     __HAL_RCC_TIM2_CLK_ENABLE();
     
     htim2.Instance = TIM2;
-    htim2.Init.Prescaler = 83;  /* 84MHz/84 = 1MHz */
+    htim2.Init.Prescaler = 274;  /* TIM2实际输入时钟275MHz(H743实测+PLL推算确认，不是84MHz)，275MHz/275=1MHz */
     htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim2.Init.Period = 19999;  /* 1MHz/20000 = 50Hz (20ms) */
     htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -42,7 +42,7 @@ void bsp_pwm_init(void)
     __HAL_RCC_TIM3_CLK_ENABLE();
     
     htim3.Instance = TIM3;
-    htim3.Init.Prescaler = 83;  /* 84MHz/84 = 1MHz */
+    htim3.Init.Prescaler = 274;  /* TIM3同样在APB1，跟TIM2同样的275MHz实际时钟，274+1=275整除1MHz */
     htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim3.Init.Period = 19999;  /* 1MHz/20000 = 50Hz (20ms) */
     htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

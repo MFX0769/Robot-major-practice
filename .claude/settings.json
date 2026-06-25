@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(D://life_log/**)",
+      "Read(//d/life_log/**)",
+      "Bash(git *)",
+      "Bash(powershell *)",
+      "Bash(python *)",
+      "Bash(npm *)",
+      "Bash(node *)",
+      "Bash(echo *)",
+      "Bash(ls *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Set-Location *)",
+      "Bash(New-Item *)",
+      "Bash(Remove-Item *)",
+      "Bash(Copy-Item *)",
+      "Bash(Move-Item *)",
+      "Bash(type *)",
+      "Bash(cat *)",
+      "Bash(Find- *)",
+      "Bash(dir *)"
+    ],
+    "additionalDirectories": []
+  }
+}

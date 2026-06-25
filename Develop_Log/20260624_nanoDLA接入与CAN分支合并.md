@@ -576,3 +576,166 @@ GDB验证：第一次读`'prot_8irtraking.c'::s_data`全0；几秒后查原始DM
 
 **计划**：把使能命令改成`$0,1,1#`(`prot_8irtraking_cmd_read(1,1)`，数字+模拟都开)，调试打印加上`analog[0..7]`，同时把`HAL_UART_Transmit()`的返回值打出来确认TX命令真的发送成功。
 **预期结果**：模拟量是原始读数，不依赖校准逻辑——如果`analog[]`能随黑白线变化，说明收发链路本身没问题，问题在校准/数字分类这一层(可能是使能时序被校准过程清空，需要在校准后补发使能或者干脆上电重发)；如果`analog[]`也是死的不变，说明问题在更底层的收发链路上(没发出去/模块没收到/模块没回)，需要进一步排查接线或波特率。
+
+加`rx_cnt`计数器(`on_receive()`一进函数就自增，不管解析成不成功都计数)验证USART10的IDLE回调到底有没有真的进过——结果`rx_cnt`持续增长(191621→251335+)，证实链路是通的。改成数字+模拟同时开(`$0,1,1#`)后，串口打印显示`analog`某一瞬间突然从全0变成`3295,3491,3437,3577,3639,3759,3779,3645`(8个通道各不相同，数值在12位ADC合理范围)，但**从那以后这8个数字再也没变过**，哪怕挪动模块也是同一组数字，跟"模块文档说能同时发数字+模拟"的预期不符——怀疑模块固件实际不支持真正同时持续刷新两种类型，可能只发一次模拟值就转为只发数字。
+
+排查过程中用单步调试看`on_receive()`，发现"buf第一位有数据后面全是0"的现象，一度怀疑是模块逐字节发送导致每收到1字节就触发一次IDLE。后来确认这是单步本身的副作用：暂停CPU会打乱UART/DMA的真实时序，全速运行时能看到完整真实帧，所以不能用单步看这种实时链路问题。也排查了H7的D-Cache(确认全项目没有调用`SCB_EnableDCache()`，缓存没打开，不是这个问题)和`dma_8ir_buf`是否需要volatile(跟其他工作正常的SBUS/VISION缓冲区写法完全一致，排除)。
+
+尝试"一发一收"猜测：把使能命令从"只在任务启动时发一次"改成"每个周期(2ms)都补发一次"，准备验证模块是不是请求-响应模式而非持续流式。这版还在编译阶段时，用户决定放弃UART协议路线。
+
+## 放弃UART协议，改用纯GPIO直读数字量(手册方式1)
+用户："不查这个了，现在改成纯GPIO，U2,U10,U3，一共6个IO，你去cubemx里面找这是哪个IO"。查`Core/Src/usart.c`确认物理引脚：USART2(PA2/PA3)、USART3(PB10/PB11)、USART10(PE2/PE3)，共6个引脚。确认`LOG_HUART`(USART3)在代码里从未被实际调用(只有宏定义)，USART2的`TUCHUAN_HUART`早就改到huart10了，三个USART现在都是空闲可用状态。
+
+改动：
+- `Core/Src/main.c`：注释掉`MX_USART2_UART_Init()`/`MX_USART3_UART_Init()`/`MX_USART10_UART_Init()`三行(USART6保留，debug还在用)
+- `Core/Src/gpio.c`的`MX_GPIO_Init()`：给PA2/PA3/PB10/PB11/PE2/PE3加`GPIO_MODE_INPUT`配置(确认这6个引脚没有被其他外设占用)
+- `Protocol/prot_8irtraking.c`新增`prot_8irtraking_poll_gpio()`，直接`HAL_GPIO_ReadPin()`读6个引脚写入`digital[]`，再调`compute_position()`；保留原来UART的`cmd_read`/`on_receive`函数不删(没被调用，不影响)
+- `Application/chassis_task.c`：把任务启动时的UART初始化+使能命令调用，换成每周期调一次`prot_8irtraking_poll_gpio()`；调试打印去掉`rx_cnt`和`analog`(GPIO模式下这两个不再有意义)
+
+用户给出实测接线顺序："从传感器X7到X2，分别是U2的T，R，U3的T，R，U10的R T"，对应X7=PA2,X6=PA3,X5=PB10,X4=PB11,X3=PE2,X2=PE3(X1/X8未接)。按这个顺序重新映射`digital[1..6]`对应X2-X7，编译烧录。
+
+GDB直接读`s_data`确认效果：`digital=[0,1,1,0,0,0,1]`(index对应X1-X7)——**6个传感器之间终于读出了真实差异**，不再是UART协议时代那种永远全0的死状态。`position`手算验证跟代码输出一致((1-3)*25+(2-3)*25+(6-3)*25=0，权重3，position=0，对得上)。
+
+**极性验证**(反复测试4轮，结果稳定可重复)：
+- 全白 → `digital[1..6]`全部读出`1`，`position=12`
+- 全黑 → `digital[1..6]`全部读出`0`，`position=0`(因为`compute_position()`的`if(digital[i])`判断为假，weight=0)
+
+确认极性是**白=高电平(1)，黑=低电平(0)**，跟`compute_position()`原本假设的"`digital[i]=1`代表检测到黑线"正好相反。当前代码(`poll_gpio()`里用`GPIO_PIN_SET`判断)还没做极性取反，处于"如实记录原始电平"的状态，尚未对齐到`compute_position()`想要的语义。
+
+**待决策**：要不要把极性取反对齐(改`poll_gpio()`用`GPIO_PIN_RESET`判断，或者改`compute_position()`的判断条件)，两种做法效果等价，还没最终选定，下一步处理。
+
+GDB读取过程中多次遇到OpenOCD/CMSIS-DAP连接失败(`CMD_INFO failed`/`transfer count mismatch`/`not halted`等不同报错连续4次以上)，比一晚上其他时候"重试1-2次就好"的情况严重，最后靠用户物理重插USB才恢复，记录在案以防再犯同样的坑时第一时间怀疑硬件连接而不是纯软件问题。
+
+极性反复验证了4轮(全白→全部1/position=12，全黑→全部0/position=0，来回切换结果稳定可重复)，确认链路稳定可靠。极性取反这个决策先搁置，没有改`poll_gpio()`/`compute_position()`。
+
+## VOFA改用U6，新增case13打印巡线位置
+用户要求："把算出来的线的位置，用VOFA打印出来，然后，VOFA，改成U6"。
+
+排查VOFA当前的UART绑定机制：跟`dbg_print()`是两套独立路径——`dbg_print()`直接用`DBG_HUART`宏；VOFA(`log_scope_data_output()`，在`Math/data_log.c`)用的是`log_huart`这个全局指针，通过`log_init(&huart)`设置，原来在`Comm/usart_comm.c`的`USER_UART_Init()`里调用`log_init(&DEBUG_HUART)`(也就是U2，跟文本调试同一个口)。
+
+改动：
+- `Application/debug_task.c`：新增`#include "prot_8irtraking.h"`；`log_scope_data_pkg()`里加`case 13`，打印`line_data->state`和`line_data->position`两个通道；`debug_wave`默认值从12改成13(让VOFA默认显示这个新case)
+- `Comm/usart_comm.c`：`log_init(&DEBUG_HUART)`改成`log_init(&huart6)`(VOFA改用U6)；同时顺手清理了一处遗留bug——`USER_UART_Init()`里还留着给`TUCHUAN_HUART`(USART10)做`__HAL_UART_CLEAR_IDLEFLAG`/`HAL_UART_Receive_DMA`的初始化代码，但USART10已经在改GPIO方案时被注释掉了`MX_USART10_UART_Init()`，这几行其实是在对一个未初始化的外设调用HAL函数，是个潜在的隐患(可能跑起来没事也可能挂死)，这次一起删掉了
+
+编译0 Error(22 Warning，比之前多1个，核对是`debug_task.c`/`usart_comm.c`新include`prot_8irtraking.h`后重复报的"文件末尾缺换行"无害警告，不是新问题)。烧录成功(89248字节)。
+
+**给用户的提醒**：VOFA物理接线要从U2挪到U6(PE3=U6_TX接VOFA+的RX)；波特率改成115200(不是VOFA+常见的921600)，因为U6现在的配置是配合视觉模块定的115200，VOFA和视觉共用这个UART口(视觉收/VOFA发，方向不同不冲突)。
+
+## VOFA串口收不到东西，排查出两层门控宏
+用户反馈"VOFA串口没收到东西"。排查发现`Application/config.h`里`DEBUG_VOFA_ENABLE`一直是`0`(关闭)，`log_scope_data_output()`的调用点被`#if DEBUG_VOFA_ENABLE`整个包住，根本没编译进去。这个宏原本和`DEBUG_TEXT_ENABLE`互斥(`#error`检查"共用USART6不能同时开")，但现在两者已经分开走U2/U6，互斥前提不存在了——去掉互斥检查，`DEBUG_VOFA_ENABLE`改成`1`。
+
+改完用户反馈还是收不到，进一步排查发现第二层门控：`Math/data_log.c`里`log_scope_data_generate()`真正写VOFA二进制帧的逻辑被`#if DATA_LOG_MODE==2U`包着——检查`Math/data_log.h`确认`DATA_LOG_MODE`已经是`2U`，这层没问题，不是阻塞点。
+
+## Keil watch窗口看不到s_data，改成全局变量
+用户反馈Keil watch里`s_data`一直是`<cannot evaluate>`，换了好几种Keil模块限定语法都不行，从源码右键加watch也不行。对比注意到`wbus_rc`(SBUS数据)是能正常live watch的，而`wbus_rc`是普通全局变量(`extern`声明)，`s_data`是`static`(文件内部链接)。猜测Keil的实时watch对`static`变量支持更差。把`prot_8irtraking.c`的`static prot_8irtraking_data_t s_data;`去掉static改成全局，`.h`里加`extern`声明，参照`wbus_rc`的写法。
+
+## 误把用户正在用的Keil调试会话杀掉，CPU被遗留在halt状态
+编译时遇到`Error: #219: error while deleting file ... Permission denied`，怀疑是残留UV4进程占着文件锁，直接`taskkill //F //IM UV4.exe`——结果这个进程其实是用户自己正在用的Keil GUI调试会话，被强制杀掉后没有走"resume再断开"的正常流程，导致目标CPU被遗留在debug halt状态。
+
+用户随后反馈"解锁逻辑不动了，但是遥控器是有数据的"——这正好符合"CPU halt但DMA外设独立于CPU继续工作"的特征(SBUS用DMA接收，不需要CPU参与就能把数据搬进缓冲区；但mode_switch_task等靠CPU调度执行的任务逻辑会完全冻住)。用OpenOCD连接后确认`[stm32h7x.cpu0] halted due to breakpoint`，执行`resume`命令恢复运行。
+
+之后用户反馈摇杆解锁手势的四个通道阈值条件(ch1<=-600,ch2>=600,ch3<=-600,ch4>=600)实测数值(`-680,670,-667,651`)全部满足，但`mode_switch_task()`函数最开头的断点("ctrl_mode=PROTECT_MODE"这一行)还是进不去，用户怀疑"代码有大bug"。核对`git diff`确认`Application/mode_switch_task.c`和`Core/Src/freertos.c`这两个文件**完全没有被改动过**(diff为空)，排除"今晚的改动破坏了这部分逻辑"的可能。怀疑是我这边残留的OpenOCD连接和用户的Keil调试会话抢占同一个调试接口造成冲突/异常状态，执行`taskkill //F //IM openocd.exe`清空我这边所有调试器连接，请用户在Keil里完全重新开一次debug session(断开再重连)排查。
+
+## 8IR底盘抖动：电源耦合问题，跟代码逻辑无关
+用户反馈"循迹模块通电，底盘遥控就会抖动，拔掉循迹模块电源就不会"，怀疑遥控模式是不是偷用了巡线数据。核对`chassis_task.c`确认`CHASSIS_REMOTER`分支只用`wbus_rc.data.ch1/ch2/ch4`这几个SBUS通道算`vx/vy/wz`，完全没有引用`line_data`——排除软件层面的数据耦合。用户确认8IR模块供电是从U10连接器的5V/GND线直接接的，跟SBUS接收机怀疑共用同一路电源轨，8个红外探头LED同时耗电造成的电流波动通过共用电源传导，干扰了SBUS信号/供电稳定性，导致摇杆通道读数抖动进而带动底盘抖动。用户后续把8IR模块供电换成板载24V转5V单独供电，反馈"现在换供电就好了"，确认是电源耦合问题，不是代码bug。
+
+## 继电器(PA7)讨论后维持原样
+用户一度提出不用继电器了，要把PA7挪给8IR新接线用，我开始删除`Application/arm_task.c`里3处继电器调用代码，删到一半用户改口"加回去，不用删，不用PA7就行，U10的TX/RX继续"——已将`arm_task.c`完整还原(`git diff`确认为空)，继电器功能保留，PA7不挪用。
+
+## compute_position()被用户临时注释掉，已按要求改回
+用户反馈"循迹出来的线位置watch看不到"，排查发现`prot_8irtraking.c`的`compute_position()`函数体被整段注释掉了(用户自己之前为了测试注释的)，导致`state`/`position`永远停在初始值0。用户确认后让"改回去"，已取消注释恢复原计算逻辑，重新编译烧录(0 Error, Verified OK)。
+
+## 真正的HardFault根因：dbg_print()的目标UART(U2)已被8IR的GPIO占用
+用户报告板子跑飞，进了`HardFault_Handler`死循环。排查链路：
+1. `Tool/debug/dbg_print.c`里`dbg_print()`直接调用`HAL_UART_Transmit(&DBG_HUART, ...)`，`DBG_HUART`宏定义指向`huart2`，**没有任何初始化/空指针检查**
+2. `Core/Src/main.c`里`MX_USART2_UART_Init()`**从未被调用**(grep确认)——因为8IR改GPIO方案时，U2的物理引脚(PA2/PA3)被复用成了GPIO输入(读X6/X7传感器)，所以USART2外设这个UART身份已经不存在了
+3. `chassis_task.c`里每500周期会调用一次`dbg_print("[CHASSIS]...")`(`DEBUG_TEXT_ENABLE=1`生效)，执行到这一行时，对未初始化的`huart2.Instance`(空指针)发起寄存器访问，触发Bus Fault → HardFault
+
+**根因定位**：这是本次会话早些时候两次独立改动互相冲突造成的——改动①把"调试打印"通过`DBG_HUART`宏指定到U2(`huart2`)；改动②(后续的8IR-GPIO切换)又把U2的引脚挪去做GPIO输入，废掉了USART2这个外设。两次改动之间没有交叉检查，是我的疏漏。
+
+**修复**(用户决策：debug和VOFA共用U6，互斥使能，不要求同时开)：
+- `Tool/debug/dbg_print.h`：`DBG_HUART`从`huart2`改回`huart6`
+- `Application/config.h`：`DEBUG_TEXT_ENABLE`改成`0`，`DEBUG_VOFA_ENABLE`保持`1`，**恢复**之前被我删掉的互斥检查`#error`(`#if DEBUG_TEXT_ENABLE && DEBUG_VOFA_ENABLE`)，因为两者现在又共用USART6了
+- 顺带排查确认`Uart2_Transmit()`(`Bsp/bsp_usart.c`)、USART2的IRQHandler等其他引用`huart2`的代码都是死代码/不会被触发，不是额外的风险点
+
+编译验证中，待确认0 Error后烧录测试是否还会HardFault，以及VOFA能否正常收到波形。
+
+## 修复后仍然HardFault，GDB硬件取证找到真正根因
+烧录上面那个修复版本后，用户反馈"还是hard"(还在HardFault)。说明`DBG_HUART`那个问题是真实存在的bug，但**不是这次崩溃的根因**，是另一个独立问题。
+
+用户要求"怎么往回排查"并主动提出贴聊天记录给我看diff，我先用`git diff`把所有未提交的C/H文件改动列出来核对了一遍（确认没有遗漏/记错的改动），然后直接上硬件取证：
+
+1. 用OpenOCD+GDB连上目标，确认CPU停在`HardFault_Handler`的`while(1)`死循环里
+2. 读取SCB故障寄存器：
+   - `HFSR=0x40000000`(FORCED位=1，说明是其他fault被强制升级成HardFault)
+   - `CFSR=0x00008200`(BFSR.PRECISERR=1精确总线错误，BFARVALID=1)
+   - `BFAR=0x60C11005`(真正出错的访问地址，不在任何合法内存区间)
+3. 读取异常自动压栈的栈帧(R0,R1,R2,R3,R12,LR,PC,xPSR)，得到`PC=0x0800dc96`(真正崩溃的指令)，`LR=0x0800dd09`(调用者返回地址)，`R0=0x60c11001`(差BFAR正好4字节，确认是`[R0+4]`这条访存指令崩的)
+4. 查`rm_main.map`文件，确认`PC=0x0800dc96`精确落在`USER_UART_IDLECallback`函数内(`usart_comm.c`)，`LR`落在`USER_UART_IRQHandler`内(调用关系吻合)
+5. 反汇编这段地址，看到三层链式取值`[r4+0x80]`→`[r0+0]`→`[r0+4]`，对应源码`USART6`分支这一行：
+   ```c
+   uint32_t rx_len = DMA_VISION_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);
+   ```
+   即`huart->hdmarx->Instance->NDTR`这条解引用链，在`hdmarx->Instance`这一步崩了
+
+**根因**：查`Core/Src/usart.c`里USART6的DMA初始化代码，发现**只配置了`hdma_usart6_tx`(发送方向)，从未配置`hdma_usart6_rx`(接收方向)**，也没有`__HAL_LINKDMA(uartHandle,hdmarx,hdma_usart6_rx)`这一行。但`USER_UART_Init()`却调用了`HAL_UART_Receive_DMA(&VISION_HUART,...)`，要求`huart6.hdmarx`必须指向一个有效的DMA handle——而它从来没被关联过，是野指针。
+
+这是更早期"视觉模块改接U6"这一步UART重分配时留下的配置缺陷：USART6原来的CubeMX配置只服务于纯发送场景(老用途只发送，比如老的调试/VOFA输出)，改成视觉口后需要RX方向收数据，但RX方向的DMA配置一直没有同步补上。一直没暴露是因为没有真实数据/噪声真正触发过USART6的IDLE中断走到这条代码路径；现在大概是某次接线/电气变化(8IR模块供电改动、继电器讨论时的接线变化等)第一次让U6收到了字节，第一次真正执行到这条从未跑过的代码，暴露出这个一直存在的潜在bug。
+
+**待修复**：需要给USART6新增一个RX方向的DMA Stream配置(类似`hdma_usart6_tx`但方向为`DMA_PERIPH_TO_MEMORY`)，并加上`__HAL_LINKDMA(uartHandle,hdmarx,hdma_usart6_rx)`。这是CubeMX层面的DMA资源分配问题，需要确认还有没有空闲的DMA Stream可用，等用户决策具体修复方式。
+
+最终采用最小风险修复：`Core/Src/stm32h7xx_it.c`的`USART6_IRQHandler()`里去掉新加的`USER_UART_IRQHandler(&huart6)`调用，`Comm/usart_comm.c`的`USER_UART_Init()`里同步注释掉`VISION_HUART`的IDLE中断使能+`HAL_UART_Receive_DMA`调用(只保留VOFA的TX发送路径，不开RX，彻底切断这个野指针解引用的触发路径)。编译0 Error，烧录Verified OK，确认board不再HardFault。已提交(`a9b6921`)。
+
+## VOFA波特率确认对、debug_wave=13确认对，但收到的数据不是JustFloat格式
+用户反馈VOFA串口收到一堆乱码，一开始用文本模式看显示乱码(这是正常的，JustFloat是二进制协议，文本模式看二进制数据本来就乱码)。换成HEX模式后，发现数据流里**完全没有`80 7F`这个JustFloat固定帧尾特征**，帧长也跟`case 13`(2个数据，应该是12字节/帧)不符。用GDB读`debug_wave`确认是`0x0D`(13)，源码链路核对也都正确，但这个矛盾没有解决——本轮没有继续深挖，转向先验证巡线本身能不能跑（VOFA只是调试可视化手段，不是巡线功能本身的依赖）。
+
+## 巡线vx_ref单位错误：从老代码直接抄了固定值，没同步缩放
+用户反馈巡线模式"不动"。排查发现`CHASSIS_LINE_TRACK`分支的`vx_ref=0.5f`是直接从参考仓库`RoboticMajor_Pratice_code`抄的固定值，但两个项目的`CHASSIS_SCALE_VX`差了1500倍(老代码`0.0020f`，当前项目`3.0f`)，`vx_ref`这个数值在新项目的量级体系下被`chassis_mecanum_resolve()`的`(int16_t)`截断后基本等于0。按比例放大：`0.5f*1500=750.0f`，编译烧录后底盘真的能动了。
+
+## 巡线wz_ref(转向)的两个连带问题：PID设计缺陷 + 极性反了
+转向力度不够，用户先后试了在PID外面乘`1500`、`-150`等系数。指出这个做法的问题：`line_track_pid`内部参数(`maxout=300,kp=0.5`)也是原样抄的老代码，从未缩放，`kp=0.5`配合`position`最大±100，PID内部输出最多`50`，根本到不了`maxout=300`这个限幅，限幅形同虚设；外面再乘系数，相当于绕过了PID自身的限幅保护。建议把缩放并入PID内部参数(`kp`从0.5直接放大，`maxout`同步设到跟遥控满转量级接近的值)，用户认可后改成`maxout=1500,kp=-15`(负号是用户实测确认的纠偏方向，从外部的`-150`系数挪过来的)。
+
+同时发现一个独立的极性bug：`compute_position()`原来的`if(digital[i])`把"白色/没压线"(实测确认`digital=1`=白色，`digital=0`=黑线)误判成"压线"，逻辑方向反了。改成`if(!digital[i])`。
+
+## 巡线位置权重搬运自老代码的irtraking_task.c
+用户提出"外面灯的权重要翻好几倍"。找到老代码真正的算法不在`prot_8irtraking.c`而在`Application/irtraking_task.c`：等距对称权重`{-3.5,-2.5,...,2.5,3.5}` + 加权平均(不是算术平均) + 归一化到±100。原`compute_position()`用的是算术平均+不对称权重`(i-3)*25`，且只有6个传感器真正接了(digital[1]~[6]对应X2~X7，digital[0]/[7]从未被`poll_gpio()`赋值)，最外侧传感器单独压线时只能到-50/75，离±100有差距。按6个有效传感器重新设计对称权重`{0,-2.5,-1.5,-0.5,0.5,1.5,2.5,0}`(首尾0占位)，加权平均后归一化(`*100/2.5`)，最外侧单独压线时能精确打满±100。
+
+## 转向振荡：kp/kd符号不一致
+用户反馈巡线时"yaw轴来回抖动"。分析：`position`是离散跳变值(传感器是数字量，不是连续的)，相邻传感器切换时`position`会有约40的台阶跳变，配合较高的`kp`（用户从-15一路调到-60）单独使用纯P控制，容易产生过冲-反冲的振荡。建议加`kd`(微分项)抑制振荡，同时解释`pid_calc()`里`dout=kd*(err_now-err_last)`跟`pout=kp*err`是同一套"误差→输出"映射，**kd必须跟kp同号**才能起到正确的阻尼作用。用户先后试了`kd=20`、`kd=50`(都是正号，跟`kp=-60`符号不一致)，反馈"还是抖"——符合"符号不对，微分项在帮倒忙"的预期。改成`kd=-50`(跟kp同号)，待用户测试效果。当前完整参数：`PID_struct_init(&line_track_pid, 150000, 150.0f, -60.0f, 0.0f, -50.0f, 0, 0, 0, NONE_IMPROVE);`
+
+## 转向机械臂：yaw限幅/电流模式确认
+巡线收尾后转入机械臂任务。确认yaw目前没有任何角度范围(机械限位)保护(用户已知，"我还没量")；确认GM6020 yaw是电压模式(不是电流模式)，量程±25000(`DJI_6020_MOTOR_DATA_RANGE`)。`ARM_YAW_CURRENT_LIMIT`原来是5000，用户先说改28000被否(超量程)，最终定为25000(`Application/arm_task.h`)。
+
+## 舵机标定测试模式：SWD打上时单舵机直接出力
+为了让用户用遥控器手动找各关节目标角度，在`arm_task.c`主循环加了一段标定模式：`ctrl_mode==REMOTER_MODE && sw3(SWD)`时跳过正常状态机，直接把一个SBUS通道映射成肩关节角度，方便Keil watch读数标定。最初用`ch5`，但`ch5`实际是个拨杆开关(不连续)，用户纠正后换成`ch3`(确认`prot_sbus.h`里`ch3=左摇杆竖`)，映射`test_angle=(ch3/660)*90`(±90是占位缩放系数，等用户实测限幅后再换成实际值)。
+
+发现这个测试模式有安全漏洞：用`continue`跳过本轮循环剩余逻辑，导致(1)yaw电机不会被刷新/清零，如果进测试模式前yaw正带着电流，会一直保持最后那个电流值(DJI电机协议特性：不发新指令不会自动停)；(2)`ARM_ERROR`状态的保护逻辑也被跳过。
+
+## yaw电机PROTECT_MODE保护补全：双重保险
+进一步发现`arm_task.c`完全没有检查全局`ctrl_mode==PROTECT_MODE`(跟`chassis_task.c`的`force_zero`机制不一样)。先加了一版"PROTECT_MODE时直接发0、否则调`arm_yaw_pid_calc()`"的外层判断，后来用户要求改成"PID一直都要算，双重保险"：在`arm_yaw_pid_calc()`内部加两层防护——前面(进函数时)`PROTECT_MODE`下让`target.yaw`跟随`angle_fdb`(error=0，PID不会主动输出)，后面(发送前)再强制把`output`清零兜底，不管前面算出什么。两层防护都在函数内部，主循环里恢复成无条件每周期调用`arm_yaw_pid_calc()`。
+
+## yaw机械限位实测标定：ecd=1018(左)/3988(右)
+用Keil watch实测yaw电机转到物理极限时的`ecd`原始值：逆时针最大(左)`ecd=1018`，顺时针最大(右)`ecd=3988`(两次测量session不同，`offset_ecd`从7411变成3990，但原始`ecd`是编码器硬件绝对读数，跟session无关，可以直接比较)。用户还提供了小车坐标系"正左方"参考方向的读数(`offset_ecd=3990,last_ecd=8173,total_ecd=4183`，验证`total_ecd=ecd-offset_ecd`吻合)，`ecd≈8173`数值上离`1018`很远，但编码器是环形的(0~8191一圈)，绕过0点算实际只差约1036计数(≈45.6°)，跟用户说的"几乎顶到左限位"吻合——这里一度误判为矛盾，按线性比较出错，后用环形距离重新核算才解开。
+
+参考`Application/gimbal_task.h`已有的云台限位范式(`YAW_ECD_LEFT/RIGHT` + `YAW_LIMIT_KP`回拉系数)，原始`ecd`不依赖`offset_ecd`这种session相关量，直接照搬。在`arm_task.h`新增`ARM_YAW_ECD_LEFT=1018`/`ARM_YAW_ECD_RIGHT=3988`/`ARM_YAW_LIMIT_KP=0.03f`，在`arm_yaw_pid_calc()`电流限幅之后加了超界回拉逻辑(超过限位时直接拿回拉力覆盖PID输出)。中点/零度参考方向还没测，"正左方"不等于中点，暂未用于角度换算。
+
+用户中途一度要求"先把yaw的PID置零，不用居中点，没时间解算了"(临时改成主循环里yaw无条件发0电流)，后又改口"PID一直都要算，前面保护模式置零，后面保护模式发0"(双重保险)，最终定稿为上面的双层防护版本，PID保持常跑。
+
+## 标定测试模式调试：肩关节舵机"没反应"
+ch3打上sw3后`test_angle`确认有正确数值在变化，但肩关节舵机没反应。排查步骤：(1)确认`ctrl_mode==REMOTER_MODE`(已解锁+sw1档位对)且`sw3`已打开——条件满足；(2)请用户用手转动肩关节判断"完全没阻力(无信号/无供电)"还是"有阻力(信号到了但角度错)"。用户反馈：**舵机有电，但会自己回到零位置**——这是无PWM信号时的典型表现(供电正常，但没收到有效脉冲)。
+
+## 真正根因：PA0/PA1/PA6三个PWM引脚被错误配成ANALOG模式
+检查`Bsp/bsp_pwm.c`的`bsp_pwm_set_pulse()`逻辑没问题(`__HAL_TIM_SET_COMPARE`正确写CCR寄存器)。再查`Core/Src/gpio.c`的`MX_GPIO_Init()`，发现`PA0(肩,TIM2_CH1)/PA1(肘,TIM2_CH2)/PA6(夹爪,TIM3_CH1)`这三个PWM输出引脚，被一段CubeMX自动生成、从未针对舵机功能更新过的代码配置成了`GPIO_MODE_ANALOG`(模拟输入)。定时器CCR寄存器值确实在跟着`test_angle`正确变化，但物理引脚根本没接到TIM2/TIM3的输出通路，引脚上不会有任何PWM波形——舵机收不到信号，跟"有电但自己回零"完全对得上。
+
+确认`PA4/PA8/PA15`(同一组ANALOG配置里的其他引脚)项目里没被用到，不受影响。修复：把`gpio.c`里这三个引脚从ANALOG组里摘出来，改成`GPIO_MODE_AF_PP`+`GPIO_AF1_TIM2`(PA0/PA1)、`GPIO_AF2_TIM3`(PA6)。确认`main.c`里`MX_GPIO_Init()`先于`MX_TIM2_Init()`调用且互不冲突(`MX_TIM2_Init()`不涉及GPIO配置，不会覆盖AF设置；`bsp_pwm_init()`跟`MX_TIM2_Init()`重复初始化了同一个`htim2`，是历史遗留，不影响这次修复)。
+
+修复前按用户要求先做了一次checkpoint commit(`155ab05`)，再改`gpio.c`。改完待用户编译烧录验证。
+
+## yaw��������Ų飺CAN2���������� �� �ᵽCAN1���
+- arm_yaw 6020��CAN2��send_cnt����������tx_current=25000ʱ���ؼ�С
+- �ᵽCAN1�����ػָ�������ȫ�ٷ�ת����ȷ����CAN2����������
+- ���Ƶ�CAN1����������0x208���ص���case��init��CAN_CHANNEL_1��CAN2ɾarm_yaw
+- ��can1_tx_ok_cnt�������ɶ�GDBȷ��Ӳ�����ͳɹ�
+- �������� total_ecd�����������㣩��ȥ�� circle_error
+- yaw PID����ȫ0���û��Ե���λ�û�/�ٶȻ�MaxOutput=25000��
+- Ŀ��ecd=100���ӿ���λ����ת100��

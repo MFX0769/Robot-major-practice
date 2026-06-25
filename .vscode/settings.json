@@ -2,5 +2,16 @@
     "files.associations": {
         "fdcan.h": "c",
         "prot_rm_motor.h": "c"
+    },
+    "cortex-debug.openocdPath": "C:\\OpenOCD\\xpack-openocd-0.12.0-5\\bin\\openocd.exe",
+    "cortex-debug.armToolchainPath": "D:\\GNUARM\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin",
+    "cortex-debug.gdbPath": "D:\\GNUARM\\xpack-arm-none-eabi-gcc-13.2.1-1.1\\bin\\arm-none-eabi-gdb.exe",
+    "cortex-debug.openOCDLaunch": {
+        "servertype": "openocd",
+        "device": "STM32H723VGTx",
+        "configFiles": [
+            "interface/cmsis-dap.cfg",
+            "target/stm32h7x.cfg"
+        ]
     }
 }

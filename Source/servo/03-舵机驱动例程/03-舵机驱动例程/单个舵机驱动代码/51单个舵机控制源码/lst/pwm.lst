@@ -1,0 +1,218 @@
+C51 COMPILER V9.01   PWM                                                                   07/28/2017 16:06:20 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE PWM
+OBJECT MODULE PLACED IN .\obj\pwm.obj
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE src\pwm.c LARGE BROWSE ORDER INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\lst\p
+                    -wm.lst) OBJECT(.\obj\pwm.obj)
+
+line level    source
+
+   1          /*---------------------------------------------------------------------*/
+   2          /* --- STC MCU Limited ------------------------------------------------*/
+   3          /* --- STC15Fxx 系列 使用增强型PWM控制舞台灯光示例---------------------*/
+   4          /* --- Mobile: (86)13922805190 ----------------------------------------*/
+   5          /* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+   6          /* --- Tel: 86-0513-55012928,55012929,55012966-------------------------*/
+   7          /* --- Web: www.STCMCU.com --------------------------------------------*/
+   8          /* --- Web: www.GXWMCU.com --------------------------------------------*/
+   9          /* 如果要在程序中使用此代码,请在程序中注明使用了STC的资料及程序        */
+  10          /* 如果要在文章中应用此代码,请在文章中注明使用了STC的资料及程序        */
+  11          /*---------------------------------------------------------------------*/
+  12          
+  13          //本示例在Keil开发环境下请选择Intel的8058芯片型号进行编译
+  14          //若无特别说明,工作频率一般为11.0592MHz
+  15          
+  16          
+  17          #include "pwm.h"
+  18          
+  19          #define CYCLE 1000
+  20          
+  21          void pwm_init(unsigned short cycle){
+  22   1          
+  23   1      //              P0M0 &= ~0xc0;
+  24   1      //    P0M1 &= ~0xc0;
+  25   1      //    P0 &= ~0xc0;                    //设置P0.6/.P0.7电平
+  26   1      //    
+  27   1      //              P2M0 |= 0x0e;
+  28   1      //    P2M1 &= ~0x0e;
+  29   1      //    P2 &= ~0x0e;                    //设置P2.1/P2.2/P2.3电平
+  30   1      //    
+  31   1      //              P3M0 |= 0x80;
+  32   1      //    P3M1 &= ~0x80;
+  33   1      //    P3 &= ~0x80;                    //设置P3.7电平
+  34   1      
+  35   1          P_SW2 |= 0x80;
+  36   1          PWMCKS = 0x1F;
+  37   1          PWMC = cycle;                   //设置PWM周期
+  38   1          PWM2T1 = 1;
+  39   1          PWM2T2 = 0;
+  40   1          PWM2CR = 0x00;                  //PWM2输出到P3.7
+  41   1          PWM3T1 = 1;
+  42   1          PWM3T2 = 0;
+  43   1          PWM3CR = 0x00;                  //PWM3输出到P2.1
+  44   1          PWM4T1 = 1;
+  45   1          PWM4T2 = 0;
+  46   1          PWM4CR = 0x00;                  //PWM4输出到P2.2
+  47   1          PWM5T1 = 1;
+  48   1          PWM5T2 = 0;
+  49   1          PWM5CR = 0x00;                  //PWM5输出到P2.3
+  50   1          PWM6T1 = 1;
+  51   1          PWM6T2 = 0;
+  52   1          PWM6CR = 0x08;                  //PWM6输出到P0.7
+  53   1          PWM7T1 = 1;
+  54   1          PWM7T2 = 0;
+C51 COMPILER V9.01   PWM                                                                   07/28/2017 16:06:20 PAGE 2   
+
+  55   1          PWM7CR = 0x08;                  //PWM7输出到P0.6
+  56   1          PWMCFG = 0x00;                  //配置PWM的输出初始电平
+  57   1          PWMCR = 0x3f;                   //使能PWM信号输出
+  58   1          PWMCR |= 0x80;                  //使能PWM模块
+  59   1          P_SW2 &= ~0x80;
+  60   1      }
+  61          
+  62          void PWM2_SetPwmWide(unsigned short Wide)
+  63          {
+  64   1          if (Wide == 0)
+  65   1          {
+  66   2              PWMCR &= ~0x01;
+  67   2              PWM2 = 0;
+  68   2          }
+  69   1          else if (Wide >= CYCLE)
+  70   1          {
+  71   2              PWMCR &= ~0x01;
+  72   2              PWM2 = 1;
+  73   2          }
+  74   1          else
+  75   1          {
+  76   2              P_SW2 |= 0x80;
+  77   2              PWM2T1 = Wide;
+  78   2              P_SW2 &= ~0x80;
+  79   2              PWMCR |= 0x01;
+  80   2          }
+  81   1      }
+  82          
+  83          void PWM3_SetPwmWide(unsigned short Wide)
+  84          {
+  85   1          if (Wide == 0)
+  86   1          {
+  87   2              PWMCR &= ~0x02;
+  88   2              PWM3 = 0;
+  89   2          }
+  90   1          else if (Wide >= CYCLE)
+  91   1          {
+  92   2              PWMCR &= ~0x02;
+  93   2              PWM3 = 1;
+  94   2          }
+  95   1          else
+  96   1          {
+  97   2              P_SW2 |= 0x80;
+  98   2              PWM3T1 = Wide;
+  99   2              P_SW2 &= ~0x80;
+ 100   2              PWMCR |= 0x02;
+ 101   2          }
+ 102   1      }
+ 103          
+ 104          void PWM4_SetPwmWide(unsigned short Wide)
+ 105          {
+ 106   1          if (Wide == 0)
+ 107   1          {
+ 108   2              PWMCR &= ~0x04;
+ 109   2              PWM4 = 0;
+ 110   2          }
+ 111   1          else if (Wide >= CYCLE)
+ 112   1          {
+ 113   2              PWMCR &= ~0x04;
+ 114   2              PWM4 = 1;
+ 115   2          }
+ 116   1          else
+C51 COMPILER V9.01   PWM                                                                   07/28/2017 16:06:20 PAGE 3   
+
+ 117   1          {
+ 118   2              P_SW2 |= 0x80;
+ 119   2              PWM4T1 = Wide;
+ 120   2              P_SW2 &= ~0x80;
+ 121   2              PWMCR |= 0x04;
+ 122   2          }
+ 123   1      }
+ 124          
+ 125          void PWM5_SetPwmWide(unsigned short Wide)
+ 126          {
+ 127   1          if (Wide == 0)
+ 128   1          {
+ 129   2              PWMCR &= ~0x08;
+ 130   2              PWM5 = 0;
+ 131   2          }
+ 132   1          else if (Wide >= CYCLE)
+ 133   1          {
+ 134   2              PWMCR &= ~0x08;
+ 135   2              PWM5 = 1;
+ 136   2          }
+ 137   1          else
+ 138   1          {
+ 139   2              P_SW2 |= 0x80;
+ 140   2              PWM5T1 = Wide;
+ 141   2              P_SW2 &= ~0x80;
+ 142   2              PWMCR |= 0x08;
+ 143   2          }
+ 144   1      }
+ 145          
+ 146          /*
+ 147          void PWM6_SetPwmWide(unsigned short Wide)
+ 148          {
+ 149              if (Wide == 0)
+ 150              {
+ 151                  PWMCR &= ~0x10;
+ 152                  PWM6 = 0;
+ 153              }
+ 154              else if (Wide == CYCLE)
+ 155              {
+ 156                  PWMCR &= ~0x10;
+ 157                  PWM6 = 1;
+ 158              }
+ 159              else
+ 160              {
+ 161                  P_SW2 |= 0x80;
+ 162                  PWM6T1 = Wide;
+ 163                  P_SW2 &= ~0x80;
+ 164                  PWMCR |= 0x10;
+ 165              }
+ 166          }
+ 167          
+ 168          void PWM7_SetPwmWide(unsigned short Wide)
+ 169          {
+ 170              if (Wide == 0)
+ 171              {
+ 172                  PWMCR &= ~0x20;
+ 173                  PWM7 = 0;
+ 174              }
+ 175              else if (Wide == CYCLE)
+ 176              {
+ 177                  PWMCR &= ~0x20;
+ 178                  PWM7 = 1;
+C51 COMPILER V9.01   PWM                                                                   07/28/2017 16:06:20 PAGE 4   
+
+ 179              }
+ 180              else
+ 181              {
+ 182                  P_SW2 |= 0x80;
+ 183                  PWM7T1 = Wide;
+ 184                  P_SW2 &= ~0x80;
+ 185                  PWMCR |= 0x20;
+ 186              }
+ 187          }
+ 188          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    292    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

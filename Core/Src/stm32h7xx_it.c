@@ -479,10 +479,10 @@ void USART6_IRQHandler(void)
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */
 //   bsp_user_usart_Receive_Handler(&usart6_rx_user_handle);
-  /* USART6的RX方向DMA(hdma_usart6_rx)从未配置，IDLE回调走到USART6分支会
+  /* USART6的RX方向DMA(hdma_usart6_rx)从未配置，IDLE回调走到USART6分支�?
      解引用huart6.hdmarx这个野指针触发HardFault。视觉模块还没接，先不接收，
-     只保留VOFA的TX输出。等USART6补上RX DMA配置后再恢复这一行 */
-//		USER_UART_IRQHandler(&huart6);
+     只保留VOFA的TX输出。等USART6补上RX DMA配置后再恢复这一�?*/
+      USER_UART_IRQHandler(&huart6);
   /* USER CODE END USART6_IRQn 1 */
 }
 
@@ -604,3 +604,5 @@ void FDCAN3_IT1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+
+

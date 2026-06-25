@@ -1,0 +1,74 @@
+C51 COMPILER V9.01   GLOBAL                                                                07/28/2017 16:06:19 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE GLOBAL
+OBJECT MODULE PLACED IN .\obj\global.obj
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE src\global.c LARGE BROWSE ORDER INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\ls
+                    -t\global.lst) OBJECT(.\obj\global.obj)
+
+line level    source
+
+   1          #include "global.h"
+   2          
+   3          duoji_doing_t duoji_doing[DJ_NUM];
+   4          u8 uart_receive_buf[UART_BUF_SIZE+4], uart1_get_ok, uart1_mode, uart_receive_buf_index;
+   5          u8 cmd_return[100];
+   6          //u32 uart_get_timeout;
+   7          
+   8          
+   9          
+  10          
+  11          void global_init(void) {
+  12   1      
+  13   1              u8 i;
+  14   1              for(i=0;i<DJ_NUM;i++) {
+  15   2                      duoji_doing[i].aim = duoji_doing[i].cur = 1500;
+  16   2                      duoji_doing[i].inc = 0;         
+  17   2              }
+  18   1              
+  19   1              uart1_get_ok = 0;
+  20   1              uart1_mode = 0;
+  21   1              uart_receive_buf_index = 0;
+  22   1              //uart_get_timeout = 0;
+  23   1      
+  24   1      }
+  25          
+  26          u16 str_contain_str(u8 *str, u8 *str2) {
+  27   1              u8 *str_temp, *str_temp2;
+  28   1              str_temp = str;
+  29   1              str_temp2 = str2;
+  30   1              while(*str_temp) {
+  31   2                      if(*str_temp == *str_temp2) {
+  32   3                              while(*str_temp2) {
+  33   4                                      if(*str_temp++ != *str_temp2++) {
+  34   5                                              str_temp = str_temp - (str_temp2-str2) + 1;
+  35   5                                              str_temp2 = str2;
+  36   5                                              break;
+  37   5                                      }       
+  38   4                              }
+  39   3                              if(!*str_temp2) {
+  40   4                                      return (str_temp-str);
+  41   4                              }
+  42   3                              
+  43   3                      } else {
+  44   3                              str_temp++;
+  45   3                      }
+  46   2              }
+  47   1              return 0;
+  48   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    361    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   1219      12
+C51 COMPILER V9.01   GLOBAL                                                                07/28/2017 16:06:19 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

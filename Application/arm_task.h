@@ -34,12 +34,12 @@
 #define ARM_TASK_PERIOD  3
 
 /* Yaw电流限幅 (6020电压模式: ±25000) */
-#define ARM_YAW_CURRENT_LIMIT  25000
+#define ARM_YAW_CURRENT_LIMIT  30000
 
 /* Yaw硬限位ecd (2026-06-25实测，原始ecd绝对值，跟offset_ecd/session无关，参考gimbal_task.h的YAW_ECD_LEFT/RIGHT模式) */
 #define ARM_YAW_ECD_LEFT       1018    /* 左极限(逆时针最大) */
 #define ARM_YAW_ECD_RIGHT      3988    /* 右极限(顺时针最大) */
-#define ARM_YAW_LIMIT_KP       0.03f   /* 限位回拉系数 */
+#define ARM_YAW_LIMIT_KP       10.0f   /* 限位回拉系数（ecd超1tick→output=10） */
 
 /* ECD转角度: 8192 = 360度 */
 #define ECD_TO_DEG  (360.0f / 8192.0f)
