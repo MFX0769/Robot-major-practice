@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>课设小车调试复盘 — 多AI标注目录</title>
+<style>
+body{font-family:-apple-system,'Segoe UI','Noto Sans SC',sans-serif;background:#0d1117;color:#c9d1d9;max-width:800px;margin:0 auto;padding:40px 20px;text-align:center;line-height:1.7}
+h1{font-size:2em;color:#58a6ff;margin-bottom:8px}
+.sub{color:#8b949e;font-size:1em;margin-bottom:40px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:600px;margin:0 auto}
+.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;text-decoration:none;color:#c9d1d9;transition:border 0.2s}
+.card:hover{border-color:#58a6ff}
+.card .icon{font-size:2em;margin-bottom:8px}
+.card .name{font-weight:bold;font-size:1.1em;color:#f0883e}
+.card .model{color:#8b949e;font-size:0.85em;margin:4px 0}
+.card .desc{font-size:0.85em;color:#8b949e;margin-top:8px}
+.card .evts{font-size:0.8em;color:#484f58;margin-top:4px}
+.footer{margin-top:60px;color:#484f58;font-size:0.85em}
+.stat-row{display:flex;justify-content:center;gap:12px;margin:20px 0;flex-wrap:wrap}
+.stat-box{background:#161b22;border-radius:8px;padding:12px 20px;min-width:100px}
+.stat-box .num{font-size:1.5em;color:#58a6ff;font-weight:bold}
+.stat-box .label{color:#8b949e;font-size:0.8em}
+</style>
+</head>
+<body>
+
+<h1>🔧 课设小车调试复盘</h1>
+<div class="sub">40 小时 · 1309 条对话 · 4 个 AI 视角 · 2026-06-22~25</div>
+
+<div class="stat-row">
+  <div class="stat-box"><div class="num">4</div><div class="label">AI 标注</div></div>
+  <div class="stat-box"><div class="num">14</div><div class="label">事件</div></div>
+  <div class="stat-box"><div class="num">7</div><div class="label">分析维度</div></div>
+  <div class="stat-box"><div class="num">16</div><div class="label">可复用信号</div></div>
+</div>
+
+<div class="grid">
+  <a href="复盘_全量标注_deepseek_V4_flash.html" class="card">
+    <div class="icon">🤖</div>
+    <div class="name">deepseek V4 flash</div>
+    <div class="model">MiMo Code · 41KB</div>
+    <div class="desc">全量标注 + 跨事件串联<br>格式最完整的 HTML 版</div>
+    <div class="evts">13 事件 · 4 条串联</div>
+  </a>
+
+  <a href="复盘_标注_MiMoV2.5Pro.html" class="card">
+    <div class="icon">🧠</div>
+    <div class="name">MiMo V2.5 Pro</div>
+    <div class="model">xiaomi/mimo-v2.5-pro</div>
+    <div class="desc">强调归因修正 + 无助感量化<br>三个最大绕路分类</div>
+    <div class="evts">13 事件 · 奶酪曲线</div>
+  </a>
+
+  <a href="复盘_标注_GPT5.5.html" class="card">
+    <div class="icon">💬</div>
+    <div class="name">GPT5.5</div>
+    <div class="model">标注者代号</div>
+    <div class="desc">15 事件拆分 + 行号引用<br>工具事故分析详细</div>
+    <div class="evts">15 事件 · 详细奶酪表</div>
+  </a>
+
+  <a href="复盘_标注_deepseek-v4-pro.html" class="card">
+    <div class="icon">🔬</div>
+    <div class="name">deepseek-v4-pro</div>
+    <div class="model">标注者代号</div>
+    <div class="desc">P0~P4 信号优先级排序<br>三层归因真相总结</div>
+    <div class="evts">14 事件 · 含 E14 系统级</div>
+  </a>
+</div>
+
+<div class="footer">
+  分析框架：复盘_分析框架.md · 主素材：对话流水_完整合并.txt<br>
+  所有文件在 Develop_Log/ 目录
+</div>
+
+</body></html>

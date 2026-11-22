@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>复盘标注 — deepseek-v4-pro</title>
+<style>
+body{font-family:-apple-system,'Segoe UI','Noto Sans SC',sans-serif;background:#0d1117;color:#c9d1d9;max-width:900px;margin:0 auto;padding:20px;line-height:1.7}
+h1{font-size:1.8em;color:#58a6ff;border-bottom:2px solid #21262d;padding-bottom:10px}
+h2{font-size:1.3em;color:#f0883e;margin-top:30px;padding:8px 12px;background:#161b22;border-left:4px solid #f0883e;border-radius:4px}
+h3{font-size:1.1em;color:#79c0ff;margin-top:24px}
+.meta{color:#8b949e;font-size:0.9em;padding:12px;background:#161b22;border-radius:6px;margin-bottom:20px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.8em;margin-right:4px}
+.tag-green{background:#1b3a1b;color:#7ee787}.tag-yellow{background:#3a2f1b;color:#d29922}.tag-red{background:#3a1b1b;color:#ff7b72}.tag-gray{background:#21262d;color:#8b949e}
+.event-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:16px 20px;margin:16px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+td,th{border:1px solid #30363d;padding:5px 10px;font-size:0.9em;vertical-align:top}
+td:first-child{color:#8b949e;width:110px;white-space:nowrap}
+th{background:#161b22;color:#8b949e}
+.curve{font-family:'Courier New',monospace;background:#0d1117;padding:12px;border-radius:6px;line-height:1.5;font-size:0.82em;white-space:pre;overflow-x:auto;color:#8b949e}
+.signal{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:0.9em}
+.signal b{color:#f0883e}
+.cheese-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0}
+.cheese-item{padding:4px 8px;background:#0d1117;border-radius:4px;font-size:0.88em}
+.cheese-yes{border-left:3px solid #ff7b72}.cheese-no{border-left:3px solid #21262d;color:#484f58}
+.footer{margin-top:40px;padding:16px;background:#161b22;border-radius:8px;text-align:center;color:#8b949e;font-size:0.9em}
+.bar-container{display:flex;align-items:center;margin:3px 0}
+.bar-label{width:110px;font-size:0.85em;color:#8b949e;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:#0d1117;border-radius:4px;overflow:hidden;margin:0 8px}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:0.78em}
+.bar-count{width:30px;font-size:0.85em;color:#8b949e;text-align:right}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.summary-card{border-radius:6px;padding:12px;background:#1b2d3a}
+.summary-card .title{color:#79c0ff;font-weight:bold;margin-bottom:4px}
+</style></head>
+<body>
+
+<h1>📋 复盘标注 — deepseek-v4-pro</h1>
+<div class="meta">
+  <div>🤖 <strong>deepseek-v4-pro</strong></div>
+  <div>📄 主素材：对话流水_完整合并.txt + Develop_Log</div>
+  <div>📅 2026-06-27</div>
+</div>
+
+<h2>事件清单</h2>
+<table>
+<tr><th>事件</th><th>名称</th><th>奶酪</th><th>无助</th><th>绕路</th></tr>
+<tr><td>E1</td><td>编译烧录 + CAN 调试 + OpenOCD</td><td>2</td><td>1</td><td>🟡</td></tr>
+<tr><td>E2</td><td>SBUS DMA 长度 bug</td><td>4</td><td>2</td><td>🔴</td></tr>
+<tr><td>E3</td><td>mode_switch SBUS 孤岛</td><td>3</td><td>1</td><td>🟢</td></tr>
+<tr><td>E4</td><td>机械臂清理 + arm_yaw bug</td><td>2</td><td>2</td><td>🟢</td></tr>
+<tr><td>E5</td><td>CAN 合并 + ID 冲突 + 拨码</td><td>7</td><td>3</td><td>🔴</td></tr>
+<tr><td>E6</td><td>四轮标定 + 电调损坏 + 拨码</td><td>5</td><td>3</td><td>🟡</td></tr>
+<tr><td>E7</td><td>右前 MaxOutput（最大绕路）</td><td>6</td><td>4→2</td><td>🔴🔴🔴</td></tr>
+<tr><td>E8</td><td>8IR UART→GPIO</td><td>5</td><td>4→2</td><td>🔴</td></tr>
+<tr><td>E9</td><td>VOFA + vx_ref + PID</td><td>5</td><td>3→2</td><td>🟡</td></tr>
+<tr><td>E10</td><td>HardFault × 2</td><td>4</td><td>4→1</td><td>🟢</td></tr>
+<tr><td>E11</td><td>PWM ANALOG + Prescaler</td><td>5</td><td>1</td><td>🟢</td></tr>
+<tr><td>E12</td><td>舵机标定 + yaw 保护</td><td>4</td><td>2</td><td>🟡</td></tr>
+<tr><td>E13</td><td>巡线 PID 振荡 + 权重</td><td>4</td><td>3</td><td>🟡</td></tr>
+<tr><td>E14</td><td>API 500 / 压缩 / GDB / 多终端</td><td>4</td><td>3</td><td>⚫</td></tr>
+</table>
+
+<h2>E1 · 编译烧录 + CAN + OpenOCD <span class="tag tag-green">2/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>OpenOCD 中文路径 + 反斜杠 + verify 失败 + CAN2 过滤器旧配置</td></tr>
+<tr><td>归因</td><td>100% 外部</td></tr>
+<tr><td>状态</td><td>心流，无助指数 1</td></tr>
+</table>
+<div class="signal">💡 H7 verify 不可靠 → 跳过。<br>OpenOCD 不支持中文路径 → .axf 复制到纯 ASCII 路径。</div>
+</div>
+
+<h2>E2 · SBUS DMA 长度 bug <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>DMA_DBUS_LEN=18（老代码），SBUS 帧 25 字节 → 恒不解析</td></tr>
+<tr><td>归因</td><td>外部（配置迁移遗留）</td></tr>
+<tr><td>关键证据</td><td>SBUS 真正根因：DMA 缓冲区配置错误（纯软件 bug）</td></tr>
+</table>
+<div class="signal">💡 DMA 数据为 0 → 先检查缓冲区长度 ≥ 协议帧长。</div>
+</div>
+
+<h2>E3 · mode_switch SBUS 孤岛 <span class="tag tag-yellow">3/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>remote_fusion 没有 SBUS 分支 + sw1 通道解码错</td></tr>
+<tr><td>用户决策</td><td>"有一点点破坏性也没关系，这代码就用这两天"</td></tr>
+</table>
+<div class="signal">💡 全项目搜索数据源消费者 → 可能根本没有代码消费它。</div>
+</div>
+
+<h2>E4 · 机械臂清理 + arm_yaw bug <span class="tag tag-green">2/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>严重 bug</td><td>arm_task.c 里 8 处用 yaw_motor 代替 arm_yaw_motor</td></tr>
+<tr><td>来源</td><td>学弟维护期引入 — 不是你的代码问题</td></tr>
+</table>
+<div class="signal">💡 不同电机变量名相似 → grep 扫描所有使用者。</div>
+</div>
+
+<h2 style="border-left-color:#ff7b72;">E5 · CAN 合并 + ID 冲突 + 拨码 <span class="tag tag-red">7/7 奶酪 ⚠️</span></h2>
+<div class="event-card" style="border-color:#ff7b72;">
+<table><tr><td>根因</td><td>两仓库分叉 + shoot_task ID 冲突 + 拨码错配</td></tr>
+</table>
+<div class="cheese-grid"><div class="cheese-item cheese-yes">🧀 代码不熟</div><div class="cheese-item cheese-yes">🧀 AI 多终端</div><div class="cheese-item cheese-yes">🧀 工具坑</div><div class="cheese-item cheese-yes">🧀 硬件故障</div><div class="cheese-item cheese-yes">🧀 信息缺失</div><div class="cheese-item cheese-yes">🧀 睡眠剥夺</div><div class="cheese-item cheese-yes">🧀 情绪堆积</div></div>
+<div class="signal">💡 两个仓库合并 → 选已验证的方案，不要混合。</div>
+</div>
+
+<h2>E6 · 四轮标定 + 电调损坏 <span class="tag tag-red">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>左后电调刹车损坏 + 右后电调损坏 + 拨码错配 — 全是硬件</td></tr>
+</table>
+<div class="signal">💡 镜像安装麦轮 → 右侧 target_rpm 取负号。<br>STOP 不减速 → 互换电调确认是否跟着电调走。</div>
+</div>
+
+<h2 style="border-left-color:#ff7b72;">E7 · 右前 MaxOutput（最大绕路）<span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card" style="border-color:#ff7b72;">
+<table><tr><td>根因</td><td>PID MaxOutput=500，但开环 2000 能转。改 8000 后正常</td></tr>
+<tr><td>关键证据</td><td>用户："PID 不可以排除，严查 PID 相关" — 正确纠正 AI 方向</td></tr>
+<tr><td>📌</td><td>"记录日志，这真是大弯路啊"</td></tr>
+</table>
+<div class="cheese-grid"><div class="cheese-item cheese-yes">🧀 代码不熟</div><div class="cheese-item cheese-yes">🧀 工具坑</div><div class="cheese-item cheese-yes">🧀 硬件故障</div><div class="cheese-item cheese-yes">🧀 信息缺失</div><div class="cheese-item cheese-yes">🧀 睡眠剥夺</div><div class="cheese-item cheese-yes">🧀 情绪堆积</div></div>
+<div class="signal">💡 <b>P0 最高优先级信号：</b>"开环能转闭环不动" → 第一反应查 PID MaxOutput。先看一眼参数再动螺丝刀。</div>
+</div>
+
+<h2>E8 · 8IR UART→GPIO <span class="tag tag-red">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"不查这个了，现在改成纯 GPIO" — 用户果断 pivot</td></tr></table>
+<div class="signal">💡 便宜模块文档不可信 → 降级 GPIO 直读，绕开协议层。</div>
+</div>
+
+<h2>E9 · VOFA + vx_ref <span class="tag tag-red">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"那能不能不看，直接开始巡线"（L6975）</td></tr></table>
+<div class="signal">💡 抄老代码值 → 先做量级验算。670×0.002=1.34 太小。</div>
+</div>
+
+<h2>E10 · HardFault × 2 <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>① DBG_HUART 指向未初始化的 huart2；② USART6 hdmarx 野指针</td></tr></table>
+<div class="signal">💡 HardFault → GDB 读 HFSR/CFSR/BFAR/PC/R0 — 30 秒定位。<br>UART 重分配 → 全局 grep 所有 huart 引用。</div>
+</div>
+
+<h2>E11 · PWM ANALOG + Prescaler <span class="tag tag-red">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>PA0/PA1/PA6 是 ANALOG（CubeMX 遗留）+ Prescaler 按 84MHz 算</td></tr>
+<tr><td>验证</td><td>PLL 正向计算 275MHz + 实测波形反向 275.4MHz — 双轨验证完全吻合</td></tr>
+</table>
+<div class="signal">💡 舵机有电但不动 → 先查 GPIO 是否 AF_PP。<br>PWM 周期不对 → F4→H7 时钟从 84→275MHz。</div>
+</div>
+
+<h2>E12 · 舵机标定 + yaw 保护 <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"这个测试模式不受保护管辖吗？？？" — 用户安全意识</td></tr></table>
+<div class="signal">💡 编码器读数矛盾 → 考虑环形回绕（0↔8191）。<br>测试模式 → 显式检查 ctrl_mode 保护。</div>
+</div>
+
+<h2>E13 · 巡线 PID 振荡 <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<div class="signal">💡 离散 position + 大 kp → 加 kd 阻尼是第一优先级。<br>直角弯丢线 → 保留最后一次有效的 position 方向继续转。</div>
+</div>
+
+<h2>E14 · 系统级 <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>问题</td><td>API 500 连环错误 / 频繁上下文压缩 / GDB 不可信用 / 多终端冲突</td></tr>
+<tr><td>归因</td><td>100% 外部 — 系统/环境/架构层面的问题</td></tr>
+</table>
+<div class="signal">💡 GDB 全零 → 先怀疑触发复位（全局性同时归零）。Keil 编译无变化 → 检查 compiling xxx.c 行。</div>
+</div>
+
+<hr>
+
+<h2>📈 跨事件串联</h2>
+
+<h3>归因漂移曲线</h3>
+<div class="curve">
+外部归因比例
+100% ┤ ○(E1) ○(E11) ○(E6) ○(E10)
+ 90% ┤ ○(E2) ○(E4) ○(E14)
+ 80% ┤ ○(E3) ○(E5) ○(E8) ○(E9-vx)
+ 70% ┤
+ 60% ┤                ●(E12)  ●(E7)
+ 50% ┤                ●(E13)
+ 40% ┤                    ●(E7-MaxOutput)
+ 30% ┤
+ 20% ┤
+ 10% ┤
+  0% └──────────────────────────────────→
+    06-22  →  06-23  →  06-24  →  06-25
+</div>
+
+<h3>无助感曲线</h3>
+<div class="curve">
+无助指数 5 ┤
+         │
+       4 ┤                  🔴(E10)
+         │            🔴(E7)  🔴(E8-UART)
+       3 ┤      🔴(E5) 🔴(E6)
+         │   🔴(E2)
+       2 ┤🔴(E3)                    🔴(E13)
+         │  ✅(E3)   ✅(E6)  ✅(E8) ✅(E10) ✅(E11)
+       1 ┤✅(E1)                        ✅(E12)
+         └─────────────────────────────────────→
+      06-22      06-23       06-24       06-25
+      
+      ✅ = 正反馈  🔴 = 事件结束无助指数
+</div>
+
+<h3>奶酪对齐统计</h3>
+<div class="bar-container"><span class="bar-label">代码不熟</span><div class="bar-track"><div class="bar-fill" style="width:71%;background:#ff7b72;">10/14</div></div><span class="bar-count">71%</span></div>
+<div class="bar-container"><span class="bar-label">AI多终端</span><div class="bar-track"><div class="bar-fill" style="width:21%;background:#58a6ff;">3/14</div></div><span class="bar-count">21%</span></div>
+<div class="bar-container"><span class="bar-label">工具不可靠</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:#d29922;">7/14</div></div><span class="bar-count">50%</span></div>
+<div class="bar-container"><span class="bar-label">硬件故障</span><div class="bar-track"><div class="bar-fill" style="width:36%;background:#d29922;">5/14</div></div><span class="bar-count">36%</span></div>
+<div class="bar-container"><span class="bar-label">信息缺失</span><div class="bar-track"><div class="bar-fill" style="width:79%;background:#ff7b72;">11/14</div></div><span class="bar-count">79%</span></div>
+<div class="bar-container"><span class="bar-label">睡眠剥夺</span><div class="bar-track"><div class="bar-fill" style="width:93%;background:#ff7b72;">13/14</div></div><span class="bar-count">93%</span></div>
+<div class="bar-container"><span class="bar-label">情绪堆积</span><div class="bar-track"><div class="bar-fill" style="width:64%;background:#d29922;">9/14</div></div><span class="bar-count">64%</span></div>
+
+<div class="summary-grid">
+<div class="summary-card"><div class="title">三层归因真相</div>
+<b>表面感受</b>："我做什么都没用，修好一个冒出一个"<br>
+<b>统计学真相</b>：14 个事件中 11 个根因是外部因素<br>
+<b>操作建议</b>：① 开环能转→查 MaxOutput ② 先软件后硬件 ③ 单 AI 终端
+</div>
+<div class="summary-card"><div class="title">人的韧性</div>
+即使在 E7 最疲劳的时刻，用户独立做出了正确判断：<br>
+"PID 不可以排除，严查 PID 相关"<br>
+— AI 在疲劳下也会犯错，用户的判断是不可替代的最后一道防线。
+</div>
+</div>
+
+<div class="footer">🤖 deepseek-v4-pro · 2026-06-27</div>
+</body></html>

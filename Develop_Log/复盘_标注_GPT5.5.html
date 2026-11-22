@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>复盘标注 — GPT5.5</title>
+<style>
+body{font-family:-apple-system,'Segoe UI','Noto Sans SC',sans-serif;background:#0d1117;color:#c9d1d9;max-width:900px;margin:0 auto;padding:20px;line-height:1.7}
+h1{font-size:1.8em;color:#58a6ff;border-bottom:2px solid #21262d;padding-bottom:10px}
+h2{font-size:1.3em;color:#f0883e;margin-top:30px;padding:8px 12px;background:#161b22;border-left:4px solid #f0883e;border-radius:4px}
+h3{font-size:1.1em;color:#79c0ff;margin-top:24px}
+.meta{color:#8b949e;font-size:0.9em;padding:12px;background:#161b22;border-radius:6px;margin-bottom:20px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.8em;margin-right:4px}
+.tag-green{background:#1b3a1b;color:#7ee787}.tag-yellow{background:#3a2f1b;color:#d29922}.tag-red{background:#3a1b1b;color:#ff7b72}
+.event-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:16px 20px;margin:16px 0}
+.event-card table{width:100%;border-collapse:collapse;margin:8px 0}
+.event-card td{border:1px solid #30363d;padding:5px 10px;font-size:0.9em;vertical-align:top}
+.event-card td:first-child{color:#8b949e;width:120px;white-space:nowrap}
+.cheese-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0}
+.cheese-item{padding:4px 8px;background:#0d1117;border-radius:4px;font-size:0.88em}
+.cheese-yes{border-left:3px solid #ff7b72}.cheese-no{border-left:3px solid #21262d;color:#484f58}
+.cheese-mid{border-left:3px solid #d29922}
+.curve{font-family:'Courier New',monospace;background:#0d1117;padding:12px;border-radius:6px;line-height:1.4;font-size:0.82em;white-space:pre;overflow-x:auto;color:#8b949e}
+.signal{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:0.9em}
+.signal b{color:#f0883e}
+.footer{margin-top:40px;padding:16px;background:#161b22;border-radius:8px;text-align:center;color:#8b949e;font-size:0.9em}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+td,th{border:1px solid #30363d;padding:5px 10px;font-size:0.9em}
+th{background:#161b22;color:#8b949e}
+.bar-container{display:flex;align-items:center;margin:3px 0}
+.bar-label{width:100px;font-size:0.85em;color:#8b949e;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:#0d1117;border-radius:4px;overflow:hidden;margin:0 8px}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:0.78em}
+.bar-count{width:30px;font-size:0.85em;color:#8b949e;text-align:right}
+</style></head>
+<body>
+
+<h1>📋 复盘标注 — GPT5.5</h1>
+<div class="meta">
+  <div>🤖 <strong>GPT5.5</strong></div>
+  <div>📄 主素材：对话流水_完整合并.txt（引用行号 Lxxxx）</div>
+  <div>📅 2026-06-27</div>
+</div>
+
+<h2>事件索引</h2>
+<table>
+<tr><th>事件</th><th>名称</th><th>奶酪</th><th>无助</th></tr>
+<tr><td>E0</td><td>多终端/工具链/nanoDLA 前置</td><td>6</td><td>3</td></tr>
+<tr><td>E1</td><td>CAN 分支合并与编译/烧录验证</td><td>6</td><td>1</td></tr>
+<tr><td>E2</td><td>SBUS 解析器写回缺失 + DMA 长度错误</td><td>6</td><td>2</td></tr>
+<tr><td>E3</td><td>mode_switch_task SBUS 孤岛 + 解锁手势</td><td>5</td><td>1</td></tr>
+<tr><td>E4</td><td>底盘速度闭环 + PROTECT_MODE 保护</td><td>4</td><td>1</td></tr>
+<tr><td>E5</td><td>CAN/供电假故障与接触不良</td><td>6</td><td>3</td></tr>
+<tr><td>E6</td><td>右前轮闭环不动/MaxOutput 绕路</td><td>7</td><td>4</td></tr>
+<tr><td>E7</td><td>8IR 从 UART/DMA 改 GPIO</td><td>6</td><td>2</td></tr>
+<tr><td>E8</td><td>Keil/GDB/OpenOCD 干扰与 CPU halt</td><td>6</td><td>4</td></tr>
+<tr><td>E9</td><td>HardFault 1：dbg_print→废弃U2</td><td>6</td><td>4</td></tr>
+<tr><td>E10</td><td>HardFault 2：USART6 RX DMA 未配置</td><td>6</td><td>3</td></tr>
+<tr><td>E11</td><td>VOFA 输出异常与绕过</td><td>5</td><td>3</td></tr>
+<tr><td>E12</td><td>巡线速度/极性/比例/PID 振荡</td><td>6</td><td>3</td></tr>
+<tr><td>E13</td><td>机械臂 yaw 保护/限位/测试模式</td><td>6</td><td>3</td></tr>
+<tr><td>E14</td><td>舵机 PWM：ANALOG + Prescaler</td><td>6</td><td>2</td></tr>
+</table>
+
+<h2>E0 · 多终端/工具链/nanoDLA 前置 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>时间</td><td>06-22 00:52 ~ 06-24</td></tr>
+<tr><td>根因</td><td>工具链、仓库、AI 终端状态没有统一基线</td></tr>
+<tr><td>归因</td><td>外部为主 — 工具/驱动/交接流程/仓库分叉</td></tr>
+<tr><td>关键原文</td><td>"今晚都要通宵了还管那些！"（L1612）</td></tr>
+</table>
+<div class="signal">💡 <b>信号：</b>先冻结"唯一可信 HEAD + 唯一 AI 终端 + 可复现烧录路径"，再做功能。</div>
+</div>
+
+<h2>E1 · CAN 分支合并 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>uint8_t CAN ID 截断 + Keil 工程重复文件遗留</td></tr>
+<tr><td>归因</td><td>混合：CAN ID 截断是代码缺陷；重复工程项是配置债</td></tr>
+<tr><td>📌</td><td>"四路增量几乎一致，没有谁掉线或卡死"（L1488）— 强正反馈</td></tr>
+</table>
+<div class="signal">💡 合并后编译爆链接错误 → 先定位到工程项/占位函数，不把"时间相邻"当"因果相连"。</div>
+</div>
+
+<h2>E2 · SBUS DMA 长度错误 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>两层软件bug：解析后没写回 rc_frame->data + DMA 缓冲区 18&lt;25</td></tr>
+<tr><td>关键原文</td><td>"接收机灯是紫色不是绿色"（L1978），"SBUS标准是 100000"（L2028）</td></tr>
+</table>
+<div class="signal">💡 遥控计数永远0 → 先查 DMA 长度是否覆盖完整协议帧、解析函数是否写回全局数据。</div>
+</div>
+
+<h2>E3 · SBUS 孤岛 + 解锁手势 <span class="tag tag-yellow">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>remote_fusion 没有 SBUS 分支；sw1 实际在 ch6 不在 ch5</td></tr>
+<tr><td>📌</td><td>"内八手势...lock=1，解锁成功；...mode=1"（L2593~L2594）— 强正反馈</td></tr>
+</table>
+<div class="signal">💡 输入计数正常但模式不变 → 把"接收层→融合层→模式层→执行层"分层验证。</div>
+</div>
+
+<h2>E4 · 底盘速度闭环 <span class="tag tag-yellow">4/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>chassis_motor_pid[4] 声明了但没有调用 pid_calc</td></tr></table>
+</div>
+
+<h2 style="border-left-color:#ff7b72;">E5 · CAN/供电假故障 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card" style="border-color:#ff7b72;">
+<table><tr><td>根因</td><td>板子发生瞬断/重启；GH1.25/BTB 接触不良是怀疑，未隔离验证</td></tr>
+<tr><td>📌</td><td>"CAN1/CAN2/IMU/SBUS 是不是真的有问题，现在没法用之前那些读数下结论了"（L1916）</td></tr>
+</table>
+<div class="signal">💡 多条总线同时归零 → 先确认 MCU 是否持续供电运行；全局归零优先按"重启/断电"处理。</div>
+</div>
+
+<h2 style="border-left-color:#ff7b72;">E6 · 右前轮 MaxOutput 绕路 <span class="tag tag-red">7/7 奶酪 ⚠️</span></h2>
+<div class="event-card" style="border-color:#ff7b72;">
+<table><tr><td>根因</td><td>速度环 PID MaxOutput=500 太小（500→8000）</td></tr>
+<tr><td>归因</td><td>当时偏外部硬件 → 实际内部参数。后期才纠正</td></tr>
+<tr><td>📌</td><td>"开环能转闭环不动" 这个强证据被疲劳和硬件坏件经验淹没了</td></tr>
+</table>
+<div class="cheese-grid"><div class="cheese-item cheese-yes">🧀 代码不熟</div><div class="cheese-item cheese-mid">🧀 AI多终端</div><div class="cheese-item cheese-mid">🧀 工具坑</div><div class="cheese-item cheese-yes">🧀 硬件故障</div><div class="cheese-item cheese-yes">🧀 信息缺失</div><div class="cheese-item cheese-yes">🧀 睡眠剥夺</div><div class="cheese-item cheese-yes">🧀 情绪堆积</div></div>
+<div class="signal">💡 <b>信号：</b>开环直发能转，恢复闭环不转 → 先查 PID maxout，再碰螺丝刀。</div>
+</div>
+
+<h2>E7 · 8IR UART→GPIO <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"数值变了！"（L5875），"GPIO方案已经验证工作正常"（L5884）</td></tr></table>
+<div class="signal">💡 传感器协议链路长 → 如果物理量本质是数字 IO，优先 GPIO 直读验证。</div>
+</div>
+
+<h2>E8 · CPU halt（工具事故）<span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>AI taskkill UV4.exe 杀掉了用户的 Keil GUI，CPU 留在 halt 状态</td></tr>
+<tr><td>📌</td><td>用户："代码有大 bug!!! 记录日志"（L6308）</td></tr>
+</table>
+<div class="signal">💡 DMA 有数据但任务不动 → 先查 CPU 是否 halted。任何杀 IDE/attach GDB 都可能改变目标运行态。</div>
+</div>
+
+<h2>E9 · HardFault 1：dbg_print→U2 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>U2 被 GPIO 占用但 DBG_HUART 仍指向 huart2</td></tr></table>
+<div class="signal">💡 每次 UART 重分配后全局 grep huartX、宏、IRQ、DMA、dbg_print。</div>
+</div>
+
+<h2>E10 · HardFault 2：USART6 RX DMA <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>huart6.hdmarx 野指针 — CubeMX 只配了 TX DMA 没配 RX DMA</td></tr>
+<tr><td>📌</td><td>"根因找到了，证据确凿"（L6736），修复后"Verified OK"（L6830）</td></tr>
+</table>
+<div class="signal">💡 HardFault 修一次仍复现 → 立刻读 SCB Fault 寄存器、BFAR、异常栈帧 PC/LR。</div>
+</div>
+
+<h2>E11 · VOFA 异常（止损）<span class="tag tag-yellow">5/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"那能不能不看，直接开始巡线"（L6976）— 正确止损</td></tr></table>
+<div class="signal">💡 调试工具不通 → 设 30 分钟止损线，直接测主功能。</div>
+</div>
+
+<h2>E12 · 巡线速度/极性/PID <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>vx_ref 差 1500 倍 + 极性反了 + kd 与 kp 符号不一致</td></tr>
+<tr><td>📌</td><td>"不动，你没给x y速度"（L6991）"很抖，yaw轴来回抖动"（L7231）</td></tr>
+</table>
+<div class="signal">💡 复制控制常数后不动/抖 → 先对齐量纲和限幅；kp/kd 符号必须同向。</div>
+</div>
+
+<h2>E13 · 机械臂 yaw 保护 <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>📌</td><td>"先把yaw的PID置零...没时间解算了"（L7563）→ "PID一直都要算...双重保险"（L7626）</td></tr></table>
+<div class="signal">💡 任何 continue/return 都要检查是否绕过安全输出清零。</div>
+</div>
+
+<h2>E14 · 舵机 PWM ANALOG + Prescaler <span class="tag tag-red">6/7 奶酪</span></h2>
+<div class="event-card">
+<table><tr><td>根因</td><td>PA0/PA1/PA6 被 CubeMX 配成 ANALOG + Prescaler 按 84MHz 算但实际 275MHz</td></tr>
+<tr><td>📌</td><td>"找到真正的根因了"（L7646）"周期20ms...确认Prescaler生效"（L7749~L7754）</td></tr>
+</table>
+<div class="signal">💡 舵机有电 CCR 在变但不动 → 先查 GPIO 是否 AF_PP。PWM 周期不对 → 实测反推时钟。</div>
+</div>
+
+<h2>📈 跨事件串联</h2>
+
+<h3>归因漂移</h3>
+<div class="curve">
+外部占比
+100% |E5●     E8●
+ 90% |E0●
+ 80% |                  E14●
+ 70% |    E1●
+ 60% |              E11●
+ 50% |        E7●   E10●
+ 40% |   E3●    E9●    E13●
+ 30% | E2●  E6●
+ 20% |   E4●          E12●
+ 10% |
+  0% +--------------------------------
+     E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 E11 E12 E13 E14
+</div>
+
+<h3>无助感曲线</h3>
+<div class="curve">
+无助指数 5 |
+        4 |          E6●    E8● E9●
+        3 |E0●         E5●     E10● E11● E12● E13●
+        2 |    E2●        E6✓ E7●        E14●
+        1 | E1✓ E3✓ E4✓
+        0 +---------------------------------------
+          E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 E11 E12 E13 E14
+
+✓ = 强正反馈；● = 事件结束状态
+</div>
+
+<h3>奶酪统计</h3>
+<div class="bar-container"><span class="bar-label">代码不熟</span><div class="bar-track"><div class="bar-fill" style="width:93%;background:#ff7b72;">14/15</div></div><span class="bar-count">93%</span></div>
+<div class="bar-container"><span class="bar-label">AI多终端</span><div class="bar-track"><div class="bar-fill" style="width:73%;background:#d29922;">11/15</div></div><span class="bar-count">73%</span></div>
+<div class="bar-container"><span class="bar-label">工具不可靠</span><div class="bar-track"><div class="bar-fill" style="width:93%;background:#ff7b72;">14/15</div></div><span class="bar-count">93%</span></div>
+<div class="bar-container"><span class="bar-label">信息缺失</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#ff7b72;">15/15</div></div><span class="bar-count">100%</span></div>
+<div class="bar-container"><span class="bar-label">睡眠剥夺</span><div class="bar-track"><div class="bar-fill" style="width:93%;background:#ff7b72;">14/15</div></div><span class="bar-count">93%</span></div>
+
+<div class="footer">🤖 GPT5.5 · 2026-06-27</div>
+</body></html>
