@@ -85,7 +85,7 @@ def main():
 
     print("\n========== 结论 ==========")
     if verdict:
-        print(f"★ 是串口总线舵机！{verdict[0]} @ {verdict[0]} 收到 {verdict[2]}")
+        print(f"★ 是串口总线舵机！{verdict[0]} @ {verdict[1]} 收到 {verdict[2]}")
         print("  下一步：告知 agent 激活 prot_xb_servo（UART4@PC10），arm_task 切串口路径")
     else:
         print("× 所有串口/波特率无总线舵机应答。")
