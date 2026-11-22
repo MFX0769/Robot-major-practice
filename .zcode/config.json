@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "enabled": true,
+    "events": {
+      "SessionStart": [
+        {
+          "matcher": "startup|resume|clear|compact",
+          "hooks": [
+            {
+              "type": "process",
+              "command": "python",
+              "args": ["C:/Users/Tommy0769/.zcode/hooks/workflow_hooks.py", "session-start"],
+              "timeoutMs": 8000,
+              "statusMessage": "workflow: inject session context"
+            }
+          ]
+        }
+      ],
+      "PreToolUse": [
+        {
+          "matcher": "Write|Edit|Bash",
+          "hooks": [
+            {
+              "type": "process",
+              "command": "python",
+              "args": ["C:/Users/Tommy0769/.zcode/hooks/workflow_hooks.py", "pre-tool-use"],
+              "timeoutMs": 5000,
+              "statusMessage": "workflow: guard check"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

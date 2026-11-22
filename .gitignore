@@ -64,3 +64,6 @@ hardware/*
 
 MDK-ARM/.vscode/c_cpp_properties.json
 
+
+# AI Harness 包带来的 develop_log 习惯结构（本地全量，不进 git：内容为 rc_remote/Kamingo 工程历史，避免误导本车 AI）
+develop_log/
