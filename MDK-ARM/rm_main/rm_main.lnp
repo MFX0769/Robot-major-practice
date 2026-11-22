@@ -84,6 +84,7 @@
 "rm_main\prot_sbus.o"
 "rm_main\prot_8irtraking.o"
 "rm_main\prot_servo.o"
+"rm_main\prot_xb_servo.o"
 "rm_main\can_comm.o"
 "rm_main\usart_comm.o"
 "rm_main\i2c_comm.o"

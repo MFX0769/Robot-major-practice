@@ -1132,6 +1132,16 @@
               <FileType>5</FileType>
               <FilePath>..\Protocol\prot_servo.h</FilePath>
             </File>
+            <File>
+              <FileName>prot_xb_servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\prot_xb_servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>prot_xb_servo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\prot_xb_servo.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -112,22 +112,28 @@ class STM32H7Tool:
         
         self.log(f"使用 Keil: {keil_path}")
         
-        # 构建命令
+        # 构建命令：UV4 -r <工程> -j0 -o <构建日志>
+        # 注意：-o 后面必须跟日志文件路径而不是工程路径，且工程必须作为位置参数传入，
+        # 否则 UV4 拿不到工程文件，会卡在弹窗上
+        build_log = KEIL_OUTPUT.parent / "build_output.log"
         cmd = [
             keil_path,
             "-r",  # 重新编译
-            "-o", str(KEIL_PROJECT),
-            "-j0"  # 不显示进度对话框
+            str(KEIL_PROJECT),
+            "-j0",  # 不显示进度对话框
+            "-o", str(build_log),
         ]
-        
+
         result = self.run_command(cmd, check=False)
-        
-        # 检查编译结果
-        if KEIL_OUTPUT.exists():
+
+        # 检查编译结果：以 UV4 退出码和构建日志为准（.axf 是历史产物，不能作为依据）
+        # UV4 退出码：0=无警告无错误 1=仅警告 2+=有错误
+        if result is not None and result.returncode in (0, 1) and build_log.exists() and "0 Error(s)" in build_log.read_text(errors="ignore"):
             self.log(f"编译成功: {KEIL_OUTPUT}")
             return True
         else:
-            self.log("编译失败：未找到输出文件", "ERROR")
+            rc = result.returncode if result is not None else "N/A"
+            self.log(f"编译失败: UV4 退出码 {rc}，详见 {build_log}", "ERROR")
             return False
     
     def flash_openocd(self):

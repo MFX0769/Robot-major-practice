@@ -1,258 +1,27 @@
+/**
+  * @file    debug_task.c
+  * @brief   VOFA+ Ê¾²¨µ÷ÊÔÍ¨µÀ£¨USART6£©
+  * @note    2026-10-25 ´óÇåÏ´£ºÉ¾³ý¾É±ÈÈü³µ£¨ÔÆÌ¨/Ä¦²ÁÂÖ/·¢Éä»ú¹¹/ÊÓ¾õ£©µÄÊ¾²¨Í¨µÀ
+  *          case 1~10£¬½ö±£Áô¿ÎÉèÐ¡³µÔÚÓÃµÄ case 11/12/13¡£ÀúÊ·Í¨µÀÔÚ git ÀúÊ·Àï¡£
+  */
 #include "debug_task.h"
 #include "config.h"
 #include "cmsis_os.h"
-#include "usart.h"
-#include "DataScope_DP.h"
-#include "status_task.h"
-#include "prot_rm_judge.h"
 #include "data_log.h"
-/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ */
-#include "math.h"
-#include "pid.h"
-#include "prot_T_imu.h"
-#include "gimbal_task.h"
-#include "prot_vision.h"
-#include "prot_vision.h"
-
-#include "prot_TriggerMotor.h"
-#include "prot_8irtraking.h"
-#include "shoot_task.h"
-#include "bsp_can.h"
-#include "pid.h"
-#include "gimbal_task.h"
-#include "status_task.h"
-#include "remote_msg.h"
-#include "mode_switch_task.h"
-#include "control_def.h"
-#include "shoot_task.h"
-#include "string.h"
-#include "remote_msg.h"
-#include "prot_dm_motor.h"
 #include "prot_rm_motor.h"
-#include "prot_remote_fusion.h"
 #include "prot_sbus.h"
-//#define DEBUG_TASK_ENABLE
+#include "prot_8irtraking.h"
 
-//#define ABS(x) ((x>0)? (x): (-(x)))
-
-//ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½
-extern pid_t pid_trigger_ecd;
-extern pid_t pid_trigger_spd;
-
-extern float* last_imu_yaw_data;
-extern float std;
-	
-float float_test;
 extern dji_motor_t chassis_2006[4];
-/* ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+
+/* ²¨ÐÎÍ¨µÀÑ¡Ôñ£º11=µ×ÅÌµç»úecd+SBUSÇ°4Í¨µÀ 12=SBUSÈ«²¿Í¨µÀ 13=Ñ²ÏßÎ»ÖÃ */
 uint8_t debug_wave = 13;
 
+/* Ê¾²¨Êý¾Ý´ò°ü£¨ÓÉ log_scope_data_output µ÷ÓÃ£© */
 void log_scope_data_pkg(void)
 {
     switch (debug_wave) {
-        case 1: { /* ï¿½ï¿½ï¿½ï¿½ */
-//					log_scope_get_data(shoot.stir_mode);
-
-
- 					log_scope_get_data(shoot.pid.trigger_ecd_ref);
-					log_scope_get_data(shoot.pid.trigger_ecd_fdb);
-//					log_scope_get_data(pid_trigger_ecd.pos_out);
-
-//					log_scope_get_data(shoot.frequency_cnt);
-					log_scope_get_data(trigger_motor.receive_cnt);
-					log_scope_get_data(shoot.pid.trigger_spd_ref);
-					log_scope_get_data(shoot.pid.trigger_spd_fdb);
-					log_scope_get_data(pid_trigger_spd.pos_out);
-					
-					log_scope_get_data(trigger_motor.tx_current);
-//					log_scope_get_data(back_flag_tri);
-//					log_scope_get_data(back_flag_cnt);
-//					log_scope_get_data(back_flag);
-//				log_scope_get_data(err_time);
-
-            break;
-        }
-        case 2: { /* ï¿½ï¿½Ì¨PIT PID IMU */
-
-						
-//			          log_scope_get_data(imu_data.pitch);
-					  log_scope_get_data(gimbal.pit_angle.ref);
-            log_scope_get_data(gimbal.pit_angle.fdb);
-				 
-            log_scope_get_data(gimbal.pit_spd.ref);
-            log_scope_get_data(gimbal.pit_spd.fdb);
-////////					
-			log_scope_get_data(dm3507_motor.t_rotor);		
-            log_scope_get_data(dm3507_motor.t_ref);
-            log_scope_get_data(dm3507_motor.err_code);
-								  
-            log_scope_get_data(dm3507_motor.send_cnt);
-            log_scope_get_data(dm3507_motor.receive_cnt);
-						
-
-            break;
-        }
-        case 3: { /* ï¿½ï¿½Ì¨YAW PID IMU*/
-////					 	log_scope_get_data(vision.target_yaw_angle);
-////					 	log_scope_get_data(yaw_err);
-////            log_scope_get_data(imu_data.yaw);
-//			
-//			
-//			log_scope_get_data(gimbal.gimbal_limit.yaw_angle_max);
-//            log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
-//					
-            log_scope_get_data(gimbal.yaw_angle.ref);
-            log_scope_get_data(gimbal.yaw_angle.fdb);
-////            log_scope_get_data(moto_yaw.ecd);
-//					
-            
-////            log_scope_get_data(gimbal.yaw_angle.pid.dout);
-////		
-//			log_scope_get_data(yaw_motor.tx_current);
-            log_scope_get_data(gimbal.yaw_spd.ref);
-            log_scope_get_data(gimbal.yaw_spd.fdb);
-//			log_scope_get_data(gimbal.yaw_spd.pid.pout);
-//			log_scope_get_data(vision.target_yaw_angle);
-//			log_scope_get_data(dm3507_motor.receive_cnt);
-//			log_scope_get_data(dm3507_motor.err_code);
-//								  
-//            log_scope_get_data(gimbal.pit_angle.fdb);
-//			log_scope_get_data(dm3507_motor.t_rotor);		
-//            log_scope_get_data(dm3507_motor.t_ref);
-						
-//            log_scope_get_data(yaw_motor.ecd);
-////            log_scope_get_data(gimbal.yaw_spd.pid.pos_out);
-////			log_scope_get_data(D_AGL_FeedForward_yaw.Out);
-
-////            log_scope_get_data(imucnt);
-//////					
-////			log_scope_get_data(yaw_motor.send_cnt);
-////			log_scope_get_data(yaw_can_receive_cnt);
-////					
-////					log_scope_get_data(gimbal.pit_angle.ref);
-////					log_scope_get_data(gimbal.pit_angle.fdb);
-////						
-////					log_scope_get_data(gimbal.pit_spd.ref);
-////					log_scope_get_data(gimbal.pit_spd.fdb);
-////									
-////					  log_scope_get_data(gimbal.gimbal_limit.yaw_angle_max);
-////			      log_scope_get_data(gimbal.gimbal_limit.yaw_angle_min);
-            break;
-        }
-		case 4: { 
-//					log_scope_get_data(vision.target_pit_angle);
-						log_scope_get_data(gimbal.pit_angle.ref);
-			log_scope_get_data(gimbal.pit_angle.fdb);
-			log_scope_get_data(gimbal.pit_spd.ref);
-            log_scope_get_data(gimbal.pit_spd.fdb);
-//			log_scope_get_data(vision.target_yaw_angle);
-			            log_scope_get_data(gimbal.yaw_angle.ref);
-
-            log_scope_get_data(gimbal.yaw_angle.fdb);
-
-						log_scope_get_data(dm3507_motor.t_rotor);		
-					log_scope_get_data(vision.rx[0].data.fire);
-			log_scope_get_data(vision.shoot_enable);
-            break;
-        }
-
-        case 5: { /* Ä¦ï¿½ï¿½ï¿½ï¿½ */
- 
-			log_scope_get_data(fric[0].spd_ref);
-            log_scope_get_data(fric[1].spd_ref);
-					
-			log_scope_get_data(fric_motor[0].speed_rpm);
-            log_scope_get_data(fric_motor[1].speed_rpm);    
-			log_scope_get_data(fric_can_recive_cnt);
-            break;
-				}
-        case 6: { /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-            log_scope_get_data(imu_data.pitch);
-            log_scope_get_data(imu_data.yaw);
-            log_scope_get_data(imu_data.wy);
-            log_scope_get_data(imu_data.wz);
-					
-            log_scope_get_data(imu_data.wz);
-			log_scope_get_data(imu_data.real_yaw);
-            break;
-        }
-		case 7: { /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-					
-            log_scope_get_data(shoot.barrel.heat);   //ï¿½ï¿½Ç°Ç¹ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½
-            log_scope_get_data(shoot.barrel.heat_remain);   //ï¿½ï¿½Ç°Ç¹ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)Ê£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			log_scope_get_data(back_flag_tri);
-			log_scope_get_data(back_flag_cnt);
-			log_scope_get_data(back_flag);
-			log_scope_get_data(err_time);
-			log_scope_get_data(dm3507_motor.err_code);	
-            break;
-        }
-//        case 8: { /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡*/
-//		  log_scope_get_data(Shoot_Data.bullet_speed);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½   
-//                log_scope_get_data(Shoot_Data.bullet_freq);
-//			     log_scope_get_data(Shoot_Data.bullet_speed);
-//			 log_scope_get_data(0.0);
-//			log_scope_get_data(imu_data.pitch);
-////			log_scope_get_data(-vision.pit_angle_error);
-////			log_scope_get_data(-vision.yaw_angle_error);
-//			log_scope_get_data(imu_data.yaw);
-//			log_scope_get_data(gimbal.pid.yaw_angle_ref);
-//			log_scope_get_data(gimbal.gimbal_limit.pitch_angle_max);
-//			log_scope_get_data(gimbal.gimbal_limit.pitch_angle_min);
-//					log_scope_get_data(moto_pit_4005.iq);
-//					log_scope_get_data(moto_pit_4005.temperature);
-//					            log_scope_get_data(moto_pit_4005.toq_i_ref);
-
-////      log_scope_get_data(gimbal.pid.yaw_angle_ref);
-//      log_scope_get_data(gimbal.pit_angle.ref);
-//      log_scope_get_data(gimbal.pid.pit_angle_fdb);
-//      log_scope_get_data(rc.ch2);
-//      log_scope_get_data(ABS(gimbal.pid.yaw_angle_fdb - vsn_drive.target_yaw_angle));
-//      log_scope_get_data(vsn_drive.yaw_min_err);
-//      log_scope_get_data(vsn_drive.shoot_enable);//2025ï¿½ï¿½4ï¿½ï¿½23ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½Ð¹Øµï¿½get dataï¿½ï¿½ï¿½áµ¼ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½Ç±ßµï¿½Ö¡ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½333ï¿½Â½ï¿½ï¿½ï¿½325 ï¿½ï¿½ 250ï¿½ï¿½
-//					
-//					
-//				log_scope_get_data(moto_pit_4005.total_encoder*360/655350);
-//			log_scope_get_data(imu_data.pitch);
-//			log_scope_get_data((float)Rad_conver_Angle(moto_pit.pos));
-//			log_scope_get_data(0.0f);
-//			log_scope_get_data(rc.ch1);
-//			log_scope_get_data(rc.ch2);
-//            break;
-//        }
-				
-				       case 9: { /*imu*/
-		  log_scope_get_data(remote_fusion.channel.ch1);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½
-		  log_scope_get_data(vtm_rc.cns);//ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½
-		log_scope_get_data(dm3507_motor.receive_cnt);
-	         log_scope_get_data(dm3507_motor.err_code);
-			log_scope_get_data(dr16_online_cnt);
-		log_scope_get_data(imu_data.pitch);
-
-            break;
-        }
-							 
-		case 10: { /*imu*/
-//		  log_scope_get_data(rc.ch1);
-//		  log_scope_get_data(rc.ch2);
-//		  log_scope_get_data(rc.ch3);
-//		  log_scope_get_data(rc.ch4);
-			log_scope_get_data(imu_data.pitch);
-			log_scope_get_data(imu_data.yaw);
-		  log_scope_get_data(yaw_err);
-		  log_scope_get_data(gimbal.yaw_angle.ref);
-		  log_scope_get_data(gimbal.yaw_angle.fdb);
-//			 log_scope_get_data(remote_online.DT7_online_cnt);
-//			 log_scope_get_data(remote_online.DT7_last_online_cnt);
-//												 
-//				log_scope_get_data(lock_flag);
-//								log_scope_get_data(fric_can_receive_cnt);
-//								log_scope_get_data(triger_can_receive_cnt);
-            break;
-        }
-							 
-				
-        case 11: { /* åº•ç›˜ç”µæœºecd + SBUSå››é€šé“ï¼Œå‚è€ƒD:\ä¾§case11(ç”µæœº)å¹¶åŠ ä¸Šé¥æŽ§å™¨ */
+        case 11: { /* µ×ÅÌµç»úecd + SBUSËÄÍ¨µÀ */
             log_scope_get_data(chassis_2006[0].ecd);
             log_scope_get_data(chassis_2006[1].ecd);
             log_scope_get_data(chassis_2006[2].ecd);
@@ -263,7 +32,7 @@ void log_scope_data_pkg(void)
             log_scope_get_data(wbus_rc.data.ch4);
             break;
         }
-        case 12: { /* ä¸“çœ‹SBUSé¥æŽ§å™¨é€šé“ */
+        case 12: { /* SBUSÒ£¿ØÆ÷È«²¿Í¨µÀ */
             log_scope_get_data(wbus_rc.data.ch1);
             log_scope_get_data(wbus_rc.data.ch2);
             log_scope_get_data(wbus_rc.data.ch3);
@@ -277,7 +46,7 @@ void log_scope_data_pkg(void)
             log_scope_get_data(wbus_rx_freq);
             break;
         }
-        case 13: { /* å·¡çº¿æ¨¡å—ç®—å‡ºæ¥çš„çº¿ä½ç½® */
+        case 13: { /* Ñ²ÏßÄ£¿éËã³öÀ´µÄÏßÎ»ÖÃ */
             const prot_8irtraking_data_t *line_data = prot_8irtraking_get_data();
             log_scope_get_data(line_data->state);
             log_scope_get_data(line_data->position);
@@ -289,7 +58,7 @@ void log_scope_data_pkg(void)
     }
 }
 
-/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+/* VOFA+ Êý¾Ý·¢ËÍÈÎÎñ */
 void debug_task(void const* argu)
 {
     uint32_t thread_wake_time = osKernelSysTick();
@@ -299,7 +68,7 @@ void debug_task(void const* argu)
 #if DEBUG_VOFA_ENABLE
         log_scope_data_output();
 #endif
-            
+
         osDelayUntil(&thread_wake_time, 5);
     }
 }
