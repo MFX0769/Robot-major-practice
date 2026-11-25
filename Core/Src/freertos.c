@@ -35,6 +35,7 @@
 #include "arm_task.h"
 #include "chassis_task.h"
 #include "bsp_imu_bridge.h"
+#include "dbg_print.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -163,15 +164,15 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of KeyTask */
-  osThreadStaticDef(KeyTask, KeyTask_Entry, osPriorityRealtime, 0, 128, KeyTaskBuffer, &KeyTaskControlBlock);
+  osThreadStaticDef(KeyTask, KeyTask_Entry, osPriorityLow, 0, 256, KeyTaskBuffer, &KeyTaskControlBlock);
   KeyTaskHandle = osThreadCreate(osThread(KeyTask), NULL);
 
   /* definition and creation of LcdTask */
-  osThreadStaticDef(LcdTask, LcdTask_Entry, osPriorityNormal, 0, 256, LcdTaskBuffer, &LcdTaskControlBlock);
+  osThreadStaticDef(LcdTask, LcdTask_Entry, osPriorityLow, 0, 256, LcdTaskBuffer, &LcdTaskControlBlock);
   LcdTaskHandle = osThreadCreate(osThread(LcdTask), NULL);
 
   /* definition and creation of ImuTask */
@@ -186,20 +187,18 @@ void MX_FREERTOS_Init(void) {
   can1_transmit_task_t = osThreadCreate(osThread(can1Task), NULL);
   osThreadDef(can2Task, Task_CAN2Transmit, osPriorityHigh, 0, 256);
   can2_transmit_task_t = osThreadCreate(osThread(can2Task), NULL);
-  osThreadDef(usbTask, Task_USB_Transmit, osPriorityHigh, 0, 128);
+  osThreadDef(usbTask, Task_USB_Transmit, osPriorityHigh, 0, 256);
   usb_task_t = osThreadCreate(osThread(usbTask), NULL);
-  osThreadDef(visionsendTask, Task_Vision_Send, osPriorityAboveNormal, 0, 128);
-  vision_send_task_t = osThreadCreate(osThread(visionsendTask), NULL);
   osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
   mode_sw_task_t = osThreadCreate(osThread(modeswTask), NULL);
-  osThreadDef(uiTask, ui_task, osPriorityNormal, 0, 256);
-  ui_task_t = osThreadCreate(osThread(uiTask), NULL);
-  osThreadDef(statusTask, status_task, osPriorityNormal, 0, 128);
+  osThreadDef(statusTask, status_task, osPriorityNormal, 0, 256);
   status_task_t = osThreadCreate(osThread(statusTask), NULL);
-  osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 512);
+  osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 768);
   arm_task_t = osThreadCreate(osThread(armTask), NULL);
   osThreadDef(chassisTask, chassis_task, osPriorityNormal, 0, 256);
   chassis_task_t = osThreadCreate(osThread(chassisTask), NULL);
+  osThreadDef(dbgTask, dbg_task, osPriorityLow, 0, 256);
+  (void)osThreadCreate(osThread(dbgTask), NULL);
   /* USER CODE END RTOS_THREADS */
 
 }

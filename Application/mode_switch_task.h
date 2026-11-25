@@ -33,4 +33,9 @@ extern ctrl_mode_e ctrl_mode;
 extern uint8_t gimbal_ctrl_mode;
 extern uint8_t RC_FAIL_KEYBOARD_FLAG;
 
+/* 无遥控器时的显式模式覆盖（示教用），clear 后回 PROTECT */
+void mode_user_set(ctrl_mode_e mode);
+void mode_user_clear(void);
+uint8_t mode_user_active(void);
+
 #endif

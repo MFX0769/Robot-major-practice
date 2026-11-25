@@ -12,7 +12,8 @@ void bsp_pwm_init(void)
     TIM_OC_InitTypeDef config = {0};
 
     htim1.Instance = TIM1;
-    htim1.Init.Prescaler = 274;  /* 275MHz / 275 = 1MHz */
+    /* TIM1 时钟 = 240MHz (HSE24*40/2/2)，240 分频 -> 1MHz */
+    htim1.Init.Prescaler = 239;
     htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim1.Init.Period = PWM_PERIOD_US - 1U;
     htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

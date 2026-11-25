@@ -52,6 +52,43 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/* 故障现场输出：调试器无 nRESET，至少让串口留下 CFSR/HFSR/BFAR */
+static void fault_puts(const char *s)
+{
+  /* 直接写 USART10 寄存器，绕开 HAL gState（故障时可能正忙于发送） */
+  if ((RCC->APB2ENR & RCC_APB2ENR_USART10EN) == 0U) return;
+  while (*s != '\0')
+  {
+    while ((USART10->ISR & USART_ISR_TXE_TXFNF) == 0U) { }
+    USART10->TDR = (uint8_t)(*s++);
+  }
+  while ((USART10->ISR & USART_ISR_TC) == 0U) { }
+}
+
+static void fault_hex(uint32_t v)
+{
+  char b[9];
+  int i;
+  for (i = 0; i < 8; i++)
+  {
+    uint8_t n = (uint8_t)((v >> ((7 - i) * 4)) & 0xFU);
+    b[i] = (n < 10U) ? (char)('0' + n) : (char)('A' + n - 10U);
+  }
+  b[8] = '\0';
+  fault_puts(b);
+}
+
+static void fault_dump(const char *tag)
+{
+  fault_puts("\r\n[FAULT] ");
+  fault_puts(tag);
+  fault_puts(" CFSR=");  fault_hex(SCB->CFSR);
+  fault_puts(" HFSR=");  fault_hex(SCB->HFSR);
+  fault_puts(" MMFAR="); fault_hex(SCB->MMFAR);
+  fault_puts(" BFAR=");  fault_hex(SCB->BFAR);
+  fault_puts("\r\n");
+}
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -80,7 +117,7 @@ extern TIM_HandleTypeDef htim23;
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-
+  fault_dump("NMI");
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
    while (1)
@@ -95,7 +132,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  fault_dump("HARDFAULT");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -110,7 +147,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
-
+  fault_dump("MEMMANAGE");
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
   {
@@ -125,7 +162,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
-
+  fault_dump("BUSFAULT");
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
   {
@@ -140,7 +177,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
-
+  fault_dump("USAGEFAULT");
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
   {
@@ -281,6 +318,17 @@ void UART5_IRQHandler(void)
   extern void dbus_rx_isr(void);
   dbus_rx_isr();
   /* USER CODE END UART5_IRQn 0 */
+}
+
+/**
+  * @brief This function handles UART8 global interrupt (vision RX, PE0).
+  */
+void UART8_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART8_IRQn 0 */
+  extern void vision_uart_rx_isr(void);
+  vision_uart_rx_isr();
+  /* USER CODE END UART8_IRQn 0 */
 }
 
 /**

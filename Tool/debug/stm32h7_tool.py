@@ -31,14 +31,14 @@ from datetime import datetime
 
 # 配置
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-KEIL_PROJECT = PROJECT_ROOT / "MDK-ARM" / "rm_main.uvprojx"
-KEIL_OUTPUT = PROJECT_ROOT / "MDK-ARM" / "rm_main" / "rm_main.axf"
-HEX_FILE = PROJECT_ROOT / "MDK-ARM" / "rm_main" / "rm_main.hex"
+KEIL_PROJECT = PROJECT_ROOT / "MDK-ARM" / "CtrBoard-H7_ALL.uvprojx"
+KEIL_OUTPUT = PROJECT_ROOT / "MDK-ARM" / "CtrBoard-H7_ALL" / "CtrBoard-H7_ALL.axf"
+HEX_FILE = PROJECT_ROOT / "MDK-ARM" / "CtrBoard-H7_ALL" / "CtrBoard-H7_ALL.hex"
 OPENOCD_CFG = PROJECT_ROOT / "Tool" / "debug" / "stm32h7.cfg"
 OPENOCD_SCRIPT = PROJECT_ROOT / "Tool" / "debug" / "openocd_controller.py"
 
 # Keil UV4 路径
-KEIL_UV4 = r"D:\Users\Tommy0769\AppData\Local\Keil_v5\UV4\UV4.exe"
+KEIL_UV4 = r"D:\Software\Keil\Keil_v5\UV4\UV4.exe"
 
 class STM32H7Tool:
     def __init__(self, verbose=False):

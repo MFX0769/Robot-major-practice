@@ -13,6 +13,24 @@ uint8_t RC_FAIL_KEYBOARD_FLAG;
 uint8_t gimbal_ctrl_mode;
 static ctrl_mode_e last_vision_flag;
 uint8_t vision_flag;
+static uint8_t s_user_mode_valid;
+
+void mode_user_set(ctrl_mode_e mode)
+{
+    s_user_mode_valid = 1U;
+    ctrl_mode = mode;
+}
+
+void mode_user_clear(void)
+{
+    s_user_mode_valid = 0U;
+    ctrl_mode = PROTECT_MODE;
+}
+
+uint8_t mode_user_active(void)
+{
+    return s_user_mode_valid;
+}
 
 static void unlock_init(void)
 {
@@ -71,6 +89,14 @@ void mode_switch_task(void const *argu)
 
     for (;;) {
         dbus_process();
+
+        /* 显式覆盖优先：无遥控器示教/调试时不被断联保护覆盖 */
+        if (s_user_mode_valid) {
+            wdg_user_set_bit(WDG_BIT_TASK_MODES);
+            osDelay(5);
+            continue;
+        }
+
         if (!dbus_online()) {
             ctrl_mode = PROTECT_MODE;
             lock_flag = 0;

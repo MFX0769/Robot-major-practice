@@ -10,6 +10,10 @@
 #include "arm_yaw_limit.h"
 #include "prot_rm_motor.h"
 #include "control_def.h"
+#include "arm_task.h"
+#include "prot_vision.h"
+#include "w25q64.h"
+#include "mode_switch_task.h"
 #include "usart.h"
 #include "dbg_print.h"
 #include "FreeRTOS.h"
@@ -54,6 +58,20 @@ static uint8_t parse_dec(const char *s, uint8_t *value)
     return 1U;
 }
 
+static uint8_t parse_u16(const char *s, uint16_t *value)
+{
+    uint32_t v = 0U;
+    if (*s == '\0') return 0U;
+    while (*s) {
+        if (!isdigit((unsigned char)*s)) return 0U;
+        v = v * 10U + (uint32_t)(*s - '0');
+        if (v > 65535U) return 0U;
+        s++;
+    }
+    *value = (uint16_t)v;
+    return 1U;
+}
+
 static void servo_test_parse_line(const char *line)
 {
     char work[SERVO_TEST_LINE_MAX];
@@ -63,13 +81,119 @@ static void servo_test_parse_line(const char *line)
     snprintf(work, sizeof(work), "%s", line);
     token = strtok(work, " ");
     if (token == NULL) goto usage;
+
+    /* ---- 四关节点动 / 全局停止 ---- */
+    if (strcmp(token, "joint") == 0) {
+        uint8_t joint;
+        uint16_t pulse;
+        int rc;
+        token = strtok(NULL, " ");
+        if (token == NULL) goto usage;
+        if (strcmp(token, "shoulder") == 0) joint = 0U;
+        else if (strcmp(token, "elbow") == 0) joint = 1U;
+        else if (strcmp(token, "gripper") == 0) joint = 2U;
+        else goto usage;
+        token = strtok(NULL, " ");
+        if (token == NULL || !parse_u16(token, &pulse) || strtok(NULL, " ") != NULL) goto usage;
+        rc = arm_joint_jog(joint, pulse);
+        dbg_print("[JOINT] %s pulse=%u rc=%d\r\n",
+                  (joint == 0U) ? "shoulder" : (joint == 1U) ? "elbow" : "gripper",
+                  (unsigned)pulse, rc);
+        return;
+    }
+    if (strcmp(token, "stop") == 0) {
+        if (strtok(NULL, " ") != NULL) goto usage;
+        arm_stop_all();
+        return;
+    }
+
+    /* ---- 示教状态机 ---- */
+    if (strcmp(token, "teach") == 0) {
+        token = strtok(NULL, " ");
+        if (token == NULL || strtok(NULL, " ") != NULL) goto usage;
+        arm_teach_cmd(token);
+        return;
+    }
+
+    /* ---- 模式覆盖 ---- */
+    if (strcmp(token, "mode") == 0) {
+        token = strtok(NULL, " ");
+        if (token == NULL || strtok(NULL, " ") != NULL) goto usage;
+        if (strcmp(token, "protect") == 0) {
+            arm_stop_all();
+            mode_user_clear();
+            dbg_print("[MODE] PROTECT\r\n");
+        } else if (strcmp(token, "status") == 0) {
+            dbg_print("[MODE] ctrl=%d override=%u\r\n",
+                      (int)ctrl_mode, (unsigned)mode_user_active());
+        } else goto usage;
+        return;
+    }
+
+    /* ---- 视觉链路状态 ---- */
+    if (strcmp(token, "vis") == 0) {
+        uint32_t age = 0U;
+        if (vision_uart_last_tick != 0U) age = HAL_GetTick() - vision_uart_last_tick;
+        dbg_print("[VIS] bytes=%lu frames=%lu age=%lu x=%d y=%d flag=%u cnt=%lu\r\n",
+                  (unsigned long)vision_uart_rx_bytes,
+                  (unsigned long)vision_uart_rx_frames,
+                  (unsigned long)age,
+                  (int)vision_fruit.x_dis, (int)vision_fruit.y_dis,
+                  (unsigned)vision_fruit.flag,
+                  (unsigned long)vision_fruit.rec_cnt);
+        return;
+    }
+
+    /* ---- W25Q64 ---- */
+    if (strcmp(token, "w25") == 0) {
+        token = strtok(NULL, " ");
+        if (token == NULL || strtok(NULL, " ") != NULL) goto usage;
+        if (strcmp(token, "id") == 0) {
+            dbg_print("[W25] id=0x%08lX ready=%u\r\n",
+                      (unsigned long)OSPI_W25Qxx_ReadID(), (unsigned)arm_flash_ready());
+        } else if (strcmp(token, "test") == 0) {
+            uint8_t wbuf[16], rbuf[16], i, ok = 1U;
+            int8_t rc1, rc2;
+            for (i = 0U; i < 16U; i++) wbuf[i] = (uint8_t)(0x5AU + i * 7U);
+            rc1 = OSPI_W25Qxx_BlockErase_32K(0x7E0000UL);
+            rc2 = OSPI_W25Qxx_WriteBuffer(wbuf, 0x7E0000UL, 16U);
+            (void)OSPI_W25Qxx_ReadBuffer(rbuf, 0x7E0000UL, 16U);
+            for (i = 0U; i < 16U; i++) if (wbuf[i] != rbuf[i]) ok = 0U;
+            dbg_print("[W25] test erase=%d write=%d match=%u ready=%u\r\n",
+                      rc1, rc2, (unsigned)ok, (unsigned)arm_flash_ready());
+        } else goto usage;
+        return;
+    }
+
     is_yaw_cmd = (strcmp(token, "yaw") == 0) ? 1U : 0U;
     if (!is_yaw_cmd && strcmp(token, "servo") != 0) goto usage;
     token = strtok(NULL, " ");
     if (token == NULL) goto usage;
 
     if (is_yaw_cmd) {
-        if (strcmp(token, "monitor") == 0) {
+        if (strcmp(token, "enable") == 0) {
+            arm_yaw_set_enable(1U);
+        } else if (strcmp(token, "disable") == 0) {
+            arm_yaw_set_enable(0U);
+        } else if (strcmp(token, "status") == 0) {
+            dbg_print("[YAW] en=%u on=%u tgt=%ld fdb=%ld err=%ld spd=%d/%.0f out=%.0f\r\n",
+                      (unsigned)arm_ctrl.yaw.enable, (unsigned)arm_ctrl.yaw.online,
+                      (long)arm_ctrl.yaw.target_ecd, (long)arm_ctrl.yaw.fdb_ecd,
+                      (long)arm_ctrl.yaw.err_ecd,
+                      (int)arm_ctrl.yaw.spd_fdb, arm_ctrl.yaw.spd_ref,
+                      arm_ctrl.yaw.out);
+        } else if (strcmp(token, "step") == 0) {
+            int32_t delta;
+            token = strtok(NULL, " ");
+            if (token == NULL || !parse_signed(token, &delta) || strtok(NULL, " ") != NULL) goto usage;
+            dbg_print("[YAW] step %ld -> %d\r\n", (long)delta,
+                      arm_yaw_set_target_ecd((int32_t)arm_yaw_motor.ecd + delta));
+        } else if (strcmp(token, "target") == 0) {
+            int32_t ecd;
+            token = strtok(NULL, " ");
+            if (token == NULL || !parse_signed(token, &ecd) || strtok(NULL, " ") != NULL) goto usage;
+            dbg_print("[YAW] target %ld -> %d\r\n", (long)ecd, arm_yaw_set_target_ecd(ecd));
+        } else if (strcmp(token, "monitor") == 0) {
             if (strtok(NULL, " ") != NULL) goto usage;
             s_yaw_monitor_active = 1U;
             s_yaw_monitor_div = 0U;
@@ -169,7 +293,7 @@ static void servo_test_parse_line(const char *line)
     return;
 
 usage:
-    dbg_print("[SERVO_TEST] usage: servo ... | yaw monitor | yaw stop | yaw set <lower> <upper> | yaw clear\r\n");
+    dbg_print("[SERVO_TEST] usage: servo ... | yaw monitor|stop|set|clear|enable|disable|target <ecd>|step <d>|status | joint <shoulder|elbow|gripper> <pulse> | stop | teach <status|enter|exit|record|save|play|stop|load|erase|origin> | mode protect|status | vis | w25 id|test\r\n");
 }
 
 void servo_test_rx_isr(void)

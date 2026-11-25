@@ -20,8 +20,8 @@ static char s_last_frame[40];
 static uint32_t s_last_frame_tick;
 
 xb_servo_dev_t xb_servo[XB_JOINT_NUM] = {
-    {0, 0, XB_PULSE_ZERO, 0, 0, 0},
-    {1, 0, XB_PULSE_ZERO, 0, 0, 0},
+    {2, 0, XB_PULSE_ZERO, 0, 0, 0},   /* 肩实测硬件 ID=002 */
+    {1, 0, XB_PULSE_ZERO, 0, 0, 0},   /* 肘实测硬件 ID=001 */
 };
 
 void xb_servo_rx_isr(void)

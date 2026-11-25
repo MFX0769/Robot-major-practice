@@ -9,8 +9,8 @@
   ==============================================================================
 */
 
-#ifndef __USART_COMM_H
-#define __USART_COMM_H
+#ifndef __USB_COMM_H
+#define __USB_COMM_H
 
 
 #ifdef __cplusplus

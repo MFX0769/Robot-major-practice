@@ -5,6 +5,7 @@
 #include "math.h"
 //#include "usart.h"
 #include "cmsis_os.h"
+#include "usb_comm.h"
 
 #define MAX_BUFFER_SIZE 1024
 uint8_t send_buf[MAX_BUFFER_SIZE];

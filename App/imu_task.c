@@ -7,23 +7,12 @@
 #include "dbg_print.h"
 #include <math.h>
 
-#define DES_TEMP    40.0f
-#define KP          100.f
-#define KI          50.f
-#define KD          10.f
-#define MAX_OUT     500
-
 float gyro[3] = {0.0f};
 float acc[3] = {0.0f};
 static float temp = 0.0f;
 
 float imuQuat[4] = {0.0f};
 float imuAngle[3] = {0.0f};
-
-float out = 0;
-float imu_err = 0;
-float err_l = 0;
-float err_ll = 0;
 
 void AHRS_init(float quat[4])
 {
@@ -85,13 +74,8 @@ void ImuTask_Entry(void const * argument)
         AHRS_update(imuQuat, gyro, acc);
         GetAngle(imuQuat, imuAngle + INS_YAW_ADDRESS_OFFSET, imuAngle + INS_PITCH_ADDRESS_OFFSET, imuAngle + INS_ROLL_ADDRESS_OFFSET);
         
-        err_ll = err_l;
-        err_l = imu_err;
-        imu_err = DES_TEMP - temp;
-        out = KP*imu_err + KI*(imu_err + err_l + err_ll) + KD*(imu_err - err_l);
-        if (out > MAX_OUT) out = MAX_OUT;
-        if (out < 0) out = 0.f;
-        htim3.Instance->CCR4 = 0U;   /* 加热强制关断，PB1 已改为普通输出低 */
+        /* 加热已永久关断：不再计算温控 PID，只保留温度遥测 */
+        htim3.Instance->CCR4 = 0U;   /* PB1 已改为普通输出低 */
         {
             static uint32_t dbg_div;
             if (++dbg_div >= 1000U) {

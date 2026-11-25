@@ -8,7 +8,6 @@
 
 #include "stdint.h"
 #include "stm32h7xx_hal.h"
-#include "arm_math.h"
 
 
 typedef enum

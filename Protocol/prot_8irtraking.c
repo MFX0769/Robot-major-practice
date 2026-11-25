@@ -217,3 +217,11 @@ const prot_8irtraking_data_t *prot_8irtraking_get_data(void)
 {
     return &s_data;
 }
+
+/* UART7 单字节中断接收完成回调：重新挂接收并解析 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == UART7) {
+        prot_8ir_on_rx();
+    }
+}

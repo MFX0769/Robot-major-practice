@@ -29,6 +29,7 @@
 #include "usart_comm.h"
 #include "prot_remote_fusion.h"
 #include "arm_task.h"
+#include "cmsis_os.h"
 /* Private define ------------------------------------------------------------*/
 #ifndef ABS
 #define ABS(x)  ((x)>0?(x):-(x))
@@ -484,4 +485,62 @@ void vision_fruit_getData(uint8_t *buff)
             return;
     }
 }
+
+/* ================= UART8 视觉接收 (2026-11-25) =================
+ * PE0 UART8_RX, 115200-8N1; 7 字节水果帧 AA xH xL yH yL flag BB。
+ * 供 PC USB-TTL 直接模拟视觉发送端。
+ */
+volatile uint32_t vision_uart_rx_bytes;
+volatile uint32_t vision_uart_rx_frames;
+volatile uint32_t vision_uart_last_tick;
+
+static uint8_t s_vbuf[VISION_FRUIT_DATA_LEN];
+static uint8_t s_vlen;
+
+void vision_uart_init(void)
+{
+    GPIO_InitTypeDef g = {0};
+
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    g.Pin = GPIO_PIN_0;
+    g.Mode = GPIO_MODE_AF_PP;
+    g.Pull = GPIO_PULLUP;
+    g.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    g.Alternate = GPIO_AF8_UART8;
+    HAL_GPIO_Init(GPIOE, &g);
+
+    __HAL_RCC_UART8_CLK_ENABLE();
+    HAL_NVIC_SetPriority(UART8_IRQn, 6, 0);
+    HAL_NVIC_EnableIRQ(UART8_IRQn);
+
+    MX_UART8_Init();                         /* RX-only, 115200 */
+    s_vlen = 0U;
+    __HAL_UART_ENABLE_IT(&huart8, UART_IT_RXNE);
+}
+void vision_uart_rx_isr(void)
+{
+    uint32_t isr = UART8->ISR;
+
+    if ((isr & (USART_ISR_ORE | USART_ISR_FE | USART_ISR_NE)) != 0U) {
+        __HAL_UART_CLEAR_FLAG(&huart8, UART_CLEAR_OREF);
+        __HAL_UART_CLEAR_FLAG(&huart8, UART_CLEAR_FEF);
+        __HAL_UART_CLEAR_FLAG(&huart8, UART_CLEAR_NEF);
+    }
+
+    while ((UART8->ISR & USART_ISR_RXNE_RXFNE) != 0U) {
+        uint8_t b = (uint8_t)UART8->RDR;
+        vision_uart_rx_bytes++;
+        if (s_vlen == 0U && b != VISION_SOF) continue;
+        s_vbuf[s_vlen++] = b;
+        if (s_vlen >= VISION_FRUIT_DATA_LEN) {
+            if (s_vbuf[VISION_FRUIT_DATA_LEN - 1U] == VISION_EOF) {
+                vision_fruit_getData(s_vbuf);
+                vision_uart_rx_frames++;
+                vision_uart_last_tick = osKernelSysTick();
+            }
+            s_vlen = 0U;
+        }
+    }
+}
+
 

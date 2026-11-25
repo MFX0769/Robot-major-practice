@@ -54,7 +54,7 @@ void comm_usb_init(void)
 /* unified USB tx enqueue (2026-11-22): non-blocking, drop-on-full */
 void usb_tx_send(const uint8_t *buf, uint16_t len)
 {
-    static usb_tx_msg_t m;
+    usb_tx_msg_t m;
     if (USB_tx_queue == NULL || buf == NULL || len == 0) return;
     if (len > USB_TX_MSG_DATA_LEN) len = USB_TX_MSG_DATA_LEN;
     m.len = len;
@@ -64,13 +64,15 @@ void usb_tx_send(const uint8_t *buf, uint16_t len)
 void Task_USB_Transmit(void const *arg)
 {
   usb_tx_msg_t msg;
+  (void)arg;
   for(;;)
   {
     if (USB_tx_queue != NULL &&
         xQueueReceive(USB_tx_queue, &msg, portMAX_DELAY) == pdPASS) {
-      /* 2026-11-22: dual output - U10 (DAP VCP, works now) + USB CDC (auto recovers when enumerated) */
-      /* debug output suppressed: DAP UART overflow - only dbg_print (huart7) active */
-      (void)msg;
+      /* 第二出口：CDC 未枚举时返回失败直接丢，绝不阻塞 */
+      if (msg.len > 0U) {
+        (void)CDC_Transmit_HS(msg.data, msg.len);
+      }
     }
   }
 }

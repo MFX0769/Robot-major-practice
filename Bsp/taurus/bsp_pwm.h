@@ -14,7 +14,7 @@
 #define SERVO_GRIPPER_TIM         TIM1
 #define SERVO_GRIPPER_CHANNEL     TIM_CHANNEL_3   /* PE13 */
 
-/* PWM参数: APB1 定时器时钟 275MHz, 275 分频 -> 1MHz */
+/* PWM参数: TIM1 时钟 240MHz, 240 分频 -> 1MHz */
 #define PWM_TIM_FREQ           1000000  /* 1MHz计数频率 */
 #define PWM_PERIOD_US          20000    /* 20ms周期 */
 

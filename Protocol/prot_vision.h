@@ -197,4 +197,11 @@ void vision_output_data(void);
 void vision_output_data_sp(void);
 void vision_fruit_getData(uint8_t *buff);
 
+/* UART8 视觉链路 (PE0 RX, 115200-8N1) */
+extern volatile uint32_t vision_uart_rx_bytes;
+extern volatile uint32_t vision_uart_rx_frames;
+extern volatile uint32_t vision_uart_last_tick;
+void vision_uart_init(void);
+void vision_uart_rx_isr(void);
+
 #endif 

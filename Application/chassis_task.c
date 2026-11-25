@@ -206,7 +206,7 @@ void chassis_task(void const *argu)
         
         /* 通过队列发送电机电�?*/
         static uint8_t skip = 0;
-        if (++skip % 4 == 0)
+        if (++skip % 1 == 0)
             chassis_can_send();
         
         

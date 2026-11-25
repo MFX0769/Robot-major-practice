@@ -29,19 +29,19 @@ goto :end
 
 :build
 echo === 编译项目 ===
-python Tool\debug\stm32h7_tool.py build
+py Tool\debug\stm32h7_tool.py build
 goto :eof
 
 :flash
 echo === 编译+烧录 ===
-python Tool\debug\stm32h7_tool.py flash
+py Tool\debug\stm32h7_tool.py flash
 goto :eof
 
 :clean
 echo === 清理编译文件 ===
-if exist "MDK-ARM\rm_main\*.axf" del /q "MDK-ARM\rm_main\*.axf"
-if exist "MDK-ARM\rm_main\*.hex" del /q "MDK-ARM\rm_main\*.hex"
-if exist "MDK-ARM\rm_main\*.map" del /q "MDK-ARM\rm_main\*.map"
+if exist "MDK-ARM\CtrBoard-H7_ALL\*.axf" del /q "MDK-ARM\CtrBoard-H7_ALL\*.axf"
+if exist "MDK-ARM\CtrBoard-H7_ALL\*.hex" del /q "MDK-ARM\CtrBoard-H7_ALL\*.hex"
+if exist "MDK-ARM\CtrBoard-H7_ALL\*.map" del /q "MDK-ARM\CtrBoard-H7_ALL\*.map"
 echo 清理完成
 goto :eof
 

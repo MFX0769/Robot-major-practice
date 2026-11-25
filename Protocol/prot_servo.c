@@ -68,7 +68,8 @@ void servo_set_config_mode(uint8_t enabled)
         servo_test_set_config_allowed(1);
     } else {
         servo_test_set_config_allowed(0);
-        servo_set_enabled(0);
+        /* 退出配置模式不回断 5V：舵机保持使能，避免 servo run 后失电 */
+        servo_set_enabled(1);
     }
 }
 

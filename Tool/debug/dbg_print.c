@@ -1,65 +1,90 @@
 /**
   * @file    dbg_print.c
-  * @brief   简单调试打印工具实现
+  * @brief   非阻塞调试打印
+  * @note    格式化在调用者栈上完成，入队后由低优先级 dbg_task 发送。
+  *          调度器未启动时直接轮询发送（仅启动横幅）。
   */
-
 #include "dbg_print.h"
+#include "usart.h"
+#include "usbd_cdc_if.h"
+#include "usb_comm.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "usbd_cdc_if.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "cmsis_os.h"   /* 达妙板调试走板载 USB CDC (2026-11-22) */
+#include <string.h>
 
-static char dbg_buf[256];
+#define DBG_MSG_MAX   192U
+#define DBG_QUEUE_LEN 8U
 
-/**
-  * @brief  初始化调试输出
-  */
+typedef struct {
+    uint16_t len;
+    char     data[DBG_MSG_MAX];
+} dbg_msg_t;
+
+static QueueHandle_t s_queue;
+
 void dbg_init(void)
 {
-    memset(dbg_buf, 0, sizeof(dbg_buf));
+    if (s_queue == NULL) {
+        s_queue = xQueueCreate(DBG_QUEUE_LEN, sizeof(dbg_msg_t));
+    }
     dbg_print("\r\n=== System Boot ===\r\n");
 }
 
-/**
-  * @brief  格式化打印
-  */
 int dbg_print(const char *fmt, ...)
 {
+    char buf[DBG_MSG_MAX];
     va_list args;
-    va_start(args, fmt);
-    int len = vsnprintf(dbg_buf, sizeof(dbg_buf), fmt, args);
-    va_end(args);
+    int len;
+    uint16_t n;
 
-    /* 双路输出 (2026-11-22): 板载 USB CDC + USART10(PE3, DAP VCP) */
-    {
-        extern UART_HandleTypeDef huart10;
-        HAL_UART_Transmit(&huart10, (uint8_t *)dbg_buf, (uint16_t)len, 20);  /* U7 freed for line sensor */
+    if (fmt == NULL) return 0;
+    va_start(args, fmt);
+    len = vsnprintf(buf, sizeof(buf), fmt, args);
+    va_end(args);
+    if (len <= 0) return 0;
+    n = (len >= (int)sizeof(buf)) ? (uint16_t)(sizeof(buf) - 1U) : (uint16_t)len;
+
+    if (s_queue != NULL && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+        dbg_msg_t msg;
+        msg.len = n;
+        memcpy(msg.data, buf, n);
+        (void)xQueueSend(s_queue, &msg, 0);      /* 满则丢，绝不阻塞控制任务 */
+        usb_tx_send((const uint8_t *)buf, n);    /* 第二出口，尽力而为 */
+    } else {
+        (void)HAL_UART_Transmit(&huart10, (uint8_t *)buf, n, 20U);
     }
-    /* CDC 仅在调度器已启动后使用 (osDelay 在 main 阶段非法) */
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
-        usb_tx_send((uint8_t *)dbg_buf, (uint16_t)len);
-    }
-    return len;
+    return (int)n;
 }
 
-/**
-  * @brief  带标签的日志
-  */
+void dbg_task(void const *argu)
+{
+    dbg_msg_t msg;
+    (void)argu;
+    if (s_queue == NULL) {
+        s_queue = xQueueCreate(DBG_QUEUE_LEN, sizeof(dbg_msg_t));
+    }
+    for (;;) {
+        if (s_queue != NULL &&
+            xQueueReceive(s_queue, &msg, portMAX_DELAY) == pdPASS) {
+            (void)HAL_UART_Transmit(&huart10, (uint8_t *)msg.data, msg.len, 100U);
+        } else {
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+    }
+}
+
 void dbg_log(const char *tag, const char *msg)
 {
     dbg_print("[%s] %s\r\n", tag, msg);
 }
 
-/**
-  * @brief  打印十六进制数据
-  */
 void dbg_hex(const char *tag, const uint8_t *data, uint16_t len)
 {
-    dbg_print("[%s] HEX(%d): ", tag, len);
-    for (uint16_t i = 0; i < len && i < 32; i++) {
-        dbg_print("%02X ", data[i]);
-    }
+    uint16_t i;
+    dbg_print("[%s] HEX(%u): ", tag, (unsigned)len);
+    for (i = 0; i < len && i < 32U; i++) dbg_print("%02X ", data[i]);
     dbg_print("\r\n");
 }

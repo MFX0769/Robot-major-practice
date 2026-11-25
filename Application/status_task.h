@@ -16,7 +16,7 @@
 #define WDG_BIT_BSP_JUDGE           (uint32_t)(1 << 13)
 
 
-typedef __packed struct {
+typedef struct {
     uint16_t remote     :1;
     uint16_t imu        :1;
     uint16_t judge      :1;
