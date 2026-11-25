@@ -3,7 +3,7 @@
 <title>Static Call Graph - [CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Nov 26 03:05:08 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Nov 26 03:15:32 2026
 <BR><P>
 <H3>Maximum Stack Usage =       1184 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -4567,8 +4567,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task
 </UL>
 
-<P><STRONG><a name="[2e7]"></a>arm_yaw_probe</STRONG> (Thumb, 252 bytes, Stack size 24 bytes, arm_task.o(i.arm_yaw_probe))
-<BR><BR>[Stack]<UL><LI>Max Depth = 832<LI>Call Chain = arm_yaw_probe &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
+<P><STRONG><a name="[2e7]"></a>arm_yaw_probe</STRONG> (Thumb, 296 bytes, Stack size 32 bytes, arm_task.o(i.arm_yaw_probe))
+<BR><BR>[Stack]<UL><LI>Max Depth = 840<LI>Call Chain = arm_yaw_probe &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
 <LI><a href="#[1fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay

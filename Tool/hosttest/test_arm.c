@@ -115,6 +115,7 @@ int main(void)
 
     sim_reset();
     g_verbose = (getenv("SIM_VERBOSE") != NULL);
+    g_capture = 1;                       /* 固件打印攒起来，个别检查要找里面的提示文字 */
     sim_advance(200U);                   /* 上电前 6020 已经在发反馈 */
     arm_task_init();
     run(300U);
@@ -195,6 +196,22 @@ int main(void)
     CHECK(rc == 1, "probe returns +1 for normal wiring");
     CHECK(arm_ctrl.yaw.dir_valid == 1 && arm_ctrl.yaw.dir == 1, "dir calibrated to +1");
     CHECK(arm_ctrl.yaw.enable == 0, "probe leaves the loop disabled");
+
+    /* 离限位太近：不探测（150 ECD 保护带，两头都算） */
+    g_yaw_angle = 1400.0f;                       /* 左限位 1260 + 140 */
+    run(20U);
+    t0 = g_yaw_frames;
+    sim_out_clear();
+    CHECK(arm_yaw_probe() == 0 && g_yaw_frames <= t0 + 2U && g_yaw_tx == 0, "no probe voltage inside the left limit band (2 zero frames at most)");
+    CHECK(sim_out_has("within 150 ECD of a limit"), "and the reason is printed");
+    g_yaw_angle = 6350.0f;                       /* 右限位 6478 - 128 */
+    run(20U);
+    t0 = g_yaw_frames;
+    CHECK(arm_yaw_probe() == 0 && g_yaw_frames <= t0 + 2U && g_yaw_tx == 0, "no probe voltage inside the right limit band");
+    g_yaw_angle = 3000.0f;
+    run(20U);
+    t0 = g_yaw_frames;
+    CHECK(arm_yaw_probe() == 1 && g_yaw_frames > t0, "probe runs again in the middle of the range");
 
     /* ------------------------------------------------------------------ */
     section("T6 yaw 跟随、限幅、边界");

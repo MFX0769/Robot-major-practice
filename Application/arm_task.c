@@ -58,6 +58,7 @@
 #define ARM_YAW_HOLD_ECD        20      /* 目标离当前位置这么近算“保持”，不启用接反保护 */
 #define ARM_YAW_PROBE_MS        150U
 #define ARM_YAW_PROBE_OUT       4000
+#define ARM_YAW_PROBE_GUARD     150     /* 离任一限位不到这么多 ECD 就不探测，也不让探测把它推进限位 */
 
 /* 关节机械行程没在这台臂上验证过，默认给窄范围，joint limit 放宽 */
 #define ARM_JOINT_DFLT_MIN      1400U   /* 肩/肘：中心 ±100us */
@@ -1812,6 +1813,7 @@ int arm_yaw_probe(void)
 {
     int32_t e0, d, v;
     uint32_t t0;
+    uint8_t near_limit = 0U;
     int rc = yaw_gate("probe", 0U);
 
     if (rc != 0) return rc;
@@ -1826,6 +1828,14 @@ int arm_yaw_probe(void)
     dbg_print("[YAW] probe: +%ld for %ums, open loop\r\n", (long)v, (unsigned)ARM_YAW_PROBE_MS);
     t0 = now_ms();
     while ((uint32_t)(now_ms() - t0) < ARM_YAW_PROBE_MS) {
+        int32_t e = (int32_t)arm_yaw_motor.ecd;
+
+        /* 限位区间不跨 0，直接比较。不知道会往哪边转，所以两头都留余量 */
+        if (e <= ARM_YAW_ECD_LEFT_DEFAULT + ARM_YAW_PROBE_GUARD ||
+            e >= ARM_YAW_ECD_RIGHT_DEFAULT - ARM_YAW_PROBE_GUARD) {
+            near_limit = 1U;
+            break;
+        }
         arm_yaw_motor.tx_current = (int16_t)v;
         dji_send_current(&arm_yaw_motor, NULL, NULL, NULL);
         osDelay(5);
@@ -1833,6 +1843,10 @@ int arm_yaw_probe(void)
     arm_yaw_motor.tx_current = 0;
     dji_send_current(&arm_yaw_motor, NULL, NULL, NULL);
     s_last_send_tick = now_ms();
+    if (near_limit != 0U) {
+        dbg_print("[YAW] probe stopped: within %d ECD of a limit, move the arm away from the limits first\r\n",
+                  ARM_YAW_PROBE_GUARD);
+    }
     osDelay(60);                       /* 等它滑行停下再读 */
 
     d = (int32_t)arm_yaw_motor.ecd - e0;
@@ -1844,8 +1858,10 @@ int arm_yaw_probe(void)
                   (long)v, (long)d, (int)arm_ctrl.yaw.dir);
         return (int)arm_ctrl.yaw.dir;
     }
-    dbg_print("[YAW] probe: no motion (dECD=%ld). Check 24V/ID, or raise 'yaw limit' (now %d)\r\n",
-              (long)d, (int)arm_ctrl.yaw.out_limit);
+    /* 探测电压封顶在 ARM_YAW_PROBE_OUT，调大 'yaw limit' 不会让它变大，所以不再这么提示 */
+    dbg_print("[YAW] probe: no motion (dECD=%ld). Check 24V and the ID4 LED. "
+              "Or set the direction by hand: 'yaw dir 1'; if it then stops with fault=1, "
+              "'yaw fault clear' and 'yaw dir -1'\r\n", (long)d);
     return 0;
 }
 
