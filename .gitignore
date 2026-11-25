@@ -10,3 +10,7 @@
 
 *.bak
 *.tmp
+
+# Python 缓存和一条龙脚本的临时编译日志
+__pycache__/
+**/MDK-ARM/build_tool.log
