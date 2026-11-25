@@ -61,18 +61,42 @@ void usb_tx_send(const uint8_t *buf, uint16_t len)
     memcpy(m.data, buf, len);
     (void)xQueueSend(USB_tx_queue, &m, 0);   /* full -> drop (keeps 1kHz vofa alive) */
 }
+extern USBD_HandleTypeDef hUsbDeviceHS;
+static usb_tx_msg_t s_tx[2];
+static uint8_t s_tx_idx;
+
+/* USB 还在读上一帧的缓冲区时返回 1 */
+static uint8_t cdc_busy(void)
+{
+    USBD_CDC_HandleTypeDef *hcdc;
+    if (hUsbDeviceHS.pClassData == NULL) return 0U;
+    hcdc = (USBD_CDC_HandleTypeDef *)hUsbDeviceHS.pClassData;
+    return (hcdc->TxState != 0U) ? 1U : 0U;
+}
+
 void Task_USB_Transmit(void const *arg)
 {
-  usb_tx_msg_t msg;
+  usb_tx_msg_t *msg;
+  uint32_t w;
   (void)arg;
   for(;;)
   {
-    if (USB_tx_queue != NULL &&
-        xQueueReceive(USB_tx_queue, &msg, portMAX_DELAY) == pdPASS) {
-      /* 第二出口：CDC 未枚举时返回失败直接丢，绝不阻塞 */
-      if (msg.len > 0U) {
-        (void)CDC_Transmit_HS(msg.data, msg.len);
-      }
+    if (USB_tx_queue == NULL)
+    {
+      vTaskDelay(pdMS_TO_TICKS(100));
+      continue;
     }
+    /* CDC_Transmit_HS 是异步的：两个缓冲交替用，复用某个缓冲之前等它上一次发送完成 */
+    msg = &s_tx[s_tx_idx];
+    if (xQueueReceive(USB_tx_queue, msg, portMAX_DELAY) != pdPASS) continue;
+    for (w = 0U; w < 20U && cdc_busy() != 0U; w++)
+    {
+      vTaskDelay(pdMS_TO_TICKS(1));
+    }
+    if (cdc_busy() == 0U)
+    {
+      (void)CDC_Transmit_HS(msg->data, msg->len);   /* 未枚举时返回失败，直接丢 */
+    }
+    s_tx_idx ^= 1U;
   }
 }

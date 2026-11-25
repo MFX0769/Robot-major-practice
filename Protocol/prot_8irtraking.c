@@ -225,3 +225,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         prot_8ir_on_rx();
     }
 }
+
+/* 溢出/帧/噪声错误后 HAL 会关掉接收中断并把状态置回 READY。
+   不重新挂接收的话，巡线从此不再收数据直到重启。 */
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance != UART7) return;
+    __HAL_UART_CLEAR_OREFLAG(huart);
+    __HAL_UART_CLEAR_FEFLAG(huart);
+    __HAL_UART_CLEAR_NEFLAG(huart);
+    __HAL_UART_CLEAR_PEFLAG(huart);
+    if (huart->RxState == HAL_UART_STATE_READY) {
+        (void)HAL_UART_Receive_IT(huart, (uint8_t *)&ir_rx_byte, 1);
+    }
+}

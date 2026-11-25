@@ -205,9 +205,7 @@ void chassis_task(void const *argu)
         taskEXIT_CRITICAL();
         
         /* 通过队列发送电机电�?*/
-        static uint8_t skip = 0;
-        if (++skip % 1 == 0)
-            chassis_can_send();
+        chassis_can_send();   /* 2ms period -> 500Hz, every loop */
         
         
         osDelayUntil(&mode_wake_time, CHASSIS_PERIOD);
