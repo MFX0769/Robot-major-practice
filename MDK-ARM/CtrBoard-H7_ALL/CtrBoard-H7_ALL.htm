@@ -3,7 +3,7 @@
 <title>Static Call Graph - [CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Nov 26 02:57:14 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Nov 26 03:05:08 2026
 <BR><P>
 <H3>Maximum Stack Usage =       1184 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -686,24 +686,24 @@ Global Symbols
 <LI><a href="#[30e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;usb_tx_send
 <LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
 <LI><a href="#[355]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
-<LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN2_Send_Frame
-<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
-<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
-<LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
 <LI><a href="#[309]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;console_rx_byte
 <LI><a href="#[3b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_parse_frames
 <LI><a href="#[342]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prot_8irtraking_on_receive
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
+<LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN2_Send_Frame
+<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
+<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
 </UL>
 
 <P><STRONG><a name="[153]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_FREERTOS_Init
 <LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_Init
 <LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_Init
-<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
-<LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_std_transmit
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
 </UL>
 
 <P><STRONG><a name="[3b9]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
@@ -743,15 +743,15 @@ Global Symbols
 <LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_MspInit
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Init
 <LI><a href="#[d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USBD_CDC_Init
-<LI><a href="#[308]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_motor_init
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
-<LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_filter_init
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_init
+<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
 <LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task_init
 <LI><a href="#[2ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_defaults
 <LI><a href="#[303]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prot_8irtraking_init
-<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_init
-<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
+<LI><a href="#[308]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_motor_init
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
+<LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_filter_init
 </UL>
 
 <P><STRONG><a name="[3bc]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
@@ -773,21 +773,21 @@ Global Symbols
 <P><STRONG><a name="[2a6]"></a>strcmp</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, strcmp.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = strcmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_pick_cmd
 <LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_ik_cmd
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[347]"></a>memchr</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, memchr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[342]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prot_8irtraking_on_receive
 </UL>
 
-<P><STRONG><a name="[2a1]"></a>memcmp</STRONG> (Thumb, 26 bytes, Stack size 12 bytes, memcmp.o(.text))
+<P><STRONG><a name="[2a2]"></a>memcmp</STRONG> (Thumb, 26 bytes, Stack size 12 bytes, memcmp.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = memcmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 </UL>
 
 <P><STRONG><a name="[384]"></a>strtok</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, strtok.o(.text))
@@ -821,10 +821,10 @@ Global Symbols
 <LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_errno_addr
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_ctype_table
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
+<BR>[Called By]<UL><LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_signed
+<LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_jog
 <LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_int
-<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_signed
 </UL>
 
 <P><STRONG><a name="[de]"></a>strtoul</STRONG> (Thumb, 114 bytes, Stack size 40 bytes, strtoul.o(.text))
@@ -1229,9 +1229,9 @@ Global Symbols
 <LI><a href="#[267]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USBD_LL_Init
 <LI><a href="#[1a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_ResetCallback
 <LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_MspInit
-<LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_filter_init
 <LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_init
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_init
+<LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_filter_init
 </UL>
 
 <P><STRONG><a name="[34]"></a>FDCAN1_IT0_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32h7xx_it.o(i.FDCAN1_IT0_IRQHandler))
@@ -1589,14 +1589,14 @@ Global Symbols
 <LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_Erase_Sector
 <LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<BR>[Called By]<UL><LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
 </UL>
 
-<P><STRONG><a name="[2a3]"></a>HAL_FLASH_Lock</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, stm32h7xx_hal_flash.o(i.HAL_FLASH_Lock))
-<BR><BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<P><STRONG><a name="[2a4]"></a>HAL_FLASH_Lock</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, stm32h7xx_hal_flash.o(i.HAL_FLASH_Lock))
+<BR><BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
-<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
 </UL>
 
 <P><STRONG><a name="[15c]"></a>HAL_FLASH_Program</STRONG> (Thumb, 228 bytes, Stack size 40 bytes, stm32h7xx_hal_flash.o(i.HAL_FLASH_Program))
@@ -1604,11 +1604,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 </UL>
 
 <P><STRONG><a name="[31a]"></a>HAL_FLASH_Unlock</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32h7xx_hal_flash.o(i.HAL_FLASH_Unlock))
-<BR><BR>[Called By]<UL><LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<BR><BR>[Called By]<UL><LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
 </UL>
 
 <P><STRONG><a name="[178]"></a>HAL_GPIO_DeInit</STRONG> (Thumb, 318 bytes, Stack size 20 bytes, stm32h7xx_hal_gpio.o(i.HAL_GPIO_DeInit))
@@ -1630,9 +1630,9 @@ Global Symbols
 <LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_MspInit
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_MspInit
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Init
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
 <LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
 </UL>
 
 <P><STRONG><a name="[344]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, stm32h7xx_hal_gpio.o(i.HAL_GPIO_ReadPin))
@@ -1645,13 +1645,13 @@ Global Symbols
 <LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Writ_Bus
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_WR_REG
 <LI><a href="#[20b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Init
+<LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_on
+<LI><a href="#[2f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_off
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_GYRO_NS_L
 <LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_GYRO_NS_H
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ACCEL_NS_L
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ACCEL_NS_H
-<LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_on
-<LI><a href="#[2f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_off
 </UL>
 
 <P><STRONG><a name="[f4]"></a>HAL_GetTick</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32h7xx_hal.o(i.HAL_GetTick))
@@ -1682,10 +1682,10 @@ Global Symbols
 <LI><a href="#[170]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSPI_WaitFlagStateUntilTimeout
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Poll
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Init
-<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;T_imu_calcu
+<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KeyTask_Entry
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;led_show
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;T_imu_calcu
 </UL>
 
 <P><STRONG><a name="[15d]"></a>HAL_HalfDuplex_Init</STRONG> (Thumb, 124 bytes, Stack size 8 bytes, stm32h7xx_hal_uart.o(i.HAL_HalfDuplex_Init))
@@ -1742,10 +1742,10 @@ Global Symbols
 <LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 <LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_MspInit
 <LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_MspInit
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
-<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
 <LI><a href="#[375]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_init
 <LI><a href="#[376]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_init
+<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
 </UL>
 
 <P><STRONG><a name="[156]"></a>HAL_NVIC_SetPriority</STRONG> (Thumb, 122 bytes, Stack size 40 bytes, stm32h7xx_hal_cortex.o(i.HAL_NVIC_SetPriority))
@@ -1760,10 +1760,10 @@ Global Symbols
 <LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 <LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_MspInit
 <LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_PCD_MspInit
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
-<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
 <LI><a href="#[375]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_init
 <LI><a href="#[376]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_init
+<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
 </UL>
 
 <P><STRONG><a name="[163]"></a>HAL_NVIC_SetPriorityGrouping</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, stm32h7xx_hal_cortex.o(i.HAL_NVIC_SetPriorityGrouping))
@@ -3208,8 +3208,8 @@ Global Symbols
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;can_send
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;can_send
 </UL>
 
 <P><STRONG><a name="[243]"></a>Prot_CAN2_Send_Frame</STRONG> (Thumb, 66 bytes, Stack size 32 bytes, can_comm.o(i.Prot_CAN2_Send_Frame))
@@ -3218,8 +3218,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;can_send
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;can_send
 </UL>
 
 <P><STRONG><a name="[c1]"></a>StartDefaultTask</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, freertos.o(i.StartDefaultTask))
@@ -4117,9 +4117,7 @@ Global Symbols
 <P><STRONG><a name="[346]"></a>__2snprintf</STRONG> (Thumb, 0 bytes, Stack size 40 bytes, printfa.o(i.__0snprintf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = __2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
-<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 <LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
 <LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
 <LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
@@ -4127,6 +4125,8 @@ Global Symbols
 <LI><a href="#[381]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_lock
 <LI><a href="#[342]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prot_8irtraking_on_receive
 <LI><a href="#[345]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prot_8irtraking_cmd_read
+<LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 </UL>
 
 <P><STRONG><a name="[3c6]"></a>__c89snprintf</STRONG> (Thumb, 0 bytes, Stack size 40 bytes, printfa.o(i.__0snprintf), UNUSED)
@@ -4217,8 +4217,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_fruit_getData
-<LI><a href="#[322]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ik_solve
+<BR>[Called By]<UL><LI><a href="#[322]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ik_solve
+<LI><a href="#[3a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_fruit_getData
 </UL>
 
 <P><STRONG><a name="[286]"></a>__mathlib_flt_infnan</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, funder.o(i.__mathlib_flt_infnan))
@@ -4272,10 +4272,10 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = arm_chassis_release &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_name
 <LI><a href="#[298]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_busy_update
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 </UL>
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
@@ -4290,34 +4290,37 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
-<P><STRONG><a name="[29c]"></a>arm_flash_commit</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, arm_task.o(i.arm_flash_commit))
-<BR><BR>[Stack]<UL><LI>Max Depth = 736<LI>Call Chain = arm_flash_commit &rArr; flash_write &rArr; flash_erase_sector &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
+<P><STRONG><a name="[29c]"></a>arm_flash_commit</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, arm_task.o(i.arm_flash_commit))
+<BR><BR>[Stack]<UL><LI>Max Depth = 816<LI>Call Chain = arm_flash_commit &rArr; flash_guard_enter &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_exit
+<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_pick_cmd
 <LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_ik_cmd
 </UL>
 
-<P><STRONG><a name="[29e]"></a>arm_flash_test</STRONG> (Thumb, 400 bytes, Stack size 112 bytes, arm_task.o(i.arm_flash_test))
+<P><STRONG><a name="[2a0]"></a>arm_flash_test</STRONG> (Thumb, 400 bytes, Stack size 112 bytes, arm_task.o(i.arm_flash_test))
 <BR><BR>[Stack]<UL><LI>Max Depth = 912<LI>Call Chain = arm_flash_test &rArr; flash_guard_enter &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_name
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_exit
-<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
-<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
-<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_exit
+<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
 <LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[2a5]"></a>arm_ik_cmd</STRONG> (Thumb, 976 bytes, Stack size 88 bytes, arm_task.o(i.arm_ik_cmd))
-<BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = arm_ik_cmd &rArr; arm_flash_commit &rArr; flash_write &rArr; flash_erase_sector &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
+<BR><BR>[Stack]<UL><LI>Max Depth = 904<LI>Call Chain = arm_ik_cmd &rArr; arm_flash_commit &rArr; flash_guard_enter &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
 <LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_commit
@@ -4335,15 +4338,15 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 712<LI>Call Chain = arm_joint_jog &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_get_current_pulse
-<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 <LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_motion_allowed
 <LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mode_name
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_name
 <LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_clamp
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtol
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
+<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_get_current_pulse
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 </UL>
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
@@ -4361,9 +4364,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 696<LI>Call Chain = arm_joint_status &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
+<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_name
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_online
 <LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_get_current_pulse
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_name
 </UL>
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
@@ -4380,10 +4383,10 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[2ae]"></a>arm_mode_name</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, arm_task.o(i.arm_mode_name))
-<BR><BR>[Called By]<UL><LI><a href="#[2ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_pid_calc
+<BR><BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_pid_calc
 <LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_jog
 <LI><a href="#[2e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_gate
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[2ad]"></a>arm_motion_allowed</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, arm_task.o(i.arm_motion_allowed))
@@ -4440,13 +4443,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelayUntil
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Poll
-<LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
-<LI><a href="#[2c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_poll
 <LI><a href="#[2ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_pid_calc
 <LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task_init
 <LI><a href="#[2c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_tick
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
 <LI><a href="#[2c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handle_key
+<LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
+<LI><a href="#[2c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_poll
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
@@ -4455,16 +4458,16 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_UserKey_Init
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
-<LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_init
 <LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_send_current
 <LI><a href="#[2cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_defaults
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 <LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp_ecd
 <LI><a href="#[2ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_defaults
 <LI><a href="#[2d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_apply
 <LI><a href="#[2cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_struct_init
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_init
+<LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_init
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task
@@ -4484,7 +4487,7 @@ Global Symbols
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_enter
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_name
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 <LI><a href="#[2d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_apply
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtol
 <LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
@@ -4497,11 +4500,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_name
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_save
 <LI><a href="#[31f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_long5
 <LI><a href="#[31d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_double
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[2db]"></a>arm_vision_callback</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, arm_task.o(i.arm_vision_callback))
@@ -4541,8 +4544,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_feedback
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
-<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_report
+<BR>[Called By]<UL><LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_report
+<LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
 </UL>
 
 <P><STRONG><a name="[2ca]"></a>arm_yaw_pid_calc</STRONG> (Thumb, 1256 bytes, Stack size 48 bytes, arm_task.o(i.arm_yaw_pid_calc))
@@ -4597,14 +4600,14 @@ Global Symbols
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
 <LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp_ecd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_probe
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_probe
 <LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stop_all
 <LI><a href="#[294]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_release
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_save
 <LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_exit
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_enter
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_abort
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[2eb]"></a>arm_yaw_set_gain</STRONG> (Thumb, 318 bytes, Stack size 48 bytes, arm_task.o(i.arm_yaw_set_gain))
@@ -4693,8 +4696,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FDCAN_GetErrorCounters
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KeyTask_Entry
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KeyTask_Entry
 </UL>
 
 <P><STRONG><a name="[249]"></a>bsp_can_std_transmit</STRONG> (Thumb, 128 bytes, Stack size 56 bytes, bsp_can.o(i.bsp_can_std_transmit))
@@ -4730,8 +4733,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
+<BR>[Called By]<UL><LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 
 <P><STRONG><a name="[1fd]"></a>bsp_imu_bridge_update</STRONG> (Thumb, 132 bytes, Stack size 0 bytes, bsp_imu_bridge.o(i.bsp_imu_bridge_update))
@@ -4830,8 +4833,8 @@ Global Symbols
 <P><STRONG><a name="[307]"></a>comm_can_init</STRONG> (Thumb, 196 bytes, Stack size 8 bytes, can_comm.o(i.comm_can_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = comm_can_init &rArr; bsp_can_init &rArr; bsp_can_filter_init &rArr; HAL_FDCAN_ConfigFilter
 </UL>
-<BR>[Calls]<UL><LI><a href="#[308]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_motor_init
-<LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_init
+<BR>[Calls]<UL><LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_init
+<LI><a href="#[308]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_motor_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -4858,8 +4861,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[30b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_init
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;status_task
-<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
-<LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
+<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KeyTask_Entry
 <LI><a href="#[2ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_target_ecd
@@ -4881,7 +4883,8 @@ Global Symbols
 <LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_set_limit
 <LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_jog
 <LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_ik_cmd
-<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_commit
 <LI><a href="#[294]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_release
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_report
 <LI><a href="#[2e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_gate
@@ -4904,10 +4907,11 @@ Global Symbols
 <LI><a href="#[31f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_long5
 <LI><a href="#[31d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_double
 <LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ik_show
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
-<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
+<LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_poll
 </UL>
 
 <P><STRONG><a name="[cc]"></a>dbg_task</STRONG> (Thumb, 74 bytes, Stack size 200 bytes, dbg_print.o(i.dbg_task))
@@ -4944,8 +4948,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = dbus_process &rArr; xQueueReceive &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[312]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sbus_callback_handler
 <LI><a href="#[313]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;wdg_user_set_bit
+<LI><a href="#[312]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sbus_callback_handler
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_switch_task
 </UL>
@@ -4993,7 +4997,7 @@ Global Symbols
 <LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stop_all
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_fault
 <LI><a href="#[399]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_end
-<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
+<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
 <LI><a href="#[2fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_can_send
 </UL>
 
@@ -5048,9 +5052,9 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
 <P><STRONG><a name="[29a]"></a>mode_user_active</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, mode_switch_task.o(i.mode_user_active))
-<BR><BR>[Called By]<UL><LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stop_all
+<BR><BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stop_all
 <LI><a href="#[299]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_stop
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[29b]"></a>mode_user_clear</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, mode_switch_task.o(i.mode_user_clear))
@@ -5062,10 +5066,10 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[2b8]"></a>mode_user_set</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, mode_switch_task.o(i.mode_user_set))
-<BR><BR>[Called By]<UL><LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mode_manual
+<BR><BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mode_manual
 <LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_start
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_enter
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
 
 <P><STRONG><a name="[214]"></a>mypow</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, lcd.o(i.mypow))
@@ -5082,15 +5086,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;status_task
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_switch_task
 <LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
-<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
+<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
+<LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
+<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuTask_Entry
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LcdTask_Entry
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KeyTask_Entry
 <LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_probe
-<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
-<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
-<LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
-<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
+<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 </UL>
 
 <P><STRONG><a name="[2cb]"></a>osDelayUntil</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, cmsis_os.o(i.osDelayUntil))
@@ -5120,17 +5124,17 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vision_uart_rx_isr
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;status_task
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
-<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
-<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
+<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
+<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
+<LI><a href="#[3b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_parse_frames
+<LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_poll
 <LI><a href="#[310]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_online
 <LI><a href="#[2db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_vision_callback
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
 <LI><a href="#[2fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_dbg_jog_start
 <LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_dbg_jog_apply
-<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
-<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
-<LI><a href="#[3b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_parse_frames
-<LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_poll
+<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
+<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
 </UL>
 
 <P><STRONG><a name="[21e]"></a>osThreadCreate</STRONG> (Thumb, 94 bytes, Stack size 32 bytes, cmsis_os.o(i.osThreadCreate))
@@ -5247,8 +5251,8 @@ Global Symbols
 <P><STRONG><a name="[312]"></a>sbus_callback_handler</STRONG> (Thumb, 102 bytes, Stack size 16 bytes, prot_sbus.o(i.sbus_callback_handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = sbus_callback_handler &rArr; rc_callback_handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[371]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc_callback_handler
-<LI><a href="#[373]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_sw_to_wbus
+<BR>[Calls]<UL><LI><a href="#[373]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_sw_to_wbus
+<LI><a href="#[371]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc_callback_handler
 </UL>
 <BR>[Called By]<UL><LI><a href="#[311]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_process
 </UL>
@@ -5274,12 +5278,12 @@ Global Symbols
 <P><STRONG><a name="[2cc]"></a>servo_init</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, prot_servo.o(i.servo_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = servo_init &rArr; servo_test_init &rArr; xQueueGenericCreate &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[375]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_init
+<BR>[Calls]<UL><LI><a href="#[375]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_init
 <LI><a href="#[376]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_init
 <LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_start
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_init
 <LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_init
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task_init
 </UL>
@@ -5296,11 +5300,11 @@ Global Symbols
 <P><STRONG><a name="[2c6]"></a>servo_poll</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, prot_servo.o(i.servo_poll))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1176<LI>Call Chain = servo_poll &rArr; servo_test_process &rArr; servo_test_parse_line &rArr; arm_teach_cmd &rArr; teach_save &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
-<LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_poll
+<BR>[Calls]<UL><LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_poll
 <LI><a href="#[377]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_online
 <LI><a href="#[37a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_get_pulse
 <LI><a href="#[378]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_process
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task
 </UL>
@@ -5312,8 +5316,8 @@ Global Symbols
 <P><STRONG><a name="[37b]"></a>servo_set_config_mode</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, prot_servo.o(i.servo_set_config_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = servo_set_config_mode &rArr; servo_set_enabled &rArr; bsp_gpio_servo_power_on
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[37c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_set_config_allowed
+<BR>[Calls]<UL><LI><a href="#[37c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_set_config_allowed
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 </UL>
@@ -5324,15 +5328,15 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_on
 <LI><a href="#[2f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_gpio_servo_power_off
 </UL>
-<BR>[Called By]<UL><LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
-<LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_init
+<BR>[Called By]<UL><LI><a href="#[37b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_config_mode
 <LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_jog
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_save
 <LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_start
 <LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_exit
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_enter
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_abort
-<LI><a href="#[37b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_config_mode
+<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
+<LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_init
 </UL>
 
 <P><STRONG><a name="[2b2]"></a>servo_set_pulse</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, prot_servo.o(i.servo_set_pulse))
@@ -5348,22 +5352,22 @@ Global Symbols
 <P><STRONG><a name="[33e]"></a>servo_set_pulse_time</STRONG> (Thumb, 90 bytes, Stack size 16 bytes, prot_servo.o(i.servo_set_pulse_time))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = servo_set_pulse_time &rArr; xb_servo_set_pos &rArr; __2snprintf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
-<LI><a href="#[37e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_set_pulse
+<BR>[Calls]<UL><LI><a href="#[37e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_pwm_set_pulse
 <LI><a href="#[37d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_pulse_limit
+<LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
-<LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_servo_to
+<BR>[Called By]<UL><LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_servo_to
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
 </UL>
 
 <P><STRONG><a name="[37f]"></a>servo_teach_begin</STRONG> (Thumb, 142 bytes, Stack size 24 bytes, prot_servo.o(i.servo_teach_begin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = servo_teach_begin &rArr; xb_servo_read_pos &rArr; xb_servo_parse_frames &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_int
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osKernelSysTick
-<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 <LI><a href="#[380]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_release
 <LI><a href="#[381]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_lock
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_enter
 </UL>
@@ -5397,8 +5401,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 712<LI>Call Chain = servo_test_poll &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clamp_target
 <LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_side
+<LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clamp_target
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task
 </UL>
@@ -5746,8 +5750,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[30b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_init
 <LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_FREERTOS_Init
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_task
-<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
 <LI><a href="#[376]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_init
+<LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_init
 </UL>
 
 <P><STRONG><a name="[351]"></a>xQueueGenericCreateStatic</STRONG> (Thumb, 224 bytes, Stack size 32 bytes, queue.o(i.xQueueGenericCreateStatic))
@@ -5800,8 +5804,8 @@ Global Symbols
 <LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[362]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTimerGenericCommand
-<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
 <LI><a href="#[309]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;console_rx_byte
+<LI><a href="#[314]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_push_frame
 </UL>
 
 <P><STRONG><a name="[247]"></a>xQueueReceive</STRONG> (Thumb, 356 bytes, Stack size 48 bytes, queue.o(i.xQueueReceive))
@@ -5825,8 +5829,8 @@ Global Symbols
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_CAN2Transmit
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_CAN1Transmit
 <LI><a href="#[363]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvProcessReceivedCommands
-<LI><a href="#[311]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_process
 <LI><a href="#[378]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_process
+<LI><a href="#[311]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_process
 </UL>
 
 <P><STRONG><a name="[3ab]"></a>xTaskCheckForTimeOut</STRONG> (Thumb, 132 bytes, Stack size 16 bytes, tasks.o(i.xTaskCheckForTimeOut))
@@ -6036,11 +6040,11 @@ Global Symbols
 <LI><a href="#[3b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_parse_frames
 <LI><a href="#[346]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
-<LI><a href="#[2c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_poll
+<BR>[Called By]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
 <LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_read_joints
 <LI><a href="#[33f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_stop_servos
-<LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_test_parse_line
+<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
+<LI><a href="#[2c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_poll
 </UL>
 
 <P><STRONG><a name="[380]"></a>xb_servo_release</STRONG> (Thumb, 42 bytes, Stack size 24 bytes, prot_xb_servo.o(i.xb_servo_release))
@@ -6072,8 +6076,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[3af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_send_frame
 <LI><a href="#[346]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse_time
-<LI><a href="#[33f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_stop_servos
+<BR>[Called By]<UL><LI><a href="#[33f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_stop_servos
+<LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse_time
 </UL>
 
 <P><STRONG><a name="[392]"></a>xb_servo_write_id_raw</STRONG> (Thumb, 178 bytes, Stack size 40 bytes, prot_xb_servo.o(i.xb_servo_write_id_raw))
@@ -6973,7 +6977,7 @@ Local Symbols
 <P><STRONG><a name="[319]"></a>crc32_update</STRONG> (Thumb, 48 bytes, Stack size 12 bytes, arm_task.o(i.crc32_update))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = crc32_update
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<BR>[Called By]<UL><LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 <LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
 </UL>
 
@@ -6985,38 +6989,40 @@ Local Symbols
 <LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 </UL>
 
-<P><STRONG><a name="[2a2]"></a>flash_erase_sector</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, arm_task.o(i.flash_erase_sector))
+<P><STRONG><a name="[2a3]"></a>flash_erase_sector</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, arm_task.o(i.flash_erase_sector))
 <BR><BR>[Stack]<UL><LI>Max Depth = 696<LI>Call Chain = flash_erase_sector &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
 <LI><a href="#[31a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Unlock
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 </UL>
 
-<P><STRONG><a name="[29f]"></a>flash_guard_enter</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, arm_task.o(i.flash_guard_enter))
+<P><STRONG><a name="[29d]"></a>flash_guard_enter</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, arm_task.o(i.flash_guard_enter))
 <BR><BR>[Stack]<UL><LI>Max Depth = 800<LI>Call Chain = flash_guard_enter &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dji_send_current
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_commit
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
 </UL>
 
-<P><STRONG><a name="[2a4]"></a>flash_guard_exit</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, arm_task.o(i.flash_guard_exit))
-<BR><BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<P><STRONG><a name="[29f]"></a>flash_guard_exit</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, arm_task.o(i.flash_guard_exit))
+<BR><BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_commit
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
 </UL>
 
-<P><STRONG><a name="[2a0]"></a>flash_load</STRONG> (Thumb, 526 bytes, Stack size 104 bytes, arm_task.o(i.flash_load))
+<P><STRONG><a name="[2a1]"></a>flash_load</STRONG> (Thumb, 526 bytes, Stack size 104 bytes, arm_task.o(i.flash_load))
 <BR><BR>[Stack]<UL><LI>Max Depth = 768<LI>Call Chain = flash_load &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
@@ -7027,7 +7033,7 @@ Local Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_task_init
-<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_run
 <LI><a href="#[31d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_double
 </UL>
@@ -7036,18 +7042,18 @@ Local Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
 </UL>
 
-<P><STRONG><a name="[29d]"></a>flash_write</STRONG> (Thumb, 208 bytes, Stack size 32 bytes, arm_task.o(i.flash_write))
+<P><STRONG><a name="[29e]"></a>flash_write</STRONG> (Thumb, 208 bytes, Stack size 32 bytes, arm_task.o(i.flash_write))
 <BR><BR>[Stack]<UL><LI>Max Depth = 728<LI>Call Chain = flash_write &rArr; flash_erase_sector &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
 <LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Program
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
-<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
 <LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_build_image
-<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
+<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_commit
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_save
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
@@ -7162,7 +7168,7 @@ Local Symbols
 <LI><a href="#[399]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_end
 <LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_run
 <LI><a href="#[31f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_long5
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 </UL>
 
 <P><STRONG><a name="[31d]"></a>on_double</STRONG> (Thumb, 118 bytes, Stack size 16 bytes, arm_task.o(i.on_double))
@@ -7174,7 +7180,7 @@ Local Symbols
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_save
 <LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_stop
 <LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_start
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 <LI><a href="#[2d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_apply
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handle_key
@@ -7252,7 +7258,7 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[31b]"></a>pick_from_track</STRONG> (Thumb, 90 bytes, Stack size 0 bytes, arm_task.o(i.pick_from_track))
-<BR><BR>[Called By]<UL><LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<BR><BR>[Called By]<UL><LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 </UL>
 
 <P><STRONG><a name="[2bc]"></a>pick_learn</STRONG> (Thumb, 102 bytes, Stack size 32 bytes, arm_task.o(i.pick_learn))
@@ -7276,7 +7282,7 @@ Local Symbols
 <LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_build
 <LI><a href="#[335]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_apply_vision
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load
 <LI><a href="#[2d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cal_apply
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_pick_cmd
@@ -7294,8 +7300,8 @@ Local Symbols
 <P><STRONG><a name="[33d]"></a>play_servo_to</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, arm_task.o(i.play_servo_to))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = play_servo_to &rArr; servo_set_pulse_time &rArr; xb_servo_set_pos &rArr; __2snprintf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse_time
-<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_clamp
+<BR>[Calls]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_clamp
+<LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse_time
 </UL>
 <BR>[Called By]<UL><LI><a href="#[39a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_tick
 <LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_start
@@ -7326,7 +7332,7 @@ Local Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_state_name
 <LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mode_manual
-<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[294]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_release
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[2da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_erase
@@ -7336,12 +7342,12 @@ Local Symbols
 <P><STRONG><a name="[2e3]"></a>teach_abort</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, arm_task.o(i.teach_abort))
 <BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = teach_abort &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_clear
+<BR>[Calls]<UL><LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_clear
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[33f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_stop_servos
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_pid_calc
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yaw_fault
@@ -7354,13 +7360,13 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 832<LI>Call Chain = teach_enter &rArr; teach_abort &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 <LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_set
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_abort
+<LI><a href="#[37f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_begin
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[31e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_long2
@@ -7370,14 +7376,14 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 840<LI>Call Chain = teach_erase &rArr; teach_exit &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
 <LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_exit
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_name
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
 <LI><a href="#[397]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_slot_blank
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_exit
-<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
-<LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
+<LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_exit
+<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_guard_enter
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_erase_sector
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[31f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_long5
@@ -7386,12 +7392,12 @@ Local Symbols
 <P><STRONG><a name="[2c3]"></a>teach_exit</STRONG> (Thumb, 70 bytes, Stack size 16 bytes, arm_task.o(i.teach_exit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = teach_exit &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_clear
+<BR>[Calls]<UL><LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_clear
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[33f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_stop_servos
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stop_all
@@ -7439,11 +7445,6 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 704<LI>Call Chain = teach_play_start &rArr; teach_set_state &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
-<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_online
-<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 <LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_set
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_servo_to
@@ -7451,6 +7452,11 @@ Local Symbols
 <LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_clamp
 <LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;iabs32
 <LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp_ecd
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
+<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_online
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pick_run
@@ -7471,8 +7477,7 @@ Local Symbols
 <P><STRONG><a name="[39a]"></a>teach_play_tick</STRONG> (Thumb, 416 bytes, Stack size 32 bytes, arm_task.o(i.teach_play_tick))
 <BR><BR>[Stack]<UL><LI>Max Depth = 840<LI>Call Chain = teach_play_tick &rArr; teach_play_end &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
-<LI><a href="#[399]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_end
+<BR>[Calls]<UL><LI><a href="#[399]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_play_end
 <LI><a href="#[39b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;seg_ms_of
 <LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;play_servo_to
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;now_ms
@@ -7480,6 +7485,7 @@ Local Symbols
 <LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joint_clamp
 <LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;iabs32
 <LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp_ecd
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_pulse
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_tick
 </UL>
@@ -7537,15 +7543,15 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 840<LI>Call Chain = teach_save &rArr; arm_yaw_set_enable &rArr; dji_send_current &rArr; can_send &rArr; Prot_CAN1_Send_Frame &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_state_name
 <LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_set_state
 <LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_read_joints
 <LI><a href="#[336]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_push
 <LI><a href="#[398]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;teach_moved
-<LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_write
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_teach_end
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_enabled
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_teach_cmd
 <LI><a href="#[31d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;on_double
@@ -7613,9 +7619,9 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 688<LI>Call Chain = yaw_gate &rArr; dbg_print &rArr; usb_tx_send &rArr; xQueueGenericSend &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbg_print
-<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 <LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_motion_allowed
 <LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mode_name
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_config_active
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_target_ecd
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_set_enable
@@ -7632,8 +7638,8 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[2df]"></a>update_feedback</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, arm_yaw_limit.o(i.update_feedback))
-<BR><BR>[Called By]<UL><LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clamp_target
-<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_side
+<BR><BR>[Called By]<UL><LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_side
+<LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clamp_target
 </UL>
 
 <P><STRONG><a name="[314]"></a>dbus_push_frame</STRONG> (Thumb, 56 bytes, Stack size 24 bytes, prot_dbus.o(i.dbus_push_frame))
@@ -7686,11 +7692,11 @@ Local Symbols
 <LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0sscanf
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
-<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
+<BR>[Called By]<UL><LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
 <LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
 <LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
 <LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_poll
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 </UL>
 
 <P><STRONG><a name="[3ae]"></a>xb_servo_reset_rx</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, prot_xb_servo.o(i.xb_servo_reset_rx))
@@ -7704,13 +7710,13 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[3ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_reset_rx
 <LI><a href="#[3b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
-<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
-<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
+<BR>[Called By]<UL><LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
 <LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
 <LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
 <LI><a href="#[380]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_release
 <LI><a href="#[381]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_lock
+<LI><a href="#[341]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_set_pos
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 </UL>
 
 <P><STRONG><a name="[309]"></a>console_rx_byte</STRONG> (Thumb, 124 bytes, Stack size 64 bytes, servo_test.o(i.console_rx_byte))
@@ -7751,12 +7757,18 @@ Local Symbols
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSPI_W25Qxx_ReadBuffer
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSPI_W25Qxx_BlockErase_32K
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN2_Send_Frame
-<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
-<LI><a href="#[38c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_rx_bytes
-<LI><a href="#[38d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_set
-<LI><a href="#[38e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clear
-<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
+<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_recover
+<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_signed
+<LI><a href="#[388]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_float
+<LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_dec
+<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
+<LI><a href="#[389]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_rx_errors
+<LI><a href="#[38a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_rx_bytes
+<LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
+<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
+<LI><a href="#[390]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_last_frame
+<LI><a href="#[393]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_bind
+<LI><a href="#[37b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_config_mode
 <LI><a href="#[310]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_online
 <LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_set
 <LI><a href="#[29a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mode_user_active
@@ -7782,7 +7794,7 @@ Local Symbols
 <LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_set_limit
 <LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_joint_jog
 <LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_ik_cmd
-<LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_flash_test
 <LI><a href="#[299]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_stop
 <LI><a href="#[294]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_chassis_release
 <LI><a href="#[386]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_dbg_pid_get
@@ -7791,20 +7803,14 @@ Local Symbols
 <LI><a href="#[2fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_dbg_jog_start
 <LI><a href="#[385]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_dbg_jog_active
 <LI><a href="#[38b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_rx_count
-<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bsp_can_recover
-<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_signed
-<LI><a href="#[388]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_float
-<LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_dec
-<LI><a href="#[392]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_write_id_raw
-<LI><a href="#[389]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_rx_errors
-<LI><a href="#[38a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_rx_bytes
-<LI><a href="#[391]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_id_raw
-<LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_ping_raw
-<LI><a href="#[390]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_last_frame
-<LI><a href="#[393]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_bind
-<LI><a href="#[37b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_set_config_mode
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtoul
 <LI><a href="#[346]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN2_Send_Frame
+<LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Prot_CAN1_Send_Frame
+<LI><a href="#[38c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dbus_rx_bytes
+<LI><a href="#[38d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_set
+<LI><a href="#[38e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_yaw_limit_clear
+<LI><a href="#[340]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xb_servo_read_pos
 <LI><a href="#[384]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtok
 <LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
 </UL>

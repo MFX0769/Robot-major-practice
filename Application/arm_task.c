@@ -597,7 +597,17 @@ static int flash_write(void)
 
 int arm_flash_commit(void)
 {
-    int rc = flash_write();
+    uint8_t prev;
+    int rc;
+
+    /* 写片内 Flash 时整颗 CPU 停 1~2 秒，这期间发不出任何 CAN 帧。车在跑就先不存 */
+    if (arm_ctrl.chassis_run != 0U) {
+        dbg_print("[PICK] save rejected: line-following is running, send 'chassis stop' first\r\n");
+        return -9;
+    }
+    prev = flash_guard_enter();        /* 底盘归零、零值帧先发出去，再让 CPU 停下来 */
+    rc = flash_write();
+    flash_guard_exit(prev);
 
     arm_ctrl.teach.saved_valid = (rc == 0 && arm_teach_count >= 2U) ? 1U : 0U;
     return rc;

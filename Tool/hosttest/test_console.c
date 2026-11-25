@@ -557,6 +557,12 @@ int main(int argc, char **argv)
     CHECK(n_close > 0, "gripper closed during the sequence");
     printf("    pick sequence took %lums\n", (unsigned long)(g_now_ms - t0));
     n0 = g_flash_erase_cnt;
+    cmd("chassis line");
+    cmd("chassis line");
+    cmd("pick save");
+    CHECK(sim_out_has("save rejected") && g_flash_erase_cnt == n0 && arm_ctrl.chassis_run == 1,
+          "no flash write while the car is line-following (the CPU stalls during the write)");
+    cmd("chassis stop");
     cmd("pick save");
     CHECK(sim_out_has("saved to internal flash") && g_flash_erase_cnt > n0, "pick save");
     g_servo_online[0] = 0;                           /* 舵机读不回来 */
