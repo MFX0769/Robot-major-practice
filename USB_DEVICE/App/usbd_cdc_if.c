@@ -23,7 +23,7 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "servo_test.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -265,6 +265,14 @@ static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 11 */
+  {
+    /* 备用控制台：调试器虚拟串口不通时，板载 USB 这条也能发命令。
+       必须在重新挂接收之前把这一包字节取走，否则会被下一包覆盖。 */
+    uint32_t i;
+    for (i = 0U; i < *Len; i++)    {
+      servo_test_rx_byte((char)Buf[i]);
+    }
+  }
   USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceHS);
   return (USBD_OK);

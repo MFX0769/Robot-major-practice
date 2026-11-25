@@ -173,7 +173,10 @@ void chassis_task(void const *argu)
         }
 
         /* arm_busy��������ģʽ */
-        if (arm_busy) vx_ref = vy_ref = wz_ref = 0.0f;
+        /* zero the reference itself whenever the output is forced to zero (stop / PROTECT / arm busy).
+           Otherwise the wheel PIDs keep a phantom 1200rpm reference while in PROTECT and emit a
+           one-loop 1200-count D kick the moment the car leaves PROTECT. */
+        if (arm_busy || chassis_mode == CHASSIS_STOP || ctrl_mode == PROTECT_MODE) vx_ref = vy_ref = wz_ref = 0.0f;
 
         /* 运动学解�?*/
         chassis_mecanum_resolve(vx_ref, vy_ref, wz_ref, MECANUM_L);
@@ -202,6 +205,7 @@ void chassis_task(void const *argu)
             }
         }
 
+        chassis_dbg_jog_apply(chassis_2006);
         taskEXIT_CRITICAL();
         
         /* 通过队列发送电机电�?*/
@@ -210,4 +214,63 @@ void chassis_task(void const *argu)
         
         osDelayUntil(&mode_wake_time, CHASSIS_PERIOD);
     }
+}
+
+/* ==================== console debug hooks (2026-11-26) ==================== */
+/* Open-loop jog for ONE motor: console 'chassis motor <idx> <cur>'. Auto timeout. */
+static int8_t   s_jog_idx = -1;
+static int16_t  s_jog_cur = 0;
+static uint32_t s_jog_until = 0U;
+static uint32_t s_jog_applied = 0U;
+
+/* called from the control loop inside its critical section */
+void chassis_dbg_jog_apply(dji_motor_t *m)
+{
+    int i;
+
+    if (s_jog_idx < 0) return;
+    if ((int32_t)(osKernelSysTick() - s_jog_until) >= 0) {
+        s_jog_idx = -1;
+        return;
+    }
+    for (i = 0; i < 4; i++) {
+        m[i].tx_current = (i == s_jog_idx) ? s_jog_cur : 0;
+    }
+    s_jog_applied++;
+}
+
+int chassis_dbg_jog_start(int32_t idx, int32_t cur)
+{
+    if (idx < 0 || idx > 3 || cur == 0) return -1;
+    if (cur > (int32_t)CHASSIS_JOG_MAX_CUR) cur = (int32_t)CHASSIS_JOG_MAX_CUR;
+    if (cur < -(int32_t)CHASSIS_JOG_MAX_CUR) cur = -(int32_t)CHASSIS_JOG_MAX_CUR;
+    taskENTER_CRITICAL();
+    s_jog_idx = (int8_t)idx;
+    s_jog_cur = (int16_t)cur;
+    s_jog_until = osKernelSysTick() + CHASSIS_JOG_MS;
+    s_jog_applied = 0U;
+    taskEXIT_CRITICAL();
+    return 0;
+}
+
+void chassis_dbg_jog_stop(void)
+{
+    taskENTER_CRITICAL();
+    s_jog_idx = -1;
+    taskEXIT_CRITICAL();
+}
+
+uint8_t chassis_dbg_jog_active(void)
+{
+    return (s_jog_idx >= 0) ? 1U : 0U;
+}
+
+pid_t *chassis_dbg_pid_get(uint8_t i)
+{
+    return (i < 4U) ? &chassis_motor_pid[i] : 0;
+}
+
+pid_t *chassis_dbg_line_pid_get(void)
+{
+    return &line_track_pid;
 }

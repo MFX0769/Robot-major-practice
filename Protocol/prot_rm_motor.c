@@ -129,6 +129,8 @@ void dji_send_current(dji_motor_t *motor1, dji_motor_t *motor2,
     for (uint8_t i = 0; i < 4U; i++)
     {
         if (motors[i] == NULL) continue;
+        /* 没注册过的电机 can_id 是 0，算出来的槽位是负数，会写到帧外面；直接跳过 */
+        if (motors[i]->can_id < 0x201U || motors[i]->can_id > 0x208U) continue;
         if (motors[i]->can_id <= 0x204U)
         {
             fill_current(&low, motors[i]);

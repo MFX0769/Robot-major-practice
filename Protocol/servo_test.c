@@ -1,8 +1,8 @@
 /**
   * @file servo_test.c
-  * @brief 舵机测试命令解析与执行
-  * @note U10/COM141 命令入口; 仅 ping/read/setid/map, 不提供运动控制。
-  *       ISR 只收整行入队, 任务上下文执行解析和串口事务。
+  * @brief 调试控制台：命令解析与执行
+  * @note 输入有两路，内容相同：USART10（PE2/PE3，调试器虚拟串口）和板载 USB 虚拟串口。
+  *       中断只收整行入队，机械臂任务上下文里逐条解析执行。
   */
 #include "servo_test.h"
 #include "prot_xb_servo.h"
@@ -11,7 +11,11 @@
 #include "prot_rm_motor.h"
 #include "control_def.h"
 #include "arm_task.h"
+#include "chassis_task.h"
 #include "prot_vision.h"
+#include "prot_8irtraking.h"
+#include "prot_sbus.h"
+#include "prot_dbus.h"
 #include "w25q64.h"
 #include "mode_switch_task.h"
 #include "usart.h"
@@ -32,6 +36,8 @@ static uint8_t s_config_allowed;
 static uint8_t s_config_active;
 static uint8_t s_yaw_monitor_active;
 static uint8_t s_yaw_monitor_div;
+static volatile uint32_t s_rx_bytes;
+static uint32_t s_line_arm_tick;
 
 static int32_t parse_signed(const char *s, int32_t *value)
 {
@@ -95,6 +101,203 @@ static void servo_test_parse_line(const char *line)
     token = strtok(work, " ");
     if (token == NULL) goto usage;
 
+    /* ---- 底盘：状态 / 免遥控器巡线 / 单电机点动 / PID ---- */
+    if (strcmp(token, "chassis") == 0) {
+        char *sub = strtok(NULL, " ");
+        char *arg = strtok(NULL, " ");
+        int32_t idx, cur;
+        pid_t *p = NULL;
+        float kp, ki, kd;
+        char *t2, *t3;
+        bsp_can_stat_t st;
+        uint8_t i;
+        int cm;
+
+        if (sub == NULL) goto usage;
+        if (strcmp(sub, "status") == 0) {
+            if (arg != NULL) goto usage;
+            cm = (wbus_rc.data.sw2 == 2) ? 1 : (wbus_rc.data.sw2 == 0) ? 2 : 0;
+            bsp_can_stat_get(CAN_CHANNEL_1, &st);
+            dbg_print("[CHASSIS] ctrl=%s sw2=%d -> %s, arm_busy=%u jog=%u | CAN1 tx=%lu rx=%lu tec=%u rec=%u bo=%u\r\n",
+                      arm_mode_name(), (int)wbus_rc.data.sw2,
+                      (cm == 2) ? "LINE_TRACK" : (cm == 1) ? "REMOTER" : "STOP",
+                      (unsigned)arm_busy, (unsigned)chassis_dbg_jog_active(),
+                      (unsigned long)st.tx_ok, (unsigned long)st.rx, st.tec, st.rec, st.bo);
+            for (i = 0U; i < 4U; i++) {
+                dbg_print("[CHASSIS] m%u(%s) id=0x%03lX on=%u ecd=%u rpm=%d cur=%d temp=%u\r\n", (unsigned)i,
+                          (i == 0U) ? "LF" : (i == 1U) ? "LB" : (i == 2U) ? "RF" : "RB",
+                          (unsigned long)chassis_2006[i].can_id, (unsigned)chassis_2006[i].online,
+                          (unsigned)chassis_2006[i].ecd, (int)chassis_2006[i].speed_rpm,
+                          (int)chassis_2006[i].tx_current, (unsigned)chassis_2006[i].temperature);
+            }
+            return;
+        }
+        if (strcmp(sub, "line") == 0) {
+            /* 两步确认：巡线一启动就走，没有 2 秒缓冲（那只在上电后才有） */
+            uint32_t now = HAL_GetTick();
+            if (arg != NULL) goto usage;
+            if (s_line_arm_tick == 0U || (uint32_t)(now - s_line_arm_tick) > 5000U) {
+                s_line_arm_tick = now;
+                dbg_print("[CHASSIS] line-follow ARMED, not running. Send 'chassis line' again within 5s to START (moves at once)\r\n");
+                return;
+            }
+            s_line_arm_tick = 0U;
+            if (arm_chassis_release() == 0) {
+                mode_user_set(REMOTER_MODE);
+                dbg_print("[CHASSIS] line-follow RUNNING (sw2=%d). 'chassis stop' or 'stop' to halt\r\n",
+                          (int)wbus_rc.data.sw2);
+            }
+            return;
+        }
+        if (strcmp(sub, "stop") == 0) {
+            if (arg != NULL) goto usage;
+            s_line_arm_tick = 0U;
+            chassis_dbg_jog_stop();
+            arm_chassis_stop();
+            dbg_print("[CHASSIS] stopped, mode=PROTECT\r\n");
+            return;
+        }
+        if (strcmp(sub, "motor") == 0) {
+            if (arg == NULL || !parse_signed(arg, &idx) || idx < 0 || idx > 3) goto usage;
+            arg = strtok(NULL, " ");
+            if (arg == NULL || !parse_signed(arg, &cur) || strtok(NULL, " ") != NULL) goto usage;
+            if (chassis_dbg_jog_start(idx, cur) != 0) goto usage;
+            dbg_print("[CHASSIS] motor %ld open-loop, clamped to +-%d, auto zero after %ums\r\n",
+                      (long)idx, CHASSIS_JOG_MAX_CUR, (unsigned)CHASSIS_JOG_MS);
+            return;
+        }
+        if (strcmp(sub, "pid") == 0) {
+            if (arg == NULL) {
+                for (i = 0U; i < 4U; i++) {
+                    p = chassis_dbg_pid_get(i);
+                    dbg_print("[CHASSIS] pid m%u kp=%.2f ki=%.2f kd=%.2f max=%lu\r\n", (unsigned)i,
+                              (double)p->p, (double)p->i, (double)p->d, (unsigned long)p->MaxOutput);
+                }
+                p = chassis_dbg_line_pid_get();
+                dbg_print("[CHASSIS] pid line kp=%.2f ki=%.2f kd=%.2f max=%lu\r\n",
+                          (double)p->p, (double)p->i, (double)p->d, (unsigned long)p->MaxOutput);
+                return;
+            }
+            if (strcmp(arg, "line") == 0) {
+                p = chassis_dbg_line_pid_get();
+            } else if (parse_signed(arg, &idx) && idx >= 0 && idx <= 3) {
+                p = chassis_dbg_pid_get((uint8_t)idx);
+            } else goto usage;
+            t2 = strtok(NULL, " ");
+            t3 = strtok(NULL, " ");
+            arg = strtok(NULL, " ");
+            if (t2 == NULL || t3 == NULL || arg == NULL || strtok(NULL, " ") != NULL) goto usage;
+            if (!parse_float(t2, &kp) || !parse_float(t3, &ki) || !parse_float(arg, &kd)) goto usage;
+            if (kp < 0.0f || kp > 500.0f || ki < 0.0f || ki > 500.0f || kd < 0.0f || kd > 500.0f) goto usage;
+            p->p = kp;
+            p->i = ki;
+            p->d = kd;
+            dbg_print("[CHASSIS] pid %s set kp=%.2f ki=%.2f kd=%.2f\r\n",
+                      (p == chassis_dbg_line_pid_get()) ? "line" : "motor", (double)kp, (double)ki, (double)kd);
+            return;
+        }
+        goto usage;
+    }
+
+    /* ---- CAN 总线：统计 / 手动恢复 / 原始帧 ---- */
+    if (strcmp(token, "can") == 0) {
+        char *sub = strtok(NULL, " ");
+        char *arg;
+        char *end = NULL;
+        int32_t ch;
+        uint32_t id;
+        uint8_t d[8] = {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U};
+        uint8_t n = 0U;
+        bsp_can_stat_t st;
+        uint8_t k;
+
+        if (sub == NULL) goto usage;
+        if (strcmp(sub, "stat") == 0) {
+            if (strtok(NULL, " ") != NULL) goto usage;
+            for (k = 0U; k < 2U; k++) {
+                bsp_can_stat_get((k == 0U) ? CAN_CHANNEL_1 : CAN_CHANNEL_2, &st);
+                dbg_print("[CAN] c%u tx=%lu rx=%lu tec=%u rec=%u lec=%u bus_off_now=%u off_total=%lu auto_recovered=%lu\r\n",
+                          (unsigned)(k + 1U), (unsigned long)st.tx_ok, (unsigned long)st.rx,
+                          st.tec, st.rec, st.lec, st.bo,
+                          (unsigned long)st.bus_off, (unsigned long)st.recovered);
+            }
+            dbg_print("[CAN] readings: rx stays 0 = nobody on the bus answers (esc power / wiring / terminator / wrong bus). "
+                      "off_total growing = no ACK; the bus goes off and comes back by itself, it recovers once a node answers. "
+                      "bus_off_now=1 for long = send 'can recover <1|2>'. tx counts frames handed to the peripheral, it grows even with nobody on the bus\r\n");
+            return;
+        }
+        if (strcmp(sub, "recover") == 0) {
+            arg = strtok(NULL, " ");
+            if (arg == NULL || !parse_signed(arg, &ch) || (ch != 1 && ch != 2) || strtok(NULL, " ") != NULL) goto usage;
+            bsp_can_recover((ch == 1) ? CAN_CHANNEL_1 : CAN_CHANNEL_2);
+            dbg_print("[CAN] CAN%ld re-initialized, filters kept\r\n", (long)ch);
+            return;
+        }
+        if (strcmp(sub, "raw") == 0) {
+            arg = strtok(NULL, " ");
+            if (arg == NULL || !parse_signed(arg, &ch) || (ch != 1 && ch != 2)) goto usage;
+            arg = strtok(NULL, " ");
+            if (arg == NULL) goto usage;
+            id = strtoul(arg, &end, 16);
+            if (end == arg || *end != '\0' || id > 0x7FFU) goto usage;
+            while ((arg = strtok(NULL, " ")) != NULL && n < 8U) {
+                unsigned long b = strtoul(arg, &end, 16);
+                if (end == arg || *end != '\0' || b > 255UL) goto usage;
+                d[n++] = (uint8_t)b;
+            }
+            if (strtok(NULL, " ") != NULL) goto usage;
+            if (ch == 1) Prot_CAN1_Send_Frame(id, d, n);
+            else Prot_CAN2_Send_Frame(id, d, n);
+            dbg_print("[CAN] CAN%ld id=0x%03lX len=%u queued\r\n", (long)ch, (unsigned long)id, (unsigned)n);
+            return;
+        }
+        goto usage;
+    }
+
+    /* ---- 各路串口接收计数：哪一路不收数一眼能看出来 ---- */
+    if (strcmp(token, "uart") == 0) {
+        const prot_8irtraking_data_t *ln;
+        if (strtok(NULL, " ") != NULL) goto usage;
+        ln = prot_8irtraking_get_data();
+        dbg_print("[UART] console(U10) rx=%lu | line(U7) rx=%lu frames=%lu | vision(U8/PE0) rx=%lu frames=%lu\r\n",
+                  (unsigned long)s_rx_bytes, (unsigned long)ir_isr_bytes,
+                  (unsigned long)ln->rx_cnt, (unsigned long)vision_uart_rx_bytes,
+                  (unsigned long)vision_uart_rx_frames);
+        dbg_print("[UART] dbus(U5) rx=%lu frames=%lu online=%u | servo(U1) rx=%lu err=%lu\r\n",
+                  (unsigned long)dbus_rx_bytes(), (unsigned long)dbus_rx_count(),
+                  (unsigned)dbus_online(), (unsigned long)xb_servo_rx_bytes(),
+                  (unsigned long)xb_servo_rx_errors());
+        return;
+    }
+
+    /* ---- 死程序采摘 / 视觉逆解 ---- */
+    if (strcmp(token, "pick") == 0 || strcmp(token, "ik") == 0) {
+        uint8_t is_pick = (token[0] == 'p') ? 1U : 0U;
+        char *sub = strtok(NULL, " ");
+        char *a1 = strtok(NULL, " ");
+        char *a2 = strtok(NULL, " ");
+        if (sub == NULL || strtok(NULL, " ") != NULL) goto usage;
+        if (is_pick != 0U) arm_pick_cmd(sub, a1, a2);
+        else arm_ik_cmd(sub, a1, a2);
+        return;
+    }
+
+    /* ---- 按数字设采摘路点（不读舵机）：wp <0..4> <sh> <el> ---- */
+    if (strcmp(token, "wp") == 0) {
+        int32_t n, sh, el;
+        char *a1 = strtok(NULL, " ");
+        char *a2 = strtok(NULL, " ");
+        char *a3 = strtok(NULL, " ");
+
+        if (a1 == NULL || a2 == NULL || a3 == NULL || strtok(NULL, " ") != NULL) goto usage;
+        if (!parse_signed(a1, &n) || n < 0 || n >= (int32_t)ARM_PICK_STEPS) goto usage;
+        if (!parse_signed(a2, &sh) || !parse_signed(a3, &el)) goto usage;
+        if (sh < (int32_t)SERVO_PULSE_MIN || sh > (int32_t)SERVO_PULSE_MAX ||
+            el < (int32_t)SERVO_PULSE_MIN || el > (int32_t)SERVO_PULSE_MAX) goto usage;
+        (void)arm_pick_set((uint8_t)n, (uint16_t)sh, (uint16_t)el);
+        return;
+    }
+
     /* ---- 四关节点动 / 全局停止 ---- */
     if (strcmp(token, "joint") == 0) {
         uint8_t joint;
@@ -133,6 +336,7 @@ static void servo_test_parse_line(const char *line)
     }
     if (strcmp(token, "stop") == 0) {
         if (strtok(NULL, " ") != NULL) goto usage;
+        chassis_dbg_jog_stop();
         arm_stop_all();
         return;
     }
@@ -153,6 +357,7 @@ static void servo_test_parse_line(const char *line)
         if (strcmp(token, "manual") == 0) {
             (void)arm_mode_manual();
         } else if (strcmp(token, "protect") == 0) {
+            chassis_dbg_jog_stop();
             arm_stop_all();
         } else if (strcmp(token, "status") == 0) {
             dbg_print("[MODE] ctrl=%s override=%u teach=%s\r\n", arm_mode_name(),
@@ -172,6 +377,7 @@ static void servo_test_parse_line(const char *line)
     /* ---- 视觉链路状态 ---- */
     if (strcmp(token, "vis") == 0) {
         uint32_t age = 0U;
+        if (strtok(NULL, " ") != NULL) goto usage;
         if (vision_uart_last_tick != 0U) age = HAL_GetTick() - vision_uart_last_tick;
         dbg_print("[VIS] bytes=%lu frames=%lu age=%lu x=%d y=%d flag=%u cnt=%lu\r\n",
                   (unsigned long)vision_uart_rx_bytes,
@@ -382,7 +588,41 @@ static void servo_test_parse_line(const char *line)
 usage:
     dbg_print("[SERVO_TEST] usage: servo ping|read|setid|bind|config|run|map | joint shoulder|elbow|gripper <pulse|+d|-d> | joint status | joint limit <j> <min> <max>\r\n");
     dbg_print("[SERVO_TEST] usage: yaw enable|disable|status|target <ecd>|step <d>|probe|dir <1|-1>|limit <n>|speed <rpm>|gain <kp> <kd> <kp> <kd>|fault [clear]|monitor|stop|set|clear\r\n");
-    dbg_print("[SERVO_TEST] usage: stop | mode manual|protect|status | teach status|pt <n>|enter|exit|record|save|play|stop|load|erase|origin | flash test | vis | w25 id|test\r\n");
+    dbg_print("[SERVO_TEST] usage: stop | mode manual|protect|status | teach status|pt <n>|enter|exit|record|save|play|stop|load|erase|origin | flash test\r\n");
+    dbg_print("[SERVO_TEST] usage: chassis status|line|stop|motor <0..3> <cur>|pid [line|0..3 kp ki kd] | can stat|recover <1|2>|raw <ch> <id> [hex..] | uart\r\n");
+    dbg_print("[SERVO_TEST] usage: pick status|learn <0..4>|run|time <n> <ms>|open <p>|close <p>|auto on|off|vis <x> <y>|apply|save | ik status|l1|l2|learn|xy|vis|depth|k|dy|yawk|save | vis | w25 id|test\r\n");
+    dbg_print("[SERVO_TEST] usage: wp <0..4> <sh> <el>   set pick waypoint by pulse numbers, no servo read needed\r\n");
+}
+
+/* 行组装。USART10 中断和 USB 中断都会调，所以进临界区。 */
+static void console_rx_byte(char ch)
+{
+    uint32_t pm = __get_PRIMASK();
+    __disable_irq();
+
+    if (ch == '\r' || ch == '\n') {
+        if (s_line_len > 0U) {
+            servo_test_msg_t msg;
+            memcpy(msg.line, s_line, s_line_len);
+            msg.line[s_line_len] = '\0';
+            if (s_queue != NULL) {
+                (void)xQueueSendFromISR(s_queue, &msg, NULL);
+            }
+            s_line_len = 0U;
+        }
+    } else if (s_line_len + 1U < sizeof(s_line)) {
+        s_line[s_line_len++] = ch;
+    } else {
+        s_line_len = 0U;
+    }
+    __set_PRIMASK(pm);
+}
+
+/* USB CDC 中断里逐字节调用 */
+void servo_test_rx_byte(char ch)
+{
+    s_rx_bytes++;
+    console_rx_byte(ch);
 }
 
 void servo_test_rx_isr(void)
@@ -394,22 +634,8 @@ void servo_test_rx_isr(void)
         __HAL_UART_CLEAR_FLAG(&huart10, UART_CLEAR_NEF);
     }
     while (USART10->ISR & USART_ISR_RXNE_RXFNE) {
-        char ch = (char)USART10->RDR;
-        if (ch == '\r' || ch == '\n') {
-            if (s_line_len > 0U) {
-                servo_test_msg_t msg;
-                memcpy(msg.line, s_line, s_line_len);
-                msg.line[s_line_len] = '\0';
-                if (s_queue != NULL) {
-                    (void)xQueueSendFromISR(s_queue, &msg, NULL);
-                }
-                s_line_len = 0;
-            }
-        } else if (s_line_len + 1U < sizeof(s_line)) {
-            s_line[s_line_len++] = ch;
-        } else {
-            s_line_len = 0;
-        }
+        s_rx_bytes++;
+        console_rx_byte((char)USART10->RDR);
     }
 }
 

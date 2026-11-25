@@ -48,6 +48,7 @@ uint16_t xb_servo_get_pulse(uint8_t joint);
 uint8_t xb_servo_online(uint8_t joint);
 uint8_t xb_servo_bind(uint8_t joint, uint8_t id);
 uint32_t xb_servo_rx_errors(void);
+uint32_t xb_servo_rx_bytes(void);
 void xb_servo_rx_isr(void);
 
 #endif

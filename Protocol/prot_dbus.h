@@ -19,5 +19,6 @@ void dbus_rx_isr(void);
 void dbus_process(void);
 uint8_t dbus_online(void);
 uint32_t dbus_rx_count(void);
+uint32_t dbus_rx_bytes(void);
 
 #endif

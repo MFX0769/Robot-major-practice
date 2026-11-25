@@ -71,6 +71,22 @@ extern bsp_can_filt_tbl_t bsp_can2_filt_tbl;
 extern uint32_t can1_tx_ok_cnt;
 extern uint32_t can2_tx_ok_cnt;
 
+/* 运行统计，用于“CAN 突然没数据”时定位 */
+typedef struct
+{
+    uint32_t tx_ok;        /* HAL 接受的发送帧数 */
+    uint32_t rx;           /* 收到的帧数 */
+    uint32_t bus_off;      /* 累计进入 bus-off 的次数 */
+    uint32_t recovered;    /* 累计自动恢复成功的次数 */
+    uint8_t  tec;          /* 发送错误计数 0~255 */
+    uint8_t  rec;          /* 接收错误计数 0~255 */
+    uint8_t  bo;           /* 1 = 当前处于 bus-off */
+    uint8_t  lec;          /* 最近一次总线错误码 */
+} bsp_can_stat_t;
+
+void bsp_can_stat_get(can_channel_e ch, bsp_can_stat_t *out);
+void bsp_can_recover(can_channel_e ch);   /* 手动恢复：Stop + Start */
+
 void bsp_can_init(bsp_user_can_t *canx, void (*pFunc)(CAN_RxBuffer_t *));
 bsp_can_state_e bsp_can_std_transmit(can_channel_e can_periph, uint32_t id, uint8_t *data);
 

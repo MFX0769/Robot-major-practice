@@ -16,6 +16,7 @@ static volatile uint8_t s_rx_ring[XB_RX_RING_SIZE];
 static volatile uint16_t s_rx_head;
 static volatile uint16_t s_rx_tail;
 static volatile uint32_t s_rx_errors;
+static volatile uint32_t s_rx_bytes;
 static char s_last_frame[40];
 static uint32_t s_last_frame_tick;
 
@@ -36,6 +37,7 @@ void xb_servo_rx_isr(void)
     while (USART1->ISR & USART_ISR_RXNE_RXFNE) {
         uint8_t byte = (uint8_t)USART1->RDR;
         uint16_t next = (uint16_t)((s_rx_head + 1U) % XB_RX_RING_SIZE);
+        s_rx_bytes++;
         if (next != s_rx_tail) {
             s_rx_ring[s_rx_head] = byte;
             s_rx_head = next;
@@ -344,4 +346,10 @@ uint8_t xb_servo_bind(uint8_t joint, uint8_t id)
 uint32_t xb_servo_rx_errors(void)
 {
     return s_rx_errors;
+}
+
+/* 中断里收到的字节总数，'uart' 命令用来判断舵机总线有没有应答 */
+uint32_t xb_servo_rx_bytes(void)
+{
+    return s_rx_bytes;
 }

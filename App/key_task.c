@@ -4,12 +4,15 @@
 #include "bsp_buzzer.h"
 #include "ws2812.h"
 #include "arm_task.h"
+#include "prot_rm_motor.h"
+#include "dbg_print.h"
 
 float vbus = 0;
 volatile uint16_t adc_val[2];
 
 static uint8_t  s_last_state = 0xFFU;
 static uint32_t s_beep_off_tick;
+static uint32_t s_can_tick;
 
 /* 状态灯语：IDLE 绿 / READY 蓝 / RECORD 红 / SAVED 黄 / PLAYBACK 青 / ABORT 紫闪 */
 static void led_show(uint8_t st)
@@ -54,6 +57,20 @@ void KeyTask_Entry(void const * argument)
         if (s_beep_off_tick != 0U && (int32_t)(now - s_beep_off_tick) >= 0) {
             BSP_Buzzer_Off();
             s_beep_off_tick = 0U;
+        }
+
+        /* 1Hz 总线健康行：tx/rx 停止增长、tec 冲高、bo=1 都一眼能看出来 */
+        if (now - s_can_tick >= 1000U) {
+            bsp_can_stat_t a, b;
+            s_can_tick = now;
+            bsp_can_stat_get(CAN_CHANNEL_1, &a);
+            bsp_can_stat_get(CAN_CHANNEL_2, &b);
+            dbg_print("[CAN] c1 tx=%lu rx=%lu tec=%u rec=%u bo=%u off=%lu fix=%lu | "
+                      "c2 tx=%lu rx=%lu tec=%u rec=%u bo=%u off=%lu fix=%lu\r\n",
+                      (unsigned long)a.tx_ok, (unsigned long)a.rx, a.tec, a.rec, a.bo,
+                      (unsigned long)a.bus_off, (unsigned long)a.recovered,
+                      (unsigned long)b.tx_ok, (unsigned long)b.rx, b.tec, b.rec, b.bo,
+                      (unsigned long)b.bus_off, (unsigned long)b.recovered);
         }
 
         osDelay(100);

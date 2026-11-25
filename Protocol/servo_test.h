@@ -1,7 +1,7 @@
 /**
   * @file servo_test.h
-  * @brief 舵机串口调试测试接口
-  * @note 固定使用 U10/COM141, 命令由 arm_task 顺序执行。
+  * @brief 调试控制台接口
+  * @note 输入来自 USART10 中断和板载 USB 虚拟串口，命令由 arm_task 顺序执行。
   */
 #ifndef SERVO_TEST_H
 #define SERVO_TEST_H
@@ -17,6 +17,7 @@ typedef struct {
 
 void servo_test_init(void);
 void servo_test_rx_isr(void);
+void servo_test_rx_byte(char ch);     /* 第二路输入（USB CDC 中断）逐字节调用 */
 void servo_test_process(void);
 void servo_test_poll(void);
 void servo_test_set_config_allowed(uint8_t allowed);
