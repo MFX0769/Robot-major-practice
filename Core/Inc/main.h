@@ -60,7 +60,15 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
+/* BMI088 CS/INT pins (hand-added 2026-11-22, from vendor CtrBoard-H7_ALL.ioc) */
+#define ACC_CS_Pin        GPIO_PIN_0
+#define ACC_CS_GPIO_Port  GPIOC
+#define GYRO_CS_Pin       GPIO_PIN_3
+#define GYRO_CS_GPIO_Port GPIOC
+#define ACC_INT_Pin       GPIO_PIN_10
+#define ACC_INT_GPIO_Port GPIOE
+#define GYRO_INT_Pin      GPIO_PIN_12
+#define GYRO_INT_GPIO_Port GPIOE
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

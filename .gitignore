@@ -10,11 +10,17 @@ MDK-ARM/**/*.axf
 MDK-ARM/**/*.lib
 MDK-ARM/**/*.ini
 MDK-ARM/**/*.htm
+!MDK-ARM/**/*.build_log.htm
 MDK-ARM/**/*.build_log.htm
 MDK-ARM/DebugConfig/
-# 发布文件（只保留 .elf 调试，.hex/.bin 忽略）
-MDK-ARM/**/*.hex
-MDK-ARM/**/*.bin
+# 发布文件（固件产物需入库：hex/axf/map/build_log 保留，中间 .o/.d/.crf 继续忽略）
+!MDK-ARM/**/*.hex
+!MDK-ARM/**/*.bin
+!MDK-ARM/**/*.axf
+!MDK-ARM/**/*.map
+!MDK-ARM/**/*.build_log.htm
+!MDK-ARM/**/*.lnp
+!MDK-ARM/**/*.sct
 
 
 # ========== 新增忽略 ==========
@@ -28,7 +34,6 @@ MDK-ARM/Listings/
 MDK-ARM/Objects/
 MDK-ARM/*.sct
 MDK-ARM/*.dep
-MDK-ARM/*.lnp
 
 
 # ========== CubeMX 重定向文件（不需要） ==========
@@ -50,6 +55,7 @@ Core/Src/Retarget_IO.c
 
 # ========== J-Link / ST-Link 日志 ==========
 *.log
+!MDK-ARM/CtrBoard-H7_ALL/*.log
 *.jlink
 *.dbg
 *.ini

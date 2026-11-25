@@ -43,6 +43,7 @@
 #include "log_task.h"
 #include "arm_task.h"
 #include "chassis_task.h"
+#include "bsp_imu.h"   /* BMI088 IMU BSP (2026-11-22) */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,6 +83,7 @@ osThreadId ui_task_t;
 osThreadId log_task_t;
 osThreadId arm_task_t;
 osThreadId chassis_task_t;
+osThreadId imu_task_t;   /* BMI088 IMU (2026-11-22) */
 
 //osThreadId judge_send_task_t;
 
@@ -221,6 +223,11 @@ void MX_FREERTOS_Init(void) {
 
     
 /***********************AboveNormal priority task***********************/
+	/* BMI088 IMU BSP init + 1kHz task (2026-11-22) */
+	bsp_imu_init();
+	osThreadDef(imuTask, bsp_imu_task, osPriorityAboveNormal, 0, 512);
+    imu_task_t = osThreadCreate(osThread(imuTask), NULL);
+
 	osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
     gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 

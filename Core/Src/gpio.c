@@ -66,17 +66,23 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PC13 PC14 PC15 PC0
-                           PC1 PC2 PC3 PC4
-                           PC5 PC8 PC9 PC10
-                           PC11 PC12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_0
-                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
+  /*Configure GPIO pins : PC13 PC14 PC15 PC1 PC2 PC4
+                           PC5 PC8 PC9 PC10 PC11 PC12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15
+                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_4
                           |GPIO_PIN_5|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
                           |GPIO_PIN_11|GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* BMI088 CS pins: PC0=ACC_CS, PC3=GYRO_CS, default HIGH (deselected) */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0|GPIO_PIN_3, GPIO_PIN_SET);
 
   /*Configure GPIO pins : PA4 PA8 PA15 */
   GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_8|GPIO_PIN_15;
@@ -132,10 +138,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  /* 2026-11-22: PE2/PE3 保留给 USART10 (DAP VCP 调试输出),
+     不再配成 8IR GPIO 输入; 8IR 暂用 PA2/PA3/PB10/PB11 四路 */
+  /* GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;  */
+  /* GPIO_InitStruct.Mode = GPIO_MODE_INPUT;       */
+  /* GPIO_InitStruct.Pull = GPIO_NOPULL;           */
+  /* HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);       */
 
 }
 

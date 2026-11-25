@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_PWR_LDO_SUPPLY,USE_HAL_DRIVER,STM32H723xx,ARM_MATH_CM7,__FPU_PRESENT=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System;../UI;../Tool/debug</IncludePath>
+              <IncludePath>../Core/Inc;../USB_DEVICE/App;../USB_DEVICE/Target;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Math;../Comm;../Application;../Bsp;../Protocol;../System;../UI;../Tool/debug;../Bsp/imu</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1231,6 +1231,31 @@
               <FileName>bsp_gpio.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Bsp\bsp_gpio.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\imu\bsp_imu.c</FilePath>
+            </File>
+            <File>
+              <FileName>BMI088driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\imu\BMI088driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>BMI088Middleware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\imu\BMI088Middleware.c</FilePath>
+            </File>
+            <File>
+              <FileName>MahonyAHRS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\imu\MahonyAHRS.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\debug_port.c</FilePath>
             </File>
           </Files>
         </Group>
