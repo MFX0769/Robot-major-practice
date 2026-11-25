@@ -59,7 +59,8 @@ void KeyTask_Entry(void const * argument)
             s_beep_off_tick = 0U;
         }
 
-        /* 1Hz 总线健康行：tx/rx 停止增长、tec 冲高、bo=1 都一眼能看出来 */
+        /* 1Hz 总线健康行：rx 不涨、off 一直涨、tec 冲高、bo=1 都一眼能看出来。
+           tx 不说明问题：没人应答时它照样涨（FDCAN 配的是不重传，发一次算一帧） */
         if (now - s_can_tick >= 1000U) {
             bsp_can_stat_t a, b;
             s_can_tick = now;
