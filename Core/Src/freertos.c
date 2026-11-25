@@ -74,7 +74,7 @@ osThreadId chassis_task_t;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId KeyTaskHandle;
-uint32_t KeyTaskBuffer[ 128 ];
+uint32_t KeyTaskBuffer[ 256 ];
 osStaticThreadDef_t KeyTaskControlBlock;
 osThreadId LcdTaskHandle;
 uint32_t LcdTaskBuffer[ 256 ];
@@ -191,11 +191,12 @@ void MX_FREERTOS_Init(void) {
   usb_task_t = osThreadCreate(osThread(usbTask), NULL);
   osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
   mode_sw_task_t = osThreadCreate(osThread(modeswTask), NULL);
-  osThreadDef(statusTask, status_task, osPriorityNormal, 0, 256);
+  /* status/chassis 栈 384 字：dbg_print 改为在调用者栈上格式化后，静态深度分别 760/840 字节 */
+  osThreadDef(statusTask, status_task, osPriorityNormal, 0, 384);
   status_task_t = osThreadCreate(osThread(statusTask), NULL);
   osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 768);
   arm_task_t = osThreadCreate(osThread(armTask), NULL);
-  osThreadDef(chassisTask, chassis_task, osPriorityNormal, 0, 256);
+  osThreadDef(chassisTask, chassis_task, osPriorityNormal, 0, 384);
   chassis_task_t = osThreadCreate(osThread(chassisTask), NULL);
   osThreadDef(dbgTask, dbg_task, osPriorityLow, 0, 256);
   (void)osThreadCreate(osThread(dbgTask), NULL);
