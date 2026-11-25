@@ -41,6 +41,7 @@ void servo_set_config_mode(uint8_t enabled);
 uint8_t servo_config_active(void);
 void servo_set_angle(uint8_t id, float angle_deg);
 void servo_set_pulse(uint8_t id, uint16_t pulse_us);
+void servo_set_pulse_time(uint8_t id, uint16_t pulse_us, uint16_t time_ms);
 float servo_angle_to_pulse(uint8_t id, float angle_deg);
 uint16_t servo_pulse_limit(uint8_t id, uint16_t pulse);
 void servo_debug_info(void);

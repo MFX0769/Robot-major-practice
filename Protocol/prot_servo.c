@@ -107,7 +107,8 @@ void servo_set_angle(uint8_t id, float angle_deg)
     servo_set_pulse(id, pulse);
 }
 
-void servo_set_pulse(uint8_t id, uint16_t pulse_us)
+/* 带运动时间的位置命令。time_ms=20 等价于旧行为；回放时传段时长，让舵机自己做线性插值 */
+void servo_set_pulse_time(uint8_t id, uint16_t pulse_us, uint16_t time_ms)
 {
     if (id >= SERVO_NUM) return;
     pulse_us = servo_pulse_limit(id, pulse_us);
@@ -115,13 +116,18 @@ void servo_set_pulse(uint8_t id, uint16_t pulse_us)
     if (id < XB_JOINT_NUM) {
         if (servo_param[id].target_pulse != pulse_us) {
             servo_param[id].target_pulse = pulse_us;
-            /* 3ms 任务周期, T=20ms 让舵机内部完成平滑运动。 */
-            (void)xb_servo_set_pos(id, pulse_us, 20U);
+            (void)xb_servo_set_pos(id, pulse_us, time_ms);
         }
     } else {
         bsp_pwm_set_pulse(id, pulse_us);
     }
     servo_param[id].current_pulse = pulse_us;
+}
+
+void servo_set_pulse(uint8_t id, uint16_t pulse_us)
+{
+    /* 3ms 任务周期, T=20ms 让舵机内部完成平滑运动。 */
+    servo_set_pulse_time(id, pulse_us, 20U);
 }
 
 uint16_t servo_get_current_pulse(uint8_t id)

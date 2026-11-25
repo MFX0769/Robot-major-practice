@@ -27,6 +27,16 @@ static uint8_t read_pressed(void)
 
 void BSP_UserKey_Init(void)
 {
+    GPIO_InitTypeDef g = {0};
+
+    /* PA15 是 JTDI，复位默认的内部上拉被 CubeMX 的 NOPULL 关掉了。这里补回，
+       避免外部上拉缺失时引脚悬空、产生假按键。低电平 = 按下。 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    g.Pin = GPIO_PIN_15;
+    g.Mode = GPIO_MODE_INPUT;
+    g.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOA, &g);
+
     s_stable = 0U;
     s_raw_last = read_pressed();
     s_raw_change_tick = HAL_GetTick();
