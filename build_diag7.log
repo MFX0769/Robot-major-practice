@@ -1,0 +1,25 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(156): error:  #8: missing closing quote
+              dbg_print("[U7] RxState=%lu Err=%lu
+..\Application\status_task.c(157): error:  #8: missing closing quote
+  ",
+..\Application\status_task.c(158): error:  #29: expected an expression
+                        (unsigned long)huart7.RxState, (unsigned long)huart7.ErrorCode);
+..\Application\status_task.c(158): error:  #18: expected a ")"
+                        (unsigned long)huart7.RxState, (unsigned long)huart7.ErrorCode);
+..\Application\status_task.c(159): error:  #8: missing closing quote
+              if (lw->rx_cnt == last_rx) { if (++frozen >= 4) { int rc = prot_8irtraking_cmd_read(1,1); dbg_print("[U7] cmd rc=%d
+..\Application\status_task.c(160): error:  #8: missing closing quote
+  ", rc); frozen = 0; } }
+..\Application\status_task.c(161): error:  #18: expected a ")"
+              else { frozen = 0; last_rx = lw->rx_cnt; } }
+..\Application\status_task.c(161): error:  #65: expected a ";"
+              else { frozen = 0; last_rx = lw->rx_cnt; } }
+..\Application\status_task.c(191): error: At end of source:  #67: expected a "}"
+..\Application\status_task.c(191): error: At end of source:  #67: expected a "}"
+..\Application\status_task.c: 0 warnings, 10 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 10 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

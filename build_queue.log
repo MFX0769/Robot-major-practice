@@ -1,0 +1,36 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling usb_device.c...
+compiling vofa.c...
+..\vofa+\vofa.c(39): warning:  #223-D: function "usb_tx_send" declared implicitly
+  	usb_tx_send(buf, len);  /* all CDC traffic via single usb task (2026-11-22) */
+..\vofa+\vofa.c: 1 warning, 0 errors
+compiling dbg_print.c...
+..\Tool\debug\dbg_print.c(42): warning:  #223-D: function "usb_tx_send" declared implicitly
+          usb_tx_send((uint8_t *)dbg_buf, (uint16_t)len);
+..\Tool\debug\dbg_print.c: 1 warning, 0 errors
+compiling usb_comm.c...
+compiling Vision_Send_task.c...
+compiling usbd_cdc_if.c...
+compiling freertos.c...
+../Application/status_task.h(34): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct {
+../Core/Src/freertos.c: 1 warning, 0 errors
+compiling main.c...
+../Math/arm_math.h(4865): warning:  #3108-D: attribute "__packed__" does not apply here
+      __SIMD32_TYPE *vstate;
+../Math/arm_math.h(4873): warning:  #3108-D: attribute "__packed__" does not apply here
+      vstate = __SIMD32_CONST(S->state);
+../Math/math_calcu.h(32): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct
+../Core/Src/main.c: 3 warnings, 0 errors
+linking...
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_get_data (referred from debug_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_init (referred from chassis_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_poll_gpio (referred from chassis_task.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 3 error messages.
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 3 Error(s), 6 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:10

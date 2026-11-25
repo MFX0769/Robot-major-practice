@@ -1,0 +1,21 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(102): error:  #8: missing closing quote
+      out[7] = '
+..\Protocol\prot_8irtraking.c(103): error:  #8: missing closing quote
+  ';
+..\Protocol\prot_8irtraking.c(103): error:  #65: expected a ";"
+  ';
+..\Protocol\prot_8irtraking.c(97): warning:  #550-D: variable "out"  was set but never used
+      uint8_t out[8];
+..\Protocol\prot_8irtraking.c(222): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 2 warnings, 3 errors
+compiling chassis_task.c...
+compiling usart_comm.c...
+compiling status_task.c...
+compiling debug_task.c...
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 3 Error(s), 2 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:07

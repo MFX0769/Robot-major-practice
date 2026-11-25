@@ -1,0 +1,12 @@
+# Keil 中间文件不入库；hex/axf/map/build_log/构建与烧录日志入库
+**/MDK-ARM/**/*.o
+**/MDK-ARM/**/*.d
+**/MDK-ARM/**/*.crf
+**/MDK-ARM/**/*.iex
+**/MDK-ARM/**/*.lst
+**/MDK-ARM/**/*.dep
+**/MDK-ARM/DebugConfig/
+**/MDK-ARM/*.uvguix.*
+
+*.bak
+*.tmp

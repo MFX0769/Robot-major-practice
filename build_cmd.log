@@ -1,0 +1,40 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(151): error:  #18: expected a ")"
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c(154): warning:  #12-D: parsing restarts here after previous syntax error
+              else { frozen = 0; last_rx = ln->rx_cnt; } }); }
+..\Application\status_task.c: 1 warning, 1 error
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(36): error:  #65: expected a ";"
+  {
+..\Protocol\prot_8irtraking.c(126): warning:  #12-D: parsing restarts here after previous syntax error
+          memcpy(frame, p, flen);
+..\Protocol\prot_8irtraking.c(127): error:  #20: identifier "frame" is undefined
+          frame[flen] = '\0';
+..\Protocol\prot_8irtraking.c(127): error:  #20: identifier "flen" is undefined
+          frame[flen] = '\0';
+..\Protocol\prot_8irtraking.c(134): warning:  #223-D: function "parse_value" declared implicitly
+                  if (parse_value(frame, key, &v) == 0)
+..\Protocol\prot_8irtraking.c(137): warning:  #223-D: function "compute_position" declared implicitly
+              compute_position();
+..\Protocol\prot_8irtraking.c(144): warning:  #223-D: function "parse_value" declared implicitly
+                  if (parse_value(frame, key, &v) == 0)
+..\Protocol\prot_8irtraking.c(149): error:  #20: identifier "p" is undefined
+          p = tail + 1;
+..\Protocol\prot_8irtraking.c(149): error:  #20: identifier "tail" is undefined
+          p = tail + 1;
+..\Protocol\prot_8irtraking.c(33): warning:  #177-D: variable "ir_fbuf"  was declared but never referenced
+  static char ir_fbuf[96];
+..\Protocol\prot_8irtraking.c(34): warning:  #177-D: variable "ir_flen"  was declared but never referenced
+  static uint16_t ir_flen = 0;
+..\Protocol\prot_8irtraking.c(151): error:  #169: expected a declaration
+  }
+..\Protocol\prot_8irtraking.c(156): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c(156): warning: At end of source:  #12-D: parsing restarts here after previous syntax error
+..\Protocol\prot_8irtraking.c: 8 warnings, 6 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 7 Error(s), 9 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:05

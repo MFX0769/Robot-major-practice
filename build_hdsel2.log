@@ -1,0 +1,11 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(159): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 1 warning, 0 errors
+linking...
+Program Size: Code=105792 RO-data=19960 RW-data=1328 ZI-data=43312  
+FromELF: creating hex file...
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 0 Error(s), 1 Warning(s).
+Build Time Elapsed:  00:00:04

@@ -1,0 +1,19 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(171): error:  #8: missing closing quote
+                dbg_print("[TX] st=%d gState=%lu TxCount=%lu
+..\Application\status_task.c(172): error:  #8: missing closing quote
+  ", (int)st,
+..\Application\status_task.c(173): error:  #29: expected an expression
+                          (unsigned long)huart7.gState, (unsigned long)huart7.TxXferCount); }
+..\Application\status_task.c(173): error:  #18: expected a ")"
+                          (unsigned long)huart7.gState, (unsigned long)huart7.TxXferCount); }
+..\Application\status_task.c(152): warning:  #550-D: variable "last_rx"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c(152): warning:  #550-D: variable "frozen"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c: 2 warnings, 4 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 4 Error(s), 2 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

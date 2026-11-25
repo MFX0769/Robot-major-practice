@@ -1,0 +1,19 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(157): error:  #8: missing closing quote
+                static const char u7t[] = "U7_FROM_STATUS
+..\Application\status_task.c(158): error:  #8: missing closing quote
+  ";
+..\Application\status_task.c(159): error:  #65: expected a ";"
+                HAL_UART_Transmit(&huart7, (const uint8_t *)u7t, sizeof(u7t)-1, 100); }
+..\Application\status_task.c(157): warning:  #177-D: variable "u7t"  was declared but never referenced
+                static const char u7t[] = "U7_FROM_STATUS
+..\Application\status_task.c(152): warning:  #550-D: variable "last_rx"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c(152): warning:  #550-D: variable "frozen"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c: 3 warnings, 3 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 3 Error(s), 3 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

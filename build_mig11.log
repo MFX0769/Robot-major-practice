@@ -1,0 +1,23 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling bsp_imu_bridge.c...
+compiling imu_task.c...
+compiling freertos.c...
+../Application/status_task.h(34): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct {
+../Core/Src/freertos.c(207): warning:  #144-D: a value of type "void (*)(void)" cannot be used to initialize an entity of type "os_pthread"
+    osThreadDef(armTask, arm_task, osPriorityAboveNormal, 0, 512);
+../Core/Src/freertos.c: 2 warnings, 0 errors
+compiling main.c...
+../Math/arm_math.h(4865): warning:  #3108-D: attribute "__packed__" does not apply here
+      __SIMD32_TYPE *vstate;
+../Math/arm_math.h(4873): warning:  #3108-D: attribute "__packed__" does not apply here
+      vstate = __SIMD32_CONST(S->state);
+../Math/math_calcu.h(32): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct
+../Core/Src/main.c: 3 warnings, 0 errors
+linking...
+Program Size: Code=99908 RO-data=19960 RW-data=1312 ZI-data=42704  
+FromELF: creating hex file...
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 0 Error(s), 5 Warning(s).
+Build Time Elapsed:  00:00:07

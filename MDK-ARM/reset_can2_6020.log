@@ -1,0 +1,32 @@
+xPack Open On-Chip Debugger 0.12.0+dev-01685-gb9224c0c0-dirty (2024-08-02-19:51)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+DEPRECATED! use 'cmsis-dap vid_pid', not 'cmsis_dap_vid_pid'
+adapter speed: 1000 kHz
+none separate
+Info : Using CMSIS-DAPv2 interface with VID:PID=0xfaed:0x4873, serial=8e74d081
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: JTAG supported
+Info : CMSIS-DAP: Atomic commands supported
+Info : CMSIS-DAP: UART via USB COM port supported
+Info : CMSIS-DAP: FW Version = V208 v0.1
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 1 SWDIO/TMS = 1 TDI = 1 TDO = 1 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 1800 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [stm32h7x.ap2] Examination succeed
+Info : [stm32h7x.cpu0] Cortex-M7 r1p2 processor detected
+Warn : [stm32h7x.cpu0] Erratum 3092511: Cortex-M7 can halt in an incorrect address when breakpoint and exception occurs simultaneously
+Info : The erratum 3092511 workaround will resume after an incorrect halt
+Info : [stm32h7x.cpu0] target has 8 breakpoints, 4 watchpoints
+Info : [stm32h7x.cpu0] Examination succeed
+Info : [stm32h7x.ap2] gdb port disabled
+Info : [stm32h7x.cpu0] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+Warn : [stm32h7x.cpu0] target was in unknown state when halt was requested
+Info : [stm32h7x.cpu0] external reset detected
+Error: [stm32h7x.cpu0] not halted
+Error: [stm32h7x.cpu0] context restore failed, aborting resume
+

@@ -1,0 +1,11 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling can_bsp.c...
+linking...
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6200E: Symbol HAL_FDCAN_RxFifo0Callback multiply defined (by bsp_can.o and can_bsp.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 1 error messages.
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 1 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

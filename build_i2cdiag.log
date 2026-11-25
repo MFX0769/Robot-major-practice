@@ -1,0 +1,15 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(29): error:  #8: missing closing quote
+        const char s[32]; int n=snprintf((char*)s,sizeof(s),"[I2C] raw=0x%02X rx=%lu
+..\Protocol\prot_8irtraking.c(30): error:  #8: missing closing quote
+  ",val,(unsigned long)s_data.rx_cnt);
+..\Protocol\prot_8irtraking.c(31): error:  #18: expected a ")"
+        if(n>0) usb_tx_send((const uint8_t*)s,(uint16_t)n); } }
+..\Protocol\prot_8irtraking.c(196): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 1 warning, 3 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 3 Error(s), 1 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

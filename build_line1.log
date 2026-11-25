@@ -1,0 +1,57 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_xb_servo.c...
+..\Protocol\prot_xb_servo.c(82): warning:  #223-D: function "prot_line_uart_on_rx" declared implicitly
+      if (huart->Instance == UART7) { prot_line_uart_on_rx(); return; }
+..\Protocol\prot_xb_servo.c: 1 warning, 0 errors
+compiling status_task.c...
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #29: expected an expression
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #7: unrecognized token
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c(144): error:  #65: expected a ";"
+  \r\n        { extern const line_uart_data_t *prot_line_uart_get(void);\r\n          const line_uart_data_t *ln = prot_line_uart_get();\r\n          dbg_print("[LINE] A=%lu D=%lu err=%lu a1..a4=%u %u %u %u d=%u%u%u%u\r\n",\r\n                    (unsigned long)ln->a_cnt, (unsigned long)ln->d_cnt, (unsigned long)ln->err_cnt,\r\n                    ln->analog[0], ln->analog[1], ln->analog[2], ln->analog[3],\r\n                    ln->digital[0], ln->digital[1], ln->digital[2], ln->digital[3]); }        }
+..\Application\status_task.c: 0 warnings, 14 errors
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(127): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 1 warning, 0 errors
+compiling usart_comm.c...
+compiling prot_line_uart.c...
+compiling prot_vision.c...
+..\Protocol\prot_vision.c(533): warning:  #177-D: variable "z"  was declared but never referenced
+              float z = 0.0f;  /* Z轴默认值，后续可由视觉提供 */
+..\Protocol\prot_vision.c: 1 warning, 0 errors
+compiling main.c...
+../Math/arm_math.h(4865): warning:  #3108-D: attribute "__packed__" does not apply here
+      __SIMD32_TYPE *vstate;
+../Math/arm_math.h(4873): warning:  #3108-D: attribute "__packed__" does not apply here
+      vstate = __SIMD32_CONST(S->state);
+../Math/math_calcu.h(32): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct
+../Core/Src/main.c: 3 warnings, 0 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 14 Error(s), 6 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:08

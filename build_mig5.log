@@ -1,0 +1,31 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling user_lib.c...
+compiling usart.c...
+compiling imu_task.c...
+compiling fun_test_task.c...
+linking...
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_gpio_servo_power_off (referred from arm_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_gpio_servo_power_on (referred from arm_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_pwm_start (referred from arm_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_gpio_init (referred from prot_servo.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_pwm_init (referred from prot_servo.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_pwm_set_pulse (referred from prot_servo.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol CAN1_Tx_queue (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol CAN2_Tx_queue (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol CAN3_Tx_queue (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_can1_filt_tbl (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_can2_filt_tbl (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_can3_filt_tbl (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_can_init (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_can_std_transmit (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_user_can1 (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_user_can2 (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol bsp_user_can3 (referred from can_comm.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol VISION_send_queue (referred from usb_comm.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 18 error messages.
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 18 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:05

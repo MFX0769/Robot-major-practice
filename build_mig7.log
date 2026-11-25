@@ -1,0 +1,24 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling bsp_usart.c...
+..\Bsp\taurus\bsp_usart.c(218): error:  #20: identifier "huart9" is undefined
+    return HAL_UART_Transmit_DMA(&huart9, msg, len);
+..\Bsp\taurus\bsp_usart.c(226): error:  #20: identifier "huart6" is undefined
+    return HAL_UART_Transmit_DMA(&huart6, msg, len);
+..\Bsp\taurus\bsp_usart.c: 0 warnings, 2 errors
+compiling bsp_pwm.c...
+..\Bsp\taurus\bsp_pwm.c(23): error:  #20: identifier "htim2" is undefined
+      htim2.Instance = TIM2;
+..\Bsp\taurus\bsp_pwm.c(60): error:  #20: identifier "htim2" is undefined
+      HAL_TIM_PWM_Start(&htim2, SERVO_SHOULDER_CHANNEL);
+..\Bsp\taurus\bsp_pwm.c(70): error:  #20: identifier "htim2" is undefined
+      HAL_TIM_PWM_Stop(&htim2, SERVO_SHOULDER_CHANNEL);
+..\Bsp\taurus\bsp_pwm.c(88): error:  #20: identifier "htim2" is undefined
+              __HAL_TIM_SET_COMPARE(&htim2, SERVO_SHOULDER_CHANNEL, pulse_us);
+..\Bsp\taurus\bsp_pwm.c: 0 warnings, 4 errors
+compiling bsp_gpio.c...
+compiling bsp_can.c...
+compiling freertos.c...
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 6 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:07

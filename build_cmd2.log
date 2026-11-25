@@ -1,0 +1,13 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(153): error:  #20: identifier "ln" is undefined
+              if (ln->rx_cnt == last_rx) { if (++frozen >= 4) { prot_8irtraking_cmd_read(1,1); frozen = 0; } }
+..\Application\status_task.c: 0 warnings, 1 error
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(156): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 1 warning, 0 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 1 Error(s), 1 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:05

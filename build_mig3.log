@@ -1,0 +1,29 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(19): error:  #5: cannot open source input file "iwdg.h": No such file or directory
+  #include "iwdg.h"
+..\Application\status_task.c: 0 warnings, 1 error
+compiling can_comm.c...
+..\Comm\can_comm.c(23): error:  #5: cannot open source input file "dbg_print.h": No such file or directory
+  #include "dbg_print.h"
+..\Comm\can_comm.c: 0 warnings, 1 error
+compiling prot_vision.c...
+..\Protocol\prot_vision.c(258): error:  #20: identifier "VISION_HUART" is undefined
+      HAL_UART_Transmit_DMA(&VISION_HUART, vision_tx.buff, 25);
+..\Protocol\prot_vision.c(485): error:  #20: identifier "VISION_HUART" is undefined
+      HAL_UART_Transmit_DMA(&VISION_HUART, (uint8_t *)&vision_tx_msg_sp, VISION_SP_TX_DATA_LEN);  /* 视觉改接U6 */
+..\Protocol\prot_vision.c(532): warning:  #177-D: variable "z"  was declared but never referenced
+              float z = 0.0f;  /* Z轴默认值，后续可由视觉提供 */
+..\Protocol\prot_vision.c: 1 warning, 2 errors
+compiling usart_comm.c...
+..\Comm\usart_comm.c(247): error:  #20: identifier "huart9" is undefined
+  	  __HAL_UART_CLEAR_IDLEFLAG(&NEW_RC_HUART);
+..\Comm\usart_comm.c: 0 warnings, 1 error
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(127): warning:  #1-D: last line of file ends without a newline
+  }
+..\Protocol\prot_8irtraking.c: 1 warning, 0 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 5 Error(s), 2 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:06

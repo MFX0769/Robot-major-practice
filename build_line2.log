@@ -1,0 +1,11 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(144): error:  #20: identifier "line_uart_data_t" is undefined
+          { extern const line_uart_data_t *prot_line_uart_get(void);
+..\Application\status_task.c(145): error:  #20: identifier "line_uart_data_t" is undefined
+            const line_uart_data_t *ln = prot_line_uart_get();
+..\Application\status_task.c: 0 warnings, 2 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 2 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

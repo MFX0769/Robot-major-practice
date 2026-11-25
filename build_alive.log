@@ -1,0 +1,47 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_8irtraking.c...
+..\Protocol\prot_8irtraking.c(102): error:  #8: missing closing quote
+          HAL_UART_Transmit(&LINE_HUART, (uint8_t *)"MCU_ALIVE
+..\Protocol\prot_8irtraking.c(103): error:  #8: missing closing quote
+  ", 11, 50);
+..\Protocol\prot_8irtraking.c(104): error:  #165: too few arguments in function call
+      }
+..\Protocol\prot_8irtraking.c(104): error:  #18: expected a ")"
+      }
+..\Protocol\prot_8irtraking.c(104): error:  #65: expected a ";"
+      }
+..\Protocol\prot_8irtraking.c(105): warning:  #77-D: this declaration has no storage class or type specifier
+  }nclude "prot_8irtraking.h"
+..\Protocol\prot_8irtraking.c(105): error:  #65: expected a ";"
+  }nclude "prot_8irtraking.h"
+..\Protocol\prot_8irtraking.c(110): warning:  #12-D: parsing restarts here after previous syntax error
+  prot_8irtraking_data_t s_data;
+..\Protocol\prot_8irtraking.c(116): error:  #247: function "prot_8irtraking_init"  has already been defined
+  void prot_8irtraking_init(void)
+..\Protocol\prot_8irtraking.c(126): error:  #247: function "prot_8irtraking_cmd_read"  has already been defined
+  int prot_8irtraking_cmd_read(uint8_t analog_en, uint8_t digital_en)
+..\Protocol\prot_8irtraking.c(139): error:  #148: variable "ir_isr_bytes"  has already been initialized
+  volatile uint32_t ir_isr_bytes  = 0;
+..\Protocol\prot_8irtraking.c(140): error:  #148: variable "ir_poll_bytes"  has already been initialized
+  volatile uint32_t ir_poll_bytes = 0;
+..\Protocol\prot_8irtraking.c(142): error:  #148: variable "ir_flen"  has already been initialized
+  static uint16_t ir_flen = 0;
+..\Protocol\prot_8irtraking.c(145): error:  #247: function "prot_8ir_start_rx"  has already been defined
+  void prot_8ir_start_rx(void)
+..\Protocol\prot_8irtraking.c(152): error:  #247: function "prot_8ir_on_rx"  has already been defined
+  void prot_8ir_on_rx(void)
+..\Protocol\prot_8irtraking.c(171): error:  #247: function "prot_8ir_poll_rx"  has already been defined
+  void prot_8ir_poll_rx(void)
+..\Protocol\prot_8irtraking.c(200): error:  #247: function "prot_8ir_uart_diag"  has already been defined
+  void prot_8ir_uart_diag(void)
+..\Protocol\prot_8irtraking.c: 2 warnings, 15 errors
+compiling status_task.c...
+..\Application\status_task.c(152): warning:  #550-D: variable "last_rx"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c(152): warning:  #550-D: variable "frozen"  was set but never used
+            { static uint32_t last_rx = 0; static uint8_t frozen = 0;
+..\Application\status_task.c: 2 warnings, 0 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 15 Error(s), 4 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

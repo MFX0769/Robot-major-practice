@@ -1,0 +1,31 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling debug_task.c...
+compiling can_comm.c...
+..\Comm\can_comm.c(100): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&arm_yaw_motor, DJI_6020_MOTOR, CAN_CHANNEL_1, CAN_ARM_YAW_MOTOR_ID, 1.0f);
+..\Comm\can_comm.c(105): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&chassis_2006[0], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_LEFT_FRONT_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+..\Comm\can_comm.c(106): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&chassis_2006[1], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_LEFT_BACK_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+..\Comm\can_comm.c(107): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&chassis_2006[2], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_RIGHT_FRONT_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+..\Comm\can_comm.c(108): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&chassis_2006[3], DJI_2006_MOTOR, CAN_CHANNEL_1, CHA_RIGHT_BACK_2006, DJI_2006_ORIGINAL_REDUCTION_RATIO);
+..\Comm\can_comm.c(109): warning:  #188-D: enumerated type mixed with another type
+      dji_motor_init(&trigger_motor, DJI_2006_MOTOR, CAN_CHANNEL_1, 0x207, 82.8f);
+..\Comm\can_comm.c: 6 warnings, 0 errors
+compiling chassis_task.c...
+compiling main.c...
+../Math/arm_math.h(4865): warning:  #3108-D: attribute "__packed__" does not apply here
+      __SIMD32_TYPE *vstate;
+../Math/arm_math.h(4873): warning:  #3108-D: attribute "__packed__" does not apply here
+      vstate = __SIMD32_CONST(S->state);
+../Math/math_calcu.h(32): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct
+../Core/Src/main.c: 3 warnings, 0 errors
+linking...
+Program Size: Code=105220 RO-data=19960 RW-data=1340 ZI-data=43308  
+FromELF: creating hex file...
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 0 Error(s), 9 Warning(s).
+Build Time Elapsed:  00:00:06

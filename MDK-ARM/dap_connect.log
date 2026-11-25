@@ -1,0 +1,42 @@
+xPack Open On-Chip Debugger 0.12.0+dev-01685-gb9224c0c0-dirty (2024-08-02-19:51)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+adapter
+  adapter assert |deassert [srst|trst [assert|deassert srst|trst]]
+  adapter deassert |assert [srst|trst [deassert|assert srst|trst]]
+  adapter driver driver_name
+  adapter gpio [
+            
+            do|tdi|tms|tck|trst|swdio|swdio_dir|swclk|srst|led[gpio_number]
+            [-chip chip_number] [-active-high|-active-low]
+            [-push-pull|-open-drain|-open-source]
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            e|-pull-up|-pull-down][-init-inactive|-init-active|-init-input]
+            ]
+  adapter list
+  adapter name
+  adapter serial serial_string
+  adapter speed [khz]
+  adapter srst
+    adapter srst delay [milliseconds]
+    adapter srst pulse_width [milliseconds]
+  adapter transports transport ...
+  adapter usb
+    adapter usb location [<bus>-port[.port]...]
+  cmsis-dap quirk [enable | disable]
+reset_config [none|trst_only|srst_only|trst_and_srst]
+          [srst_pulls_trst|trst_pulls_srst|combined|separate]
+          [srst_gates_jtag|srst_nogate] [trst_push_pull|trst_open_drain]
+          [srst_push_pull|srst_open_drain]
+          [connect_deassert_srst|connect_assert_srst]
+

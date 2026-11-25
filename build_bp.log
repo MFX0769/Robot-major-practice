@@ -1,0 +1,81 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling dbg_print.c...
+..\Tool\debug\dbg_print.c(38): warning:  #223-D: function "xTaskGetSchedulerState" declared implicitly
+      if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+..\Tool\debug\dbg_print.c(38): error:  #20: identifier "taskSCHEDULER_RUNNING" is undefined
+      if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+..\Tool\debug\dbg_print.c(41): warning:  #223-D: function "osDelay" declared implicitly
+              osDelay(1);
+..\Tool\debug\dbg_print.c: 2 warnings, 1 error
+compiling main.c...
+../Math/arm_math.h(4865): warning:  #3108-D: attribute "__packed__" does not apply here
+      __SIMD32_TYPE *vstate;
+../Math/arm_math.h(4873): warning:  #3108-D: attribute "__packed__" does not apply here
+      vstate = __SIMD32_CONST(S->state);
+../Math/math_calcu.h(32): warning:  #3108-D: attribute "__packed__" does not apply here
+  typedef __packed struct
+../Core/Src/main.c(255): error:  #7: unrecognized token
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(255): error:  #29: expected an expression
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(255): error:  #7: unrecognized token
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(255): error:  #7: unrecognized token
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(255): error:  #29: expected an expression
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(255): error:  #7: unrecognized token
+    dbg_print("[B]S1 pre USER_UART_Init\r\n");\r\n  USER_UART_Init();\r\n  dbg_print("[B]S1 done\r\n");
+../Core/Src/main.c(256): error:  #7: unrecognized token
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(256): error:  #29: expected an expression
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(256): error:  #7: unrecognized token
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(256): error:  #7: unrecognized token
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(256): error:  #29: expected an expression
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(256): error:  #7: unrecognized token
+    dbg_print("[B]S4 pre line\r\n");\r\n  prot_line_uart_init();\r\n  dbg_print("[B]S4 done\r\n");   /* line sensor U7 @115200 (2026-11-22) */       /* SBUS(USART1 100000 8E2)/UART7 等业务串口 DMA+IDLE 配置 */
+../Core/Src/main.c(257): error:  #7: unrecognized token
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(257): error:  #29: expected an expression
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(257): error:  #7: unrecognized token
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(257): error:  #7: unrecognized token
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(257): error:  #29: expected an expression
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(257): error:  #7: unrecognized token
+    dbg_print("[B]S2 pre comm_can\r\n");\r\n  comm_can_init();\r\n  dbg_print("[B]S2 done\r\n");        /* CAN 电机实例注册 + 过滤表 (DJI 2006/6020 收敛 CAN1) */
+../Core/Src/main.c(258): error:  #7: unrecognized token
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(258): error:  #29: expected an expression
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(258): error:  #7: unrecognized token
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(258): error:  #7: unrecognized token
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(258): error:  #29: expected an expression
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(258): error:  #7: unrecognized token
+    dbg_print("[B]S3 pre shoot\r\n");\r\n  shoot_init();\r\n  dbg_print("[B]S3 done\r\n");           /* 发射机构初始化 */
+../Core/Src/main.c(268): error:  #7: unrecognized token
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c(268): error:  #29: expected an expression
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c(268): error:  #7: unrecognized token
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c(268): error:  #7: unrecognized token
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c(268): error:  #29: expected an expression
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c(268): error:  #7: unrecognized token
+    dbg_print("[B]S5 pre freertos\r\n");\r\n  MX_FREERTOS_Init();\r\n  dbg_print("[B]S5 done, starting kernel\r\n");
+../Core/Src/main.c: 3 warnings, 30 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 31 Error(s), 5 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

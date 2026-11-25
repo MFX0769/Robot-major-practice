@@ -1,0 +1,14 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+linking...
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_line_uart_init (referred from main.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_get_data (referred from debug_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_init (referred from chassis_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8ir_on_rx (referred from prot_xb_servo.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 4 error messages.
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 4 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

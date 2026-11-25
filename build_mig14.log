@@ -1,0 +1,17 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling status_task.c...
+..\Application\status_task.c(99): error:  #20: identifier "dbg_div" is undefined
+          if (++dbg_div >= 2) {
+..\Application\status_task.c(101): error:  #8: missing closing quote
+              dbg_print("[SYS] imu yaw=%.1f pit=%.1f cnt=%lu mode=%d
+..\Application\status_task.c(102): error:  #8: missing closing quote
+  ",
+..\Application\status_task.c(103): error:  #18: expected a ")"
+                        imu_data.yaw, imu_data.pitch, (unsigned long)imucnt, (int)ctrl_mode);
+..\Application\status_task.c(122): warning:  #177-D: variable "dbg_div"  was declared but never referenced
+      uint32_t dbg_div = 0;
+..\Application\status_task.c: 1 warning, 4 errors
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 4 Error(s), 1 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04

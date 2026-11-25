@@ -1,0 +1,15 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\Keil\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'CtrBoard-H7_ALL'
+compiling prot_8irtraking.c...
+linking...
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol ir_isr_bytes (referred from status_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8irtraking_cmd_read (referred from status_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8ir_poll_rx (referred from chassis_task.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8ir_start_rx (referred from prot_8irtraking.o).
+CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf: Error: L6218E: Undefined symbol prot_8ir_on_rx (referred from prot_xb_servo.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 5 error messages.
+"CtrBoard-H7_ALL\CtrBoard-H7_ALL.axf" - 5 Error(s), 0 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:04
