@@ -97,6 +97,7 @@
 "ctrboard-h7_all\prot_remote_fusion.o"
 "ctrboard-h7_all\prot_sbus.o"
 "ctrboard-h7_all\prot_8irtraking.o"
+"ctrboard-h7_all\tfmini.o"
 "ctrboard-h7_all\prot_servo.o"
 "ctrboard-h7_all\prot_xb_servo.o"
 "ctrboard-h7_all\servo_test.o"
