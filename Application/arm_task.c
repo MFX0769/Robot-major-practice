@@ -296,16 +296,26 @@ void arm_diag_print(void)
               (unsigned)((arm_ctrl.vis_tick != 0U && (uint32_t)(now_ms() - arm_ctrl.vis_tick) < TEACH_VIS_FRESH_MS) ? 1U : 0U),
               (unsigned)line_on, (unsigned long)(line != NULL ? line->rx_cnt : 0U),
               (unsigned long)line_age, (unsigned)dbus_online(), (unsigned long)dbus_rx_count(), (unsigned)lock_flag);
+    dbg_print("[DIAG] LINE state=%u pos=%d contrast=%u(on>=150) on_cnt=%u weight=%.2f(>=0.50) thr=%.0f rx=%lu age=%lums\r\n",
+              (unsigned)(line != NULL ? line->state : 0U), (int)(line != NULL ? line->position : 0),
+              (unsigned)(line != NULL ? line->contrast : 0U), (unsigned)(line != NULL ? line->on_cnt : 0U),
+              (double)(line != NULL ? line->weight_sum : 0.0f), (double)(line != NULL ? line->threshold : 0.0f),
+              (unsigned long)(line != NULL ? line->rx_cnt : 0U), (unsigned long)line_age);
+    if (line != NULL) {
+        dbg_print("[DIAG] LINE raw=%u %u %u %u %u %u %u %u | ratio=0.50 minWeight=0.08\r\n",
+                  (unsigned)line->analog[0], (unsigned)line->analog[1], (unsigned)line->analog[2], (unsigned)line->analog[3],
+                  (unsigned)line->analog[4], (unsigned)line->analog[5], (unsigned)line->analog[6], (unsigned)line->analog[7]);
+    }
     dbg_print("[DIAG] DBUS frames=%lu bad=%lu qdrop=%lu interval=%lums max=%lums | CONSOLE bytes=%lu lines=%lu enq=%lu qdrop=%lu\r\n",
               (unsigned long)df, (unsigned long)db, (unsigned long)dd,
               (unsigned long)dlast, (unsigned long)dmax,
               (unsigned long)rb, (unsigned long)rl, (unsigned long)re, (unsigned long)rd);
-    dbg_print("[DIAG] limits sh=%u..%u el=%u..%u gr=%u..%u yaw=%d/%d out=%d spd=%lu | yaw_guard=30ECD/15rpm hold=20 probeBand=150\r\n",
+    dbg_print("[DIAG] limits sh=%u..%u el=%u..%u gr=%u..%u yaw=%d/%d out=%d spd=%lu | yaw_guard=30ECD/15rpm hold=20 probeBand=150 lineKp=%.1f\r\n",
               (unsigned)s_joint_min[0], (unsigned)s_joint_max[0],
               (unsigned)s_joint_min[1], (unsigned)s_joint_max[1],
               (unsigned)s_joint_min[2], (unsigned)s_joint_max[2],
               ARM_YAW_ECD_LEFT_DEFAULT, ARM_YAW_ECD_RIGHT_DEFAULT, (int)arm_ctrl.yaw.out_limit,
-              (unsigned long)arm_ctrl.yaw.angle_pid.MaxOutput);
+              (unsigned long)arm_ctrl.yaw.angle_pid.MaxOutput, (double)chassis_dbg_line_pid_get()->p);
     dbg_print("[DIAG] LOG enq=%lu drop=%lu trunc=%lu uart_tx=%lu timeout=%lu | USB enq=%lu qdrop=%lu tx=%lu busy_drop=%lu | dbgQ=8x192B usbQ=16x120B\r\n",
               (unsigned long)enq, (unsigned long)drop, (unsigned long)trunc,
               (unsigned long)tx, (unsigned long)tout,

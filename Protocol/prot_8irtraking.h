@@ -19,6 +19,8 @@ typedef struct {
     uint32_t rx_cnt;
     uint8_t on_cnt;     /* 自适应阈值下有效通道数 */
     uint16_t contrast;  /* 本帧模拟量 max-min, 低于门限视为无线 */
+    float    weight_sum; /* 当前帧八路黑度权重总和；与 0.5 门限比较 */
+    float    threshold;  /* 当前帧动态黑白阈值 */
 } prot_8irtraking_data_t;
 
 extern prot_8irtraking_data_t s_data;

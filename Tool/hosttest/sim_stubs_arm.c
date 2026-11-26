@@ -3,6 +3,7 @@
 #include "servo_test.h"
 #include "prot_sbus.h"
 #include "chassis_task.h"
+#include "pid.h"
 #include "prot_dbus.h"
 #include "prot_8irtraking.h"
 #include "usb_comm.h"
@@ -14,6 +15,8 @@ wbus_frame_u wbus_rc;
 
 /* 机械臂测试不编 chassis_task.c：方向微调和避障标定只吞参数，不生效 */
 void chassis_map_sign_set(uint8_t idx, int8_t sign) { (void)idx; (void)sign; }
+static pid_t s_arm_test_line_pid;
+pid_t *chassis_dbg_line_pid_get(void) { return &s_arm_test_line_pid; }
 void chassis_av_apply(uint16_t kodo, uint16_t shift, uint16_t fwd, int8_t side)
 {
     (void)kodo; (void)shift; (void)fwd; (void)side;

@@ -375,6 +375,8 @@ int main(int argc, char **argv)
           "diag shows the exact last gate rejection and all interlock inputs");
     CHECK(sim_out_has("DBUS frames=") && sim_out_has("CONSOLE bytes=") && sim_out_has("USB enq=") && sim_out_has("LOG enq="),
           "diag covers the input and output diagnostic chains");
+    CHECK(sim_out_has("[DIAG] LINE state=") && sim_out_has("[DIAG] LINE raw=") && sim_out_has("weight="),
+          "diag exposes line state, eight raw channels and the LOST gate values");
     cmd("chassis line");
     CHECK(sim_out_has("ARMED") && arm_ctrl.chassis_run == 0 && ctrl_mode == ARM_TEACH_MODE, "first 'chassis line' only arms");
     chassis_run(200U);

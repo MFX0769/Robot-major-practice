@@ -204,6 +204,8 @@ static void compute_position(void)
         on++;
     }
     s_data.on_cnt = on;
+    s_data.weight_sum = wsum;
+    s_data.threshold = thr;
 
     if (on >= PROT_8IR_NUM_SENSORS) {
         s_data.state = LINE_STATE_ALLON;         /* 十字/全黑: 保持记忆位置 */
