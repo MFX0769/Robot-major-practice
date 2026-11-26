@@ -54,8 +54,8 @@ def info(msg):
 
 
 # 固件里直接读写的串口寄存器 -> 测试台的模拟寄存器。只改临时副本里的这几处，其余字节原样。
-REG_RE = re.compile(rb"(UART5|USART10|UART8)->(ISR|RDR|ICR)\b")
-REG_NUM = {"UART5": 5, "USART10": 10, "UART8": 8}
+REG_NUM = {"UART5": 5, "USART10": 10, "UART8": 8, "UART9": 9}
+REG_RE = re.compile(rb"(" + b"|".join(sorted((n.encode() for n in REG_NUM), key=len, reverse=True)) + rb")->(ISR|RDR|ICR)\b")
 REG_CALL = {"ISR": b"sim_uart_isr(%d)", "RDR": b"sim_uart_rdr(%d)", "ICR": b"(*sim_uart_icr(%d))"}
 
 
@@ -139,7 +139,8 @@ def main():
     proto = lambda n: ROOT / "Protocol" / n
     motor = proto("prot_rm_motor.c")            # 真实：电机 -> 0x200/0x1FF 帧打包
     pid = ROOT / "Math" / "pid.c"
-    core = ["sim.c", "sim_extra.c"]
+    # tfmini.c 是真实驱动：sim.c 的模拟测距传感器要往它的中断里灌字节，所以每个测试都编
+    core = ["sim.c", "sim_extra.c", stage(proto("tfmini.c"))]
 
     jobs = []
     if not a.key and not a.console and not a.dbus:

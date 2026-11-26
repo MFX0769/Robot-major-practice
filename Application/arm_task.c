@@ -69,7 +69,9 @@
 
 #define IK_DFLT_L1_MM           150U    /* 来自 6 月的 STL 模型，未实测 */
 #define IK_DFLT_L2_MM           150U
-#define IK_DFLT_DEPTH_MM        300U
+/* 视觉不给 Z。300 = L1+L2，横向一点余量都没有；250 时还能横着够 147mm。
+   到树前拖到位再 'ik here' 一次标出来，这个默认值只是没标之前的起点 */
+#define IK_DFLT_DEPTH_MM        250U
 #define IK_DFLT_K_X100          150U    /* 1.5 mm/像素，待标定 */
 
 /* ========================= 全局 ========================= */
@@ -372,6 +374,10 @@ static void cal_apply(void)
     chassis_map_sign_set(0U, (c->reserved[0] == (uint16_t)-1) ? -1 : 1);
     chassis_map_sign_set(1U, (c->reserved[1] == (uint16_t)-1) ? -1 : 1);
     chassis_map_sign_set(2U, (c->reserved[2] == (uint16_t)-1) ? -1 : 1);
+
+    /* 避障里程计标定、横移/前进距离；旧镜像里是 0，按默认值 */
+    chassis_av_apply(c->reserved[3], c->reserved[4], c->reserved[5],
+                     ((c->flags & ARM_CAL_FLAG_AVOID_RIGHT) != 0U) ? -1 : 1);
 }
 
 static void pick_defaults(void)
@@ -672,8 +678,8 @@ static int flash_load(void)
     if (cal.l2_mm < 20U || cal.l2_mm > 2000U) cal.l2_mm = IK_DFLT_L2_MM;
     if (cal.vis_depth_mm < 20U || cal.vis_depth_mm > 2000U) cal.vis_depth_mm = IK_DFLT_DEPTH_MM;
     if (cal.vis_k_x100 == 0U || cal.vis_k_x100 > 10000U) cal.vis_k_x100 = IK_DFLT_K_X100;
-    if (cal.pick_open < SERVO_PULSE_MIN || cal.pick_open > SERVO_PULSE_MAX) cal.pick_open = 1500U;
-    if (cal.pick_close < SERVO_PULSE_MIN || cal.pick_close > SERVO_PULSE_MAX) cal.pick_close = 1300U;
+    if (cal.pick_open < SERVO_PULSE_MIN || cal.pick_open > SERVO_PULSE_MAX) cal.pick_open = 1100U;
+    if (cal.pick_close < SERVO_PULSE_MIN || cal.pick_close > SERVO_PULSE_MAX) cal.pick_close = 1450U;
     if (cal.ik_valid != 0U) {
         if (cal.sh0_pulse < SERVO_PULSE_MIN || cal.sh0_pulse > SERVO_PULSE_MAX ||
             cal.sh90_pulse < SERVO_PULSE_MIN || cal.sh90_pulse > SERVO_PULSE_MAX ||
@@ -1624,6 +1630,54 @@ usage:
 }
 
 /* ========================= 视觉逆解：控制台命令 ========================= */
+/* 正运动学：脉宽 -> 夹爪相对肩轴的前向距离和高度（mm）。要先学会 sh0/sh90/el0/el90。 */
+static int fk_pose(const arm_teach_point_t *p, float *fwd, float *up)
+{
+    const arm_cal_t *c = &arm_ctrl.cal;
+    float k_sh, k_el, t1, t2;
+
+    if (c->ik_valid == 0U) return -1;
+    k_sh = ((float)c->sh90_pulse - (float)c->sh0_pulse) / 90.0f;
+    k_el = ((float)c->el90_pulse - (float)c->el0_pulse) / 90.0f;
+    t1 = ((float)p->shoulder - (float)c->sh0_pulse) / k_sh * DEG2RAD;
+    t2 = ((float)p->elbow - (float)c->el0_pulse) / k_el * DEG2RAD;
+    *fwd = (float)c->l1_mm * cosf(t1) + (float)c->l2_mm * cosf(t1 + t2);
+    *up = (float)c->l1_mm * sinf(t1) + (float)c->l2_mm * sinf(t1 + t2);
+    return 0;
+}
+
+/* 'ik here'：把写死的 Z 标出来。在树前拖到能夹到的位置、'pick learn 1' 记下之后发这条：
+   前向距离 -> vis_depth；收到过视觉帧的话，高度 -> cam_dy（解算里 up = dy - y_px*k）。 */
+static void ik_learn_here(void)
+{
+    const arm_teach_point_t *p = &arm_ctrl.pick_wp[1];
+    float fwd, up;
+    int32_t dy;
+
+    if (fk_pose(p, &fwd, &up) != 0) {
+        dbg_print("[IK] here: IK not calibrated, 'ik learn sh0|sh90|el0|el90' first\r\n");
+        return;
+    }
+    if (fwd < 20.0f || fwd > 2000.0f) {
+        dbg_print("[IK] here: EXTEND waypoint sh=%u el=%u gives fwd=%.1fmm, out of range\r\n",
+                  (unsigned)p->shoulder, (unsigned)p->elbow, (double)fwd);
+        return;
+    }
+    arm_ctrl.cal.vis_depth_mm = (uint16_t)(fwd + 0.5f);
+    dbg_print("[IK] here: EXTEND waypoint sh=%u el=%u -> fwd=%umm, vis_depth set\r\n",
+              (unsigned)p->shoulder, (unsigned)p->elbow, (unsigned)arm_ctrl.cal.vis_depth_mm);
+    if (arm_ctrl.vis_tick == 0U) {
+        dbg_print("[IK] here: no vision frame yet, dy unchanged. 'ik vis <x> <y>' then 'ik here' again sets the height\r\n");
+        return;
+    }
+    dy = (int32_t)up + (int32_t)((float)arm_ctrl.vis_y * ((float)arm_ctrl.cal.vis_k_x100 / 100.0f));
+    if (dy < -1000) dy = -1000;
+    if (dy > 1000) dy = 1000;
+    arm_ctrl.cal.cam_dy_mm = (int16_t)dy;
+    dbg_print("[IK] here: up=%.1fmm, vision y=%dpx -> dy=%dmm ('ik save' to keep)\r\n",
+              (double)up, (int)arm_ctrl.vis_y, (int)dy);
+}
+
 void arm_ik_cmd(const char *sub, const char *a1, const char *a2)
 {
     arm_cal_t *c = &arm_ctrl.cal;
@@ -1656,6 +1710,7 @@ void arm_ik_cmd(const char *sub, const char *a1, const char *a2)
     if (strcmp(sub, "learn") == 0) {
         /* 在示教释力状态下用手把臂摆到对应姿势，再发这条 */
         if (a1 == NULL) goto usage;
+        if (strcmp(a1, "here") == 0) { ik_learn_here(); return; }
         if (teach_read_joints(&p) != 0) {
             dbg_print("[IK] learn failed: servo read (need servo 5V)\r\n");
             return;
@@ -1722,7 +1777,7 @@ void arm_ik_cmd(const char *sub, const char *a1, const char *a2)
         return;
     }
 usage:
-    dbg_print("[IK] usage: ik status|l1 <mm>|l2 <mm>|learn sh0|sh90|el0|el90|xy <fwd> <up>|vis [x y]|depth <mm>|k <mm/px>|dy <mm>|yawk <n>|save\r\n");
+    dbg_print("[IK] usage: ik status|l1 <mm>|l2 <mm>|learn sh0|sh90|el0|el90|learn here|xy <fwd> <up>|vis [x y]|depth <mm>|k <mm/px>|dy <mm>|yawk <n>|save\r\n");
 }
 
 /* ========================= yaw 双环 ========================= */

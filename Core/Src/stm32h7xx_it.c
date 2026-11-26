@@ -332,6 +332,17 @@ void UART8_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles UART9 global interrupt (front TF-mini rangefinder RX, PD14).
+  */
+void UART9_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART9_IRQn 0 */
+  extern void tfmini_rx_isr(void);
+  tfmini_rx_isr();
+  /* USER CODE END UART9_IRQn 0 */
+}
+
+/**
   * @brief This function handles USART10 global interrupt.
   */
 void USART10_IRQHandler(void)

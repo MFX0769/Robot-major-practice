@@ -508,6 +508,27 @@ int main(void)
     CHECK(arm_ctrl.pick_wp[1].shoulder == s_ik_pose.shoulder, "pick apply writes the EXTEND pose");
     CHECK(arm_ctrl.pick_wp[2].shoulder == s_ik_pose.shoulder, "pick apply writes the GRAB pose");
     CHECK(arm_teach_count == 5, "pick track rebuilt");
+
+    /* 现场最快的 Z 标定：手拖到果子位置，pick learn 1 记下，再 ik here。
+       四点标定是 sh0=1500/sh90=1000、el0=1500/el90=2000，所以 1800/1800 的 FK 正好是 (238,-121)。
+       视觉 y=-50、k=1.5 => dy = up + y*k = -121 - 75 = -196。 */
+    sim_set_pulse(0, 1800); sim_set_pulse(1, 1800);
+    run(20U);
+    arm_pick_cmd("learn", "1", NULL);
+    CHECK(arm_ctrl.pick_wp[1].shoulder == 1800 && arm_ctrl.pick_wp[1].elbow == 1800, "EXTEND waypoint learned from the dragged pose");
+    arm_ik_cmd("depth", "999", NULL);                   /* 故意错，确认 here 会覆盖 */
+    sim_out_clear();
+    arm_ik_cmd("learn", "here", NULL);
+    CHECK(arm_ctrl.cal.vis_depth_mm == 238, "ik here turns the dragged pose into fixed depth 238mm");
+    CHECK(arm_ctrl.cal.cam_dy_mm == -196, "ik here uses the latest vision y to set the height offset");
+    CHECK(sim_out_has("vis_depth set"), "and prints that it set the depth");
+    arm_ik_cmd("vis", NULL, NULL);
+    fk_from_pulse(s_ik_pose.shoulder, s_ik_pose.elbow, &x, &y);
+    CHECK(fabsf(x - 238.0f) < 2.0f && fabsf(y + 121.0f) < 2.0f, "the IK solution reproduces the dragged target after here");
+    arm_ik_cmd("learn", "here", NULL);
+    CHECK(arm_ctrl.cal.vis_depth_mm == 238 && arm_ctrl.cal.cam_dy_mm == -196, "ik here is idempotent");
+    arm_ik_cmd("depth", "200", NULL);                   /* 后续 T13 的保存值仍用 200 */
+
     CHECK(arm_joint_set_limit(0, 600, 2400) == 0 && arm_joint_set_limit(2, 1100, 1900) == 0, "joint limits changed at runtime");
     CHECK(arm_yaw_set_limit(6000) == 0 && arm_yaw_set_speed_limit(200) == 0, "yaw limits changed at runtime");
     CHECK(arm_yaw_set_gain(10.0f, 2.0f, 100.0f, 5.0f) == 0, "yaw gains changed at runtime");
@@ -528,7 +549,7 @@ int main(void)
     CHECK(arm_ctrl.yaw.angle_pid.p == 10.0f && arm_ctrl.yaw.angle_pid.d == 2.0f &&
           arm_ctrl.yaw.spd_pid.p == 100.0f && arm_ctrl.yaw.spd_pid.d == 5.0f, "yaw gains survive power cycle");
     CHECK(arm_teach_count == 5 && arm_ctrl.teach.saved_valid == 1, "pick track restored");
-    CHECK(arm_ctrl.pick_wp[1].shoulder == s_ik_pose_saved_sh, "pick waypoints rebuilt from the saved 5-point track");
+    CHECK(arm_ctrl.pick_wp[1].shoulder == 1800, "pick waypoints rebuilt from the saved 5-point track");
     n_x = (uint16_t)g_cmd_log_n;
     tripleclick();
     run(1200U);

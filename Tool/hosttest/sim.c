@@ -14,6 +14,7 @@
 #include "prot_sbus.h"
 #include "mode_switch_task.h"
 #include "prot_vision.h"
+#include "tfmini.h"
 #include "stm32h7xx_hal_flash.h"
 #include "stm32h7xx_hal_flash_ex.h"
 
@@ -50,6 +51,11 @@ sim_delayuntil_fn g_delayuntil_hook;
 char     g_out[G_OUT_CAP];
 uint32_t g_out_len;
 int      g_capture;
+/* 模拟的前向测距模块：g_tfmini_hz > 0 时每秒发这么多帧 */
+int      g_tfmini_hz;
+uint16_t g_tfmini_dist;
+uint16_t g_tfmini_strength;
+int      g_wheel_lock;              /* 1 = 轮子卡住不转（测超时用） */
 
 /* 固件里声明的全局对象，在这里给出定义 */
 servo_param_t servo_param[SERVO_NUM];
@@ -200,6 +206,10 @@ static void plant_1ms(void)
 
     for (j = 0U; j < 4U; j++) {
         /* 2006：满电流对应约 3000rpm，时间常数约 50ms */
+        if (g_wheel_lock != 0) {
+            chassis_2006[j].speed_rpm = 0;
+            continue;
+        }
         float tgt = (float)s_wheel_tgt[j] * 0.3f;
         float spd = (float)chassis_2006[j].speed_rpm;
         spd += (tgt - spd) * 0.02f;
@@ -207,13 +217,48 @@ static void plant_1ms(void)
     }
 }
 
+/* 往 UART9 的接收寄存器里灌原始字节（测校验、错位、重同步用） */
+void sim_tfmini_bytes(const uint8_t *buf, uint32_t n)
+{
+    uint32_t i;
+
+    for (i = 0U; i < n; i++) {
+        sim_uart_rx_push(9, buf[i]);
+        tfmini_rx_isr();
+    }
+}
+
+/* 模拟模块发一帧：dist 是帧里的原始值（出厂单位 cm） */
+void sim_tfmini_frame(uint16_t dist, uint16_t strength)
+{
+    uint8_t b[9];
+    uint8_t i, sum = 0U;
+
+    b[0] = 0x59U;
+    b[1] = 0x59U;
+    b[2] = (uint8_t)(dist & 0xFFU);
+    b[3] = (uint8_t)(dist >> 8);
+    b[4] = (uint8_t)(strength & 0xFFU);
+    b[5] = (uint8_t)(strength >> 8);
+    b[6] = 0x20U;
+    b[7] = 0x01U;
+    for (i = 0U; i < 8U; i++) sum = (uint8_t)(sum + b[i]);
+    b[8] = sum;
+    sim_tfmini_bytes(b, 9U);
+}
+
 void sim_advance(uint32_t ms)
 {
     uint32_t i;
+    static uint32_t ms_cnt;
 
     for (i = 0U; i < ms; i++) {
         g_now_ms++;
         plant_1ms();
+        ms_cnt++;
+        if (g_tfmini_hz > 0 && (ms_cnt % (uint32_t)(1000 / g_tfmini_hz)) == 0U) {
+            sim_tfmini_frame(g_tfmini_dist, g_tfmini_strength);
+        }
     }
 }
 
@@ -400,6 +445,11 @@ void sim_reset(void)
     memset(&arm_yaw_motor, 0, sizeof(arm_yaw_motor));
     ctrl_mode = PROTECT_MODE;
     g_sim_primask = 0U;
+    g_tfmini_hz = 0;
+    g_tfmini_dist = 0U;
+    g_tfmini_strength = 800U;
+    g_wheel_lock = 0;
+    huart9.uart = 9;
 
     /* 与 Comm/can_comm.c 的 comm_can_init 相同：can_id 决定电机落在 0x200/0x1FF 帧的哪个槽位 */
     dji_motor_init(&arm_yaw_motor, DJI_6020_MOTOR, PROT_CAN_CHANNEL_2, 0x208U, 1.0f);

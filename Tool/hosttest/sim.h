@@ -44,6 +44,14 @@ extern int16_t  g_motor_tx[4];         /* 最近一帧里 4 个电机的电流�
 extern uint32_t g_chassis_tx_frames;   /* 底盘任务发帧次数 */
 void   sim_wheel_set_rpm(int idx, int rpm);
 void   sim_line_set(uint8_t state, int16_t position);   /* 巡线模块给的 state / position */
+extern int      g_wheel_lock;          /* 1 = 四个轮子卡住不转 */
+
+/* 前向测距模块（UART9，真实驱动 Protocol/tfmini.c） */
+extern int      g_tfmini_hz;           /* >0：sim_advance 里每秒自动发这么多帧 */
+extern uint16_t g_tfmini_dist;         /* 自动帧的原始距离（出厂单位 cm） */
+extern uint16_t g_tfmini_strength;
+void   sim_tfmini_frame(uint16_t dist, uint16_t strength);   /* 手发一帧，带正确校验 */
+void   sim_tfmini_bytes(const uint8_t *buf, uint32_t n);     /* 灌原始字节 */
 
 /* can raw 记录 */
 extern uint32_t g_canraw_cnt;

@@ -298,6 +298,15 @@ static void servo_test_parse_line(const char *line)
         return;
     }
 
+    /* ---- 前向测距避障 ---- */
+    if (strcmp(token, "avoid") == 0) {
+        char *sub = strtok(NULL, " ");
+        char *arg = strtok(NULL, " ");
+        if (sub != NULL && strtok(NULL, " ") == NULL) chassis_av_cmd(sub, arg);
+        else chassis_av_cmd(NULL, NULL);
+        return;
+    }
+
     /* ---- 死程序采摘 / 视觉逆解 ---- */
     if (strcmp(token, "pick") == 0 || strcmp(token, "ik") == 0) {
         uint8_t is_pick = (token[0] == 'p') ? 1U : 0U;
@@ -620,6 +629,7 @@ usage:
     dbg_print("[SERVO_TEST] usage: chassis status|line|stop|motor <0..3> <cur>|pid [line|0..3 kp ki kd]|map [vx|vy|wz <1|-1>] | can stat|recover <1|2>|raw <ch> <id> [hex..] | uart | rc\r\n");
     dbg_print("[SERVO_TEST] usage: pick status|learn <0..4>|run|time <n> <ms>|open <p>|close <p>|auto on|off|vis <x> <y>|apply|save | ik status|l1|l2|learn|xy|vis|depth|k|dy|yawk|save | vis | w25 id|test\r\n");
     dbg_print("[SERVO_TEST] usage: wp <0..4> <sh> <el>   set pick waypoint by pulse numbers, no servo read needed\r\n");
+    dbg_print("[SERVO_TEST] usage: avoid status|on|off|run|app <mm>|shift <mm>|fwd <mm>|side left|right|unit cm|mm|wheel <mm>|odo|calib <mm>   front TF-mini sidestep\r\n");
 }
 
 /* 行组装。USART10 中断和 USB 中断都会调，所以进临界区。 */

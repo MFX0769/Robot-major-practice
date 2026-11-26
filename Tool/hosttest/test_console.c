@@ -16,6 +16,7 @@
 #include "prot_8irtraking.h"
 #include "servo_test.h"
 #include "mode_switch_task.h"
+#include "tfmini.h"
 
 static int g_fail, g_pass;
 static const char *g_section = "";
@@ -38,6 +39,9 @@ static volatile uint32_t s_budget;
 static volatile int s_task_alive;
 static int s_absmax;                 /* 这一轮里 4 个轮子电流绝对值的最大值 */
 static int16_t s_last_tx[4];
+/* 测试自己的一套里程计：拿轮速按 mm 积分，用来独立核对固件那条（g_t_kodo = mm per rpm*s） */
+static float g_t_kodo = 0.221f;
+static float g_t_ox, g_t_oy;
 
 static int chassis_hook(uint32_t *ticks, uint32_t period)
 {
@@ -50,11 +54,18 @@ static int chassis_hook(uint32_t *ticks, uint32_t period)
         if (a < 0) a = -a;
         if (a > s_absmax) s_absmax = a;
     }
+    {
+        int32_t fl = chassis_2006[0].speed_rpm, bl = chassis_2006[1].speed_rpm;
+        int32_t fr = chassis_2006[2].speed_rpm, br = chassis_2006[3].speed_rpm;
+        g_t_ox += (float)(fl + bl - fr - br) * 0.25f * g_t_kodo * 0.002f;
+        g_t_oy += (float)(fl - bl + fr - br) * 0.25f * g_t_kodo * 0.002f;
+    }
+    if (s_budget > 0U) s_budget--;
     if (s_budget == 0U) {
         if (setjmp(s_task_ctx) == 0) longjmp(s_test_ctx, 1);
+        sim_advance(period);            /* 恢复后也要走完最后这一圈的 2ms，不能漏时钟 */
         return 0;
     }
-    s_budget--;
     sim_advance(period);
     return 0;
 }
@@ -70,7 +81,7 @@ static void chassis_enter(void)
 static void chassis_run(uint32_t loops)              /* 让底盘任务正好再跑 loops 圈，每圈 2ms */
 {
     if (loops == 0U) return;
-    s_budget = loops - 1U;                            /* 第 loops 圈跑完后，钩子里的预算恰好见底 */
+    s_budget = loops;                              /* 跑完 loops 圈后停；停在延迟钩子里的那一圈只跑完时间，不进入下一圈 */
     s_absmax = 0;
     if (setjmp(s_test_ctx) == 0) {
         if (s_task_alive) longjmp(s_task_ctx, 1);
@@ -170,6 +181,49 @@ static void cmd(const char *line)
     cmd_drain();
 }
 
+/* 避障状态机现在在哪个状态（从 'avoid status' 的打印里读） */
+static const char *av_state(void)
+{
+    static char st[16];
+    const char *p;
+
+    sim_out_clear();
+    cmd("avoid status");
+    p = strstr(g_out, "state=");
+    if (p == NULL) return "?";
+    (void)sscanf(p + 6, "%15s", st);
+    return st;
+}
+
+/* 一圈圈放底盘任务，直到状态机进入 want；返回经过的圈数，超时返回 -1 */
+static int av_wait_state(const char *want, uint32_t max_loops)
+{
+    uint32_t n = 0U;
+
+    while (n < max_loops) {
+        if (strcmp(av_state(), want) == 0) return (int)n;
+        chassis_run(5U);
+        n += 5U;
+    }
+    return -1;
+}
+
+static int av_in(const char *want)
+{
+    return strcmp(av_state(), want) == 0;
+}
+
+/* 左横移（右摇杆左推那一侧，vy<0）：FL、RF 负，BL、RB 正 */
+static int pattern_left(void)
+{
+    return s_last_tx[0] < 0 && s_last_tx[1] > 0 && s_last_tx[2] < 0 && s_last_tx[3] > 0;
+}
+
+static int pattern_right(void)
+{
+    return s_last_tx[0] > 0 && s_last_tx[1] < 0 && s_last_tx[2] > 0 && s_last_tx[3] < 0;
+}
+
 static const char *const s_bad[] = {
     " ", "joint", "joint shoulder", "joint shoulder 1550 extra", "joint knee 1500",
     "joint limit", "joint limit knee 1 2", "joint limit shoulder 1", "joint limit shoulder 1700 1400", "joint status x",
@@ -192,6 +246,8 @@ static const char *const s_bad[] = {
     "servo ping", "servo ping 300", "servo ping x", "servo read", "servo read x", "servo setid 2", "servo setid 2 2",
     "servo bind knee 2", "servo bind shoulder", "servo config x", "servo run x", "servo map x",
     "rc x", "chassis map bogus 1", "chassis map vx", "chassis map vx 0", "chassis map vx 1 x",
+    "avoid x", "avoid status x", "avoid app", "avoid app 10", "avoid app 2001", "avoid shift 900", "avoid fwd 1600",
+    "avoid wheel 10", "avoid calib 10", "avoid side front", "avoid unit m", "avoid off x", "avoid run x", "avoid odo x",
     "unknowncommand", "STOP", "mode\tmanual",
 };
 
@@ -239,6 +295,7 @@ int main(int argc, char **argv)
     CHECK(g_chassis_tx_frames == 1000U, "one CAN frame per 2ms loop (500Hz)");
     CHECK(s_absmax == 0, "all four wheel currents stayed exactly 0 for 2s");
     CHECK(g_canraw_ch == 1U && g_canraw_id == 0x200U && g_canraw_n == 8U, "frame on CAN1, id 0x200, 8 bytes");
+    CHECK(chassis_dbg_line_pid_get()->p == -12.0f, "line tracker boots at the researched kp=-12");
     CHECK(d[0] == 0U && d[1] == 0U && d[2] == 0U && d[3] == 0U && d[4] == 0U && d[5] == 0U && d[6] == 0U && d[7] == 0U,
           "frame is all zero");
 
@@ -282,9 +339,12 @@ int main(int argc, char **argv)
     CHECK(ctrl_mode == ARM_TEACH_MODE, "manual mode uses ARM_TEACH, not REMOTER");
     CHECK(arm_ctrl.manual == 1 && arm_busy == 1 && arm_ctrl.chassis_run == 0, "arm free, chassis locked");
     chassis_run(1500U);
-    CHECK(s_absmax == 0, "with no remote the right switch reads 0 (= line-follow), still all zero while the arm owns the car");
+    CHECK(chassis_2006[0].speed_rpm == 0 && chassis_2006[1].speed_rpm == 0 &&
+          chassis_2006[2].speed_rpm == 0 && chassis_2006[3].speed_rpm == 0 && s_last_tx[0] > -50 && s_last_tx[1] > -50,
+          "with no remote sw2 reads 0 (line-follow), but arm_busy brakes all wheels to zero");
     chassis_run(1U);
-    CHECK(s_absmax == 0, "and no one-loop kick from a reference the PIDs saw while in PROTECT");
+    CHECK(s_last_tx[0] > -50 && s_last_tx[1] > -50 && s_last_tx[2] > -50 && s_last_tx[3] > -50,
+          "and no large kick from a reference the PIDs saw while in PROTECT");
     cmd("chassis status");
     CHECK(sim_out_has("sw2=0 -> LINE_TRACK, arm_busy=1 jog=0"), "chassis status shows the truth");
     cmd("joint shoulder 1550");
@@ -663,6 +723,197 @@ int main(int argc, char **argv)
     CHECK(g_canraw_ch == 2U && g_canraw_id == 0x7FFU && g_canraw_n == 1U && d[0] == 0xAAU, "CAN2 id 0x7FF one byte");
     cmd("can raw 2 200");
     CHECK(g_canraw_ch == 2U && g_canraw_id == 0x200U && g_canraw_n == 0U, "zero data bytes is legal");
+
+    /* ------------------------------------------------------------------ */
+    section("C14 前向 TF-mini 驱动：9 字节校验、强度过滤、断线、噪声后重同步");
+    tfmini_init();
+    sim_tfmini_frame(25U, 800U);
+    CHECK(tfmini[0].rx_frames == 1U && tfmini[0].dist_raw == 25U && tfmini[0].strength == 800U,
+          "one valid frame decoded");
+    CHECK(tfmini_online(0U) == 1U && tfmini_frame_valid(0U) == 1U, "online and usable");
+    {
+        uint8_t bad[9] = {0x59U, 0x59U, 10U, 0U, 0xE8U, 3U, 0U, 0U, 0U};
+        uint8_t sum = 0U, i;
+        for (i = 0U; i < 8U; i++) sum = (uint8_t)(sum + bad[i]);
+        bad[8] = (uint8_t)(sum + 1U);
+        sim_tfmini_bytes(bad, 9U);
+    }
+    CHECK(tfmini[0].crc_errors == 1U && tfmini[0].rx_frames == 1U, "bad checksum dropped and counted");
+    sim_tfmini_frame(20U, 19U);
+    CHECK(tfmini[0].rx_frames == 2U && tfmini_frame_valid(0U) == 0U, "strength below 20 is not a usable range");
+    sim_tfmini_frame(0xFFFFU, 800U);
+    CHECK(tfmini[0].rx_frames == 3U && tfmini_frame_valid(0U) == 0U, "FFFF is the invalid-distance sentinel");
+    sim_tfmini_frame(15U, 800U);
+    sim_advance(150U);
+    CHECK(tfmini_online(0U) == 0U, "no frame for over 100ms -> offline");
+    {
+        const uint8_t noise[] = {0x00U, 0x59U, 0x01U, 0xAAU, 0x59U, 0x59U};
+        sim_tfmini_bytes(noise, sizeof(noise));
+    }
+    sim_tfmini_frame(30U, 800U);
+    CHECK(tfmini[0].dist_raw == 30U && tfmini_frame_valid(0U) == 1U, "next valid frame resynchronizes after noise");
+
+    /* ------------------------------------------------------------------ */
+    section("C15 避障控制台：单位、距离、方向、里程计标定、非法参数");
+    cmd("avoid off");
+    CHECK(av_in("IDLE"), "avoid off is idle");
+    cmd("avoid unit mm");
+    cmd("avoid app 260");
+    cmd("avoid shift 320");
+    cmd("avoid fwd 460");
+    cmd("avoid side right");
+    cmd("avoid wheel 152");
+    cmd("avoid status");
+    CHECK(sim_out_has("app=260mm shift=320mm fwd=460mm side=right unit=mm kodo=221/1000"),
+          "all settings read back");
+    CHECK(arm_ctrl.cal.reserved[3] == 221U && arm_ctrl.cal.reserved[4] == 320U && arm_ctrl.cal.reserved[5] == 460U,
+          "settings are mirrored into the flash calibration block");
+    sim_line_set(LINE_STATE_OK, 0);
+    cmd("chassis line");
+    cmd("chassis line");
+    CHECK(arm_ctrl.chassis_run == 1, "line following started");
+    g_t_ox = g_t_oy = 0.0f;
+    cmd("avoid odo");
+    chassis_run(1500U);
+    cmd("avoid status");
+    {
+        long integ;
+        char line[48];
+        const char *p = strstr(g_out, "forward integral=");
+        CHECK(p != NULL, "odometry prints the forward integral");
+        integ = (p != NULL) ? strtol(p + 18, NULL, 10) : -1L;
+        CHECK(integ > 4000L, "driving forward accumulated rpm*s");
+        snprintf(line, sizeof(line), "avoid calib %d\n", (int)(g_t_ox + 0.5f));
+        cmd(line);
+        CHECK(sim_out_has("-> kodo="), "calib accepted the measured straight distance");
+    }
+    cmd("avoid calib 20");
+    CHECK(sim_out_has("usage:"), "distance below 50mm refused");
+    cmd("avoid app -1");
+    CHECK(sim_out_has("usage:"), "negative trigger distance refused");
+    cmd("avoid side middle");
+    CHECK(sim_out_has("usage:"), "unknown side refused");
+    cmd("avoid on");
+    CHECK(av_in("IDLE"), "turned back on, still idle without an obstacle");
+    cmd("avoid unit cm");
+    cmd("avoid app 300");
+    cmd("avoid shift 300");
+    cmd("avoid fwd 450");
+    cmd("avoid side left");
+    cmd("chassis stop");
+
+    /* ------------------------------------------------------------------ */
+    section("C16 三帧近障触发 → 停 → 左横移 → 前进 → 回线恢复");
+    sim_line_set(LINE_STATE_OK, 0);
+    cmd("chassis line");
+    cmd("chassis line");
+    g_tfmini_hz = 100;
+    g_tfmini_dist = 25U;                       /* 250mm, threshold 300mm */
+    chassis_run(50U);
+    CHECK(av_in("STOP"), "three new 250mm frames in 30ms trigger a stop");
+    CHECK(av_wait_state("STRAFE_OUT", 200U) >= 0, "after 300ms the sidestep starts");
+    chassis_run(5U);
+    CHECK(pattern_left(), "side=left: the car strafes to the left");
+    sim_line_set(LINE_STATE_LOST, -20);         /* 已经离开黑线 */
+    CHECK(av_wait_state("AHEAD", 2000U) >= 0, "wheel-speed integration reaches the 300mm shift");
+    chassis_run(20U);
+    CHECK(pattern_line(), "then it goes forward past the obstacle");
+    CHECK(av_wait_state("STRAFE_BACK", 3000U) >= 0, "reaches the 450mm forward distance");
+    sim_line_set(LINE_STATE_OK, 0);                   /* 宽障碍：回移刚开始时还看得见线 */
+    chassis_run(5U);
+    CHECK(av_in("STRAFE_BACK"), "seeing the line at the start of the back-shift does not skip the shift");
+    chassis_run(2000U);
+    CHECK(av_in("IDLE"), "after moving back most of the 300mm, the visible line ends the bypass");
+    sim_line_set(LINE_STATE_OK, 0);
+    chassis_run(5U);
+    CHECK(pattern_line(), "line-follow refs are active again");
+    cmd("chassis stop");
+    cmd("avoid off");
+    chassis_run(2U);
+    g_tfmini_hz = 0;
+    g_tfmini_dist = 100U;
+
+    /* ------------------------------------------------------------------ */
+    section("C16b 右侧绕行：方向参数同时翻转横移、回移与里程判据");
+    cmd("avoid side right");
+    sim_line_set(LINE_STATE_OK, 0);
+    cmd("chassis line");
+    cmd("chassis line");
+    wheels_stop();
+    cmd("avoid run");
+    CHECK(av_wait_state("STRAFE_OUT", 200U) >= 0, "right-side run reaches the outbound leg");
+    chassis_run(5U);
+    CHECK(pattern_right(), "side=right strafes right (FL/RF positive, BL/RB negative)");
+    sim_line_set(LINE_STATE_LOST, 20);
+    CHECK(av_wait_state("AHEAD", 3000U) >= 0, "right outbound reaches its distance");
+    CHECK(av_wait_state("STRAFE_BACK", 3000U) >= 0, "right forward leg completes");
+    chassis_run(5U);
+    CHECK(pattern_left(), "right-side bypass strafes back left");
+    sim_line_set(LINE_STATE_OK, 0);
+    CHECK(av_wait_state("IDLE", 2000U) >= 0, "right-side return reaches the line too");
+    cmd("avoid side left");
+    cmd("chassis stop");
+
+    /* ------------------------------------------------------------------ */
+    section("C17 避障兜底：找不到线停车；超时停车；离开巡线取消");
+    cmd("avoid off");
+    chassis_run(2U);
+    cmd("chassis line");
+    cmd("chassis line");
+    CHECK(arm_ctrl.chassis_run == 1, "line following restarted for the fallback tests");
+    wheels_stop();
+    sim_line_set(LINE_STATE_LOST, 20);
+    cmd("avoid run");
+    CHECK(av_wait_state("STRAFE_OUT", 200U) >= 0, "avoid run starts even without a rangefinder");
+    sim_line_set(LINE_STATE_LOST, 20);
+    CHECK(av_wait_state("AHEAD", 3000U) >= 0, "first leg complete");
+    CHECK(av_wait_state("RELINE", 5000U) >= 0, "back-shift complete, but the line is still lost");
+    CHECK(av_wait_state("ABORT", 5000U) >= 0, "extra 150mm search is not enough -> ABORT");
+    chassis_run(1500U);
+    CHECK(chassis_2006[0].speed_rpm == 0 && chassis_2006[1].speed_rpm == 0 &&
+          chassis_2006[2].speed_rpm == 0 && chassis_2006[3].speed_rpm == 0,
+          "ABORT gives zero refs and the closed-loop wheels brake to a stop");
+    cmd("avoid run");
+    chassis_run(2U);
+    CHECK(av_in("STOP"), "avoid run can retry after an abort");
+    g_wheel_lock = 1;
+    for (i = 0U; i < 4U; i++) sim_wheel_set_rpm(i, 0);
+    CHECK(av_wait_state("ABORT", 5000U) >= 0, "a leg that cannot move aborts after 8 seconds");
+    g_wheel_lock = 0;
+    wheels_stop();
+    cmd("avoid run");
+    chassis_run(2U);
+    CHECK(av_in("STOP"), "retry again");
+    cmd("chassis stop");
+    cmd("avoid off");                 /* 控制台立即清状态，不依赖下一圈底盘任务 */
+    CHECK(av_in("IDLE"), "avoid off cancels the sequence");
+    cmd("chassis line");
+    cmd("chassis line");
+    chassis_run(2U);
+    cmd("avoid run");
+    chassis_run(2U);
+    CHECK(av_in("STOP"), "a fresh line-follow run starts avoidance");
+    cmd("chassis stop");
+    cmd("avoid off");
+    CHECK(av_in("IDLE"), "avoid off clears the active sequence too");
+    sim_line_set(LINE_STATE_OK, 0);
+
+    /* ------------------------------------------------------------------ */
+    section("C18 避障标定随 Flash 重启保留；默认巡线增益是 -12");
+    cmd("avoid shift 333");
+    cmd("avoid fwd 477");
+    cmd("avoid side right");
+    cmd("avoid wheel 160");
+    cmd("avoid app 288");
+    cmd("pick save");
+    arm_task_init();
+    cmd("chassis line");
+    cmd("chassis line");
+    chassis_run(2U);
+    cmd("avoid status");
+    CHECK(sim_out_has("shift=333mm fwd=477mm side=right") && arm_ctrl.cal.reserved[3] >= 200U,
+          "avoidance calibration survives reboot");
+    cmd("chassis stop");
 
     printf("\n%d checks, %d failed\n", g_pass + g_fail, g_fail);
     return (g_fail == 0) ? 0 : 1;

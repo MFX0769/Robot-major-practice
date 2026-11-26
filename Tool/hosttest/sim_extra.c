@@ -16,13 +16,20 @@ typedef struct {
     uint32_t icr;                      /* 上一次写进 ICR 的值 */
 } uart_t;
 
-static uart_t s_uart[2];
+static uart_t s_uart[3];
 UART_HandleTypeDef huart5;             /* 测试里把 .uart 填成 5 */
 UART_HandleTypeDef huart10;            /* .uart = 10 */
+UART_HandleTypeDef huart9;             /* 测距模块，.uart = 9 */
 
 static uart_t *uart_of(int uart)
 {
-    return (uart == 5) ? &s_uart[0] : &s_uart[1];
+    return (uart == 5) ? &s_uart[0] : (uart == 9) ? &s_uart[2] : &s_uart[1];
+}
+
+HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *h)
+{
+    (void)h;
+    return HAL_OK;                     /* 波特率、引脚都是真的才有意义，这里只要能编过 */
 }
 
 static uint32_t uart_count(uart_t *u)

@@ -1654,6 +1654,16 @@
               <FilePath>..\Protocol\prot_8irtraking.c</FilePath>
             </File>
             <File>
+              <FileName>tfmini.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\tfmini.c</FilePath>
+            </File>
+            <File>
+              <FileName>tfmini.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Protocol\tfmini.h</FilePath>
+            </File>
+            <File>
               <FileName>prot_servo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Protocol\prot_servo.c</FilePath>

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include "pid.h"
 #include "prot_rm_motor.h"
+#include "prot_8irtraking.h"
 
 /* 底盘电机结构体 */
 typedef struct {
@@ -42,5 +43,13 @@ pid_t  *chassis_dbg_line_pid_get(void);
 /* ---- 摇杆方向微调（标定块 reserved[0..2] 掉电保存） ---- */
 extern int8_t g_chassis_map_sign[3];                      /* 0=vx 1=vy 2=wz，值 ±1 */
 void    chassis_map_sign_set(uint8_t idx, int8_t sign);   /* 由 arm_task 的 cal_apply 调 */
+
+/* ---- 前向测距避障（标定块 reserved[3..5]：kodo / 横移 / 前进，掉电保存） ---- */
+void    chassis_av_init(void);                            /* 底盘任务启动时调 */
+void    chassis_av_apply(uint16_t kodo_x1000, uint16_t shift_mm, uint16_t fwd_mm, int8_t side);   /* cal_apply 调 */
+void    chassis_odo_step(void);                           /* 每圈调：轮速积分 */
+void    chassis_av_tick(float *vx, float *vy, float *wz, const prot_8irtraking_data_t *line);   /* 巡线分支里调 */
+void    chassis_av_cancel(void);                          /* 离开巡线模式时调 */
+void    chassis_av_cmd(const char *sub, const char *arg); /* 控制台 avoid ... */
 
 #endif

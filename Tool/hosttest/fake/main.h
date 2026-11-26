@@ -14,8 +14,16 @@ typedef enum { GPIO_PIN_RESET = 0, GPIO_PIN_SET } GPIO_PinState;
 #define GPIO_PULLUP           1U
 #define GPIO_NOPULL           0U
 #define GPIO_SPEED_FREQ_LOW   0U
+/* PD14 -> UART9_RX（测距模块）用到的几个 GPIO 名字 */
+#define GPIOD                 ((void *)1)
+#define GPIO_PIN_14           0x4000U
+#define GPIO_MODE_AF_PP       2U
+#define GPIO_SPEED_FREQ_VERY_HIGH 3U
+#define GPIO_AF11_UART9       11U
+#define __HAL_RCC_GPIOD_CLK_ENABLE()   do { } while (0)
+#define __HAL_RCC_UART9_CLK_ENABLE()   do { } while (0)
 
-typedef struct { uint32_t Pin, Mode, Pull, Speed; } GPIO_InitTypeDef;
+typedef struct { uint32_t Pin, Mode, Pull, Speed, Alternate; } GPIO_InitTypeDef;
 
 uint32_t      HAL_GetTick(void);
 GPIO_PinState HAL_GPIO_ReadPin(void *port, uint16_t pin);
@@ -53,9 +61,20 @@ uint8_t             sim_uart_rdr(int uart);          /* 出队一个字节 */
 volatile uint32_t  *sim_uart_icr(int uart);           /* 写 1 清对应标志 */
 void                sim_uart_clear_flag(int uart, uint32_t flags);
 
-typedef struct { int uart; } UART_HandleTypeDef;
+/* HAL 的串口初始化结构：tfmini_init() 会填一遍，这里只保证能编译 */
+typedef struct {
+    uint32_t BaudRate, WordLength, StopBits, Parity, Mode, HwFlowCtl, OverSampling, OneBitSampling, ClockPrescaler;
+} UART_InitTypeDef;
+typedef struct {
+    int uart;                                  /* 模拟寄存器的编号 */
+    void *Instance;
+    UART_InitTypeDef Init;
+    struct { uint32_t AdvFeatureInit; } AdvancedInit;
+} UART_HandleTypeDef;
 extern UART_HandleTypeDef huart5;     /* 测试里先把 .uart 填成 5 */
 extern UART_HandleTypeDef huart10;
+extern UART_HandleTypeDef huart9;     /* Protocol/tfmini.c 用 */
+HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *h);
 
 #define __HAL_UART_CLEAR_FLAG(h, f)   sim_uart_clear_flag((h)->uart, (f))
 #define __HAL_UART_DISABLE_IT(h, i)   ((void)(i))
@@ -63,6 +82,17 @@ extern UART_HandleTypeDef huart10;
 
 #define USART10_IRQn   1
 #define UART5_IRQn     2
+#define UART9_IRQn     9
+#define UART9          ((void *)9)
+#define UART_WORDLENGTH_8B             0U
+#define UART_STOPBITS_1                0U
+#define UART_PARITY_NONE               0U
+#define UART_MODE_RX                   1U
+#define UART_HWCONTROL_NONE            0U
+#define UART_OVERSAMPLING_16           0U
+#define UART_ONE_BIT_SAMPLE_DISABLE    0U
+#define UART_PRESCALER_DIV1            0U
+#define UART_ADVFEATURE_NO_INIT        0U
 void HAL_NVIC_SetPriority(int irq, uint32_t preempt, uint32_t sub);
 void HAL_NVIC_EnableIRQ(int irq);
 

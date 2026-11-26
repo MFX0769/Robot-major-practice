@@ -94,11 +94,12 @@ typedef struct {
     uint16_t yaw_kd_pos_x100;
     uint16_t yaw_kp_spd_x100;
     uint16_t yaw_kd_spd_x100;
-    uint16_t reserved[6];
+    uint16_t reserved[6];      /* [0..2] 底盘摇杆方向 ±1；[3] 里程计 mm/(rpm·s)×1000；[4] 避障横移 mm；[5] 避障前进 mm */
 } arm_cal_t;
 
 #define ARM_CAL_FLAG_YAW_DIR_VALID  0x0001U
 #define ARM_CAL_FLAG_YAW_DIR_NEG    0x0002U
+#define ARM_CAL_FLAG_AVOID_RIGHT    0x0004U   /* 避障向右横移（默认向左） */
 
 typedef struct {
     arm_teach_state_e state;
