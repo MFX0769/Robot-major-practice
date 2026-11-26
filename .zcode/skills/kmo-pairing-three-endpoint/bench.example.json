@@ -1,0 +1,6 @@
+{
+  "bridge_usb_serial": "FILL_BRIDGE_USB_SERIAL",
+  "remote_usb_serial": "FILL_REMOTE_USB_SERIAL",
+  "app_package": "com.kamingo.bike",
+  "bridge_name": "kmo_bridge_t"
+}
