@@ -10,6 +10,7 @@
 #include "servo_test.h"
 #include "prot_xb_servo.h"
 #include "prot_rm_motor.h"
+#include "chassis_task.h"
 #include "mode_switch_task.h"
 #include "bsp_user_key.h"
 #include "prot_vision.h"
@@ -63,7 +64,7 @@
 /* 关节机械行程没在这台臂上验证过，默认给窄范围，joint limit 放宽 */
 #define ARM_JOINT_DFLT_MIN      1400U   /* 肩/肘：中心 ±100us */
 #define ARM_JOINT_DFLT_MAX      1600U
-#define ARM_GRIPPER_DFLT_MIN    1250U   /* 夹爪：旧固件实际到过的范围约 1259~2062us */
+#define ARM_GRIPPER_DFLT_MIN    1000U   /* 夹爪：6 月表演动作实际用到 1100（张开），留余量 */
 #define ARM_GRIPPER_DFLT_MAX    2060U
 
 #define IK_DFLT_L1_MM           150U    /* 来自 6 月的 STL 模型，未实测 */
@@ -320,10 +321,13 @@ static void cal_defaults(void)
     arm_ctrl.cal.l2_mm = IK_DFLT_L2_MM;
     arm_ctrl.cal.vis_depth_mm = IK_DFLT_DEPTH_MM;
     arm_ctrl.cal.vis_k_x100 = IK_DFLT_K_X100;
-    arm_ctrl.cal.pick_open = 1500U;
-    arm_ctrl.cal.pick_close = 1300U;
+    arm_ctrl.cal.pick_open = 1100U;     /* 6 月表演动作的实测值：1100 张开 */
+    arm_ctrl.cal.pick_close = 1450U;    /* 1450/1400 闭合，现场再调 */
     arm_ctrl.cal.ik_valid = 0U;
     arm_ctrl.cal.flags = 0U;
+    arm_ctrl.cal.reserved[0] = 1U;      /* 底盘方向微调 vx，见 cal_apply */
+    arm_ctrl.cal.reserved[1] = 1U;      /* vy */
+    arm_ctrl.cal.reserved[2] = 1U;      /* wz */
     arm_ctrl.cal.lim_sh_min = ARM_JOINT_DFLT_MIN;
     arm_ctrl.cal.lim_sh_max = ARM_JOINT_DFLT_MAX;
     arm_ctrl.cal.lim_el_min = ARM_JOINT_DFLT_MIN;
@@ -362,23 +366,33 @@ static void cal_apply(void)
         arm_ctrl.yaw.spd_pid.p = (float)c->yaw_kp_spd_x100 / 100.0f;
         arm_ctrl.yaw.spd_pid.d = (float)c->yaw_kd_spd_x100 / 100.0f;
     }
+
+    /* 底盘方向微调（DBUS 装车后某个方向反了就用 'chassis map' 翻，随标定块掉电保存）。
+       旧镜像这里全是 0，按 +1 处理。 */
+    chassis_map_sign_set(0U, (c->reserved[0] == (uint16_t)-1) ? -1 : 1);
+    chassis_map_sign_set(1U, (c->reserved[1] == (uint16_t)-1) ? -1 : 1);
+    chassis_map_sign_set(2U, (c->reserved[2] == (uint16_t)-1) ? -1 : 1);
 }
 
 static void pick_defaults(void)
 {
     uint8_t i;
 
+    /* 6 月表演动作（主仓 e1513be，6 帧 x2 秒循环）压成 5 路点：
+       就绪 1333/1500 -> 伸出 1700/2000 -> 夹合(1450) -> 收回 1333/1500 -> 松开(1100)。
+       没有存档时三击/遥控拨动就跑这一套；拖动示教学过真实动作后 pick save 会覆盖它。 */
     for (i = 0; i < ARM_PICK_STEPS; i++) {
         memset(&arm_ctrl.pick_wp[i], 0, sizeof(arm_ctrl.pick_wp[i]));
-        arm_ctrl.pick_wp[i].shoulder = 1500U;
-        arm_ctrl.pick_wp[i].elbow = 1500U;
+        arm_ctrl.pick_wp[i].shoulder = (i == 1U || i == 2U) ? 1700U : 1333U;
+        arm_ctrl.pick_wp[i].elbow = (i == 1U || i == 2U) ? 2000U : 1500U;
         arm_ctrl.pick_wp[i].yaw_ecd = ARM_PICK_KEEP_YAW;
     }
     arm_ctrl.pick_ms[0] = 0U;
-    arm_ctrl.pick_ms[1] = 1000U;
-    arm_ctrl.pick_ms[2] = 600U;
-    arm_ctrl.pick_ms[3] = 1000U;
-    arm_ctrl.pick_ms[4] = 600U;
+    arm_ctrl.pick_ms[1] = 2000U;
+    arm_ctrl.pick_ms[2] = 1000U;
+    arm_ctrl.pick_ms[3] = 2000U;
+    arm_ctrl.pick_ms[4] = 1000U;
+    s_pick_learned = 1U;                /* 出厂即有表演可跑；'pick learn'/'wp' 后按新的来 */
 }
 
 /* 存档里的轨迹正好是 5 点：按死程序采摘的结构把路点反向建回来。
@@ -1021,8 +1035,7 @@ static void teach_erase(void)
     arm_ctrl.teach.origin_valid = 0U;
     arm_ctrl.teach.origin_ecd = 0;
     arm_ctrl.teach.delete_confirm = 0U;
-    s_pick_learned = 0U;
-    s_pick_dirty = 0U;
+    s_pick_dirty = 0U;                  /* learned 不清：出厂 6 月表演动作仍然可跑 */
     if (s_flash_ok != 0U) {
         /* 轨迹删掉，但关节限位、yaw 方向、增益这些标定要留下：写一张只有标定的镜像 */
         s_flash_seq = 0U;
@@ -1338,6 +1351,30 @@ static void pick_run(void)
 void arm_pick_toggle(void)
 {
     pick_run();
+}
+
+/* 底盘任务在巡线中检测到摇杆拨动：置位，机械臂任务下个周期执行（不在底盘上下文里动舵机）。
+   READY/RECORD（拖动示教中）不接受，避免误触打断示教。 */
+static volatile uint8_t s_pick_trig_pending;
+
+void arm_pick_remote_trig(void)
+{
+    arm_teach_state_e st = arm_ctrl.teach.state;
+
+    if (st == ARM_TEACH_READY || st == ARM_TEACH_RECORD) return;
+    s_pick_trig_pending = 1U;
+}
+
+/* 控制台 chassis map：装车后某个底盘方向反了就翻符号，不重编译。
+   存进标定块 reserved[0..2]，'pick save' 之后掉电保留。 */
+int arm_chassis_map_set(uint8_t idx, int32_t sign)
+{
+    if (idx > 2U || (sign != 1 && sign != -1)) return -1;
+    arm_ctrl.cal.reserved[idx] = (uint16_t)(int16_t)sign;
+    chassis_map_sign_set(idx, (int8_t)sign);
+    dbg_print("[CHASSIS] map %s -> %+d ('pick save' to keep across reboot)\r\n",
+              (idx == 0U) ? "vx" : (idx == 1U) ? "vy" : "wz", (int)sign);
+    return 0;
 }
 
 /* 控制台 wp <n> <sh> <el>：不读舵机，直接按脉宽写路点。
@@ -2295,6 +2332,7 @@ void arm_task_init(void)
     s_play_phase_tick = now;
     s_pick_dirty = 0U;
     s_pick_learned = 0U;
+    s_pick_trig_pending = 0U;
     s_ik_ready = 0U;
     s_ik_yaw_corr = 0;
     memset(&s_ik_pose, 0, sizeof(s_ik_pose));
@@ -2340,6 +2378,10 @@ void arm_task(void const *argu)
         servo_test_poll();         /* yaw monitor（旧遥测） */
         ev = BSP_UserKey_Poll();
         if (ev != KEY_EVT_NONE) handle_key(ev);
+        if (s_pick_trig_pending != 0U) {
+            s_pick_trig_pending = 0U;
+            pick_run();
+        }
         teach_tick();
         arm_yaw_pid_calc();
 

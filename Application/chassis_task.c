@@ -14,6 +14,7 @@
 #include "config.h"
 #include "prot_sbus.h"
 #include "prot_8irtraking.h"
+#include "arm_task.h"
 #include <string.h>
 
 /* 澶栭儴鐢垫満鍙橀噺 */
@@ -121,9 +122,11 @@ void chassis_task(void const *argu)
                 } else if (wbus_rc.data.sw1 == 0 && wbus_rc.data.sw3) {
                     vx_ref = vy_ref = wz_ref = 0.0f;
                 } else {
-                    vx_ref = -wbus_rc.data.ch2 * CHASSIS_SCALE_VX;
-                    vy_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_VY;
-                    wz_ref = wbus_rc.data.ch4 * CHASSIS_SCALE_WZ;
+                    /* DBUS/DR16 解码（prot_dr16.c）：ch1 右横(左=-) ch2 右竖(上=+) ch3 左横(左=-) ch4 左竖(上=+)。
+                       右摇杆 = 平移，左摇杆横 = 旋转。装车后哪个方向反了用 'chassis map vx|vy|wz -1' 翻。 */
+                    vx_ref = wbus_rc.data.ch2 * CHASSIS_SCALE_VX * (float)g_chassis_map_sign[0];
+                    vy_ref = wbus_rc.data.ch1 * CHASSIS_SCALE_VY * (float)g_chassis_map_sign[1];
+                    wz_ref = wbus_rc.data.ch3 * CHASSIS_SCALE_WZ * (float)g_chassis_map_sign[2];
                 }
             }break;
 
@@ -158,18 +161,38 @@ void chassis_task(void const *argu)
                     {
                         if (lost_ms < 700U) lost_ms += CHASSIS_PERIOD;
                         if (lost_ms < 700U) {
+                            /* 朝线最后出现的同侧找：纠偏是 pos>0 -> 正 wz（kp<0，err=ref-fdb），
+                               丢线也用同号；dir 跟随 kp 符号，'chassis pid line' 改了它自动跟着翻 */
+                            float dir = (line_track_pid.p < 0.0f) ? 1.0f : -1.0f;
                             vx_ref = 350.0f;
-                            wz_ref = (line_data->position >= 0) ? -900.0f : 900.0f;
+                            wz_ref = dir * ((line_data->position >= 0) ? 900.0f : -900.0f);
                         } else {                              /* 丢线超时: 停 */
                             vx_ref = 0.0f;
                             wz_ref = 0.0f;
                         }
                     }
                 }
-                /* 神之一手: 手动随时可救场 */
-                wz_ref += wbus_rc.data.ch1 * CHASSIS_SCALE_WZ;
-            }break;
+            /* 神之一手: 手动随时可救场（左摇杆横） */
+            wz_ref += wbus_rc.data.ch3 * CHASSIS_SCALE_WZ * (float)g_chassis_map_sign[2];
+        }break;
             default:break;
+        }
+
+        /* 巡线中左摇杆竖向拨过 ±300（边沿 + 1.2s 防抖）= 触发/停止表演动作 */
+        {
+            static int16_t s_trig_prev = 0;
+            static uint32_t s_trig_last = 0U;
+            int16_t ch4 = wbus_rc.data.ch4;
+            int16_t a4 = (ch4 < 0) ? (int16_t)(-ch4) : ch4;
+            int16_t ap = (s_trig_prev < 0) ? (int16_t)(-s_trig_prev) : s_trig_prev;
+            uint32_t nowt = osKernelSysTick();
+
+            if (chassis_mode == CHASSIS_LINE_TRACK && a4 >= 300 && ap < 300 &&
+                (int32_t)(nowt - s_trig_last) >= 1200) {
+                s_trig_last = nowt;
+                arm_pick_remote_trig();
+            }
+            s_trig_prev = ch4;
         }
 
         /* arm_busy锟斤拷锟斤拷锟斤拷锟斤拷模式 */
@@ -217,6 +240,16 @@ void chassis_task(void const *argu)
 }
 
 /* ==================== console debug hooks (2026-11-26) ==================== */
+/* 摇杆方向微调：DBUS 装车后某个方向反了用 'chassis map vx|vy|wz -1' 翻，
+   值存在机械臂标定块 reserved[0..2]（'pick save' 后掉电保留）。 */
+int8_t g_chassis_map_sign[3] = {1, 1, 1};
+
+void chassis_map_sign_set(uint8_t idx, int8_t sign)
+{
+    if (idx > 2U || (sign != 1 && sign != -1)) return;
+    g_chassis_map_sign[idx] = sign;
+}
+
 /* Open-loop jog for ONE motor: console 'chassis motor <idx> <cur>'. Auto timeout. */
 static int8_t   s_jog_idx = -1;
 static int16_t  s_jog_cur = 0;

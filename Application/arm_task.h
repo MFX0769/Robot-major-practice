@@ -148,6 +148,7 @@ const char *arm_mode_name(void);
 int  arm_mode_manual(void);        /* 控制台 mode manual */
 int  arm_chassis_release(void);    /* 控制台 chassis line：放开底盘，锁住机械臂命令 */
 void arm_chassis_stop(void);       /* 控制台 chassis stop */
+int  arm_chassis_map_set(uint8_t idx, int32_t sign);   /* 底盘方向微调：0=vx 1=vy 2=wz，sign ±1 */
 
 /* yaw 双环。返回 0 成功，<0 被拒绝（原因已打印） */
 int  arm_yaw_set_enable(uint8_t en);
@@ -178,5 +179,6 @@ void arm_pick_cmd(const char *sub, const char *a1, const char *a2);
 void arm_ik_cmd(const char *sub, const char *a1, const char *a2);
 void arm_pick_toggle(void);        /* 三击：开始 / 停止死程序 */
 int  arm_pick_set(uint8_t n, uint16_t shoulder, uint16_t elbow);   /* 控制台 wp：按数字设路点，不读舵机 */
+void arm_pick_remote_trig(void);   /* 底盘任务：巡线中摇杆拨动 -> 触发/停止表演 */
 
 #endif /* __ARM_TASK_H__ */

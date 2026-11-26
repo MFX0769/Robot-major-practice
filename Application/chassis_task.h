@@ -39,4 +39,8 @@ uint8_t chassis_dbg_jog_active(void);
 pid_t  *chassis_dbg_pid_get(uint8_t i);                   /* i 0..3，越界返回 0 */
 pid_t  *chassis_dbg_line_pid_get(void);
 
+/* ---- 摇杆方向微调（标定块 reserved[0..2] 掉电保存） ---- */
+extern int8_t g_chassis_map_sign[3];                      /* 0=vx 1=vy 2=wz，值 ±1 */
+void    chassis_map_sign_set(uint8_t idx, int8_t sign);   /* 由 arm_task 的 cal_apply 调 */
+
 #endif

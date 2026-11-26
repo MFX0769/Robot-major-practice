@@ -166,6 +166,23 @@ static void servo_test_parse_line(const char *line)
                       (long)idx, CHASSIS_JOG_MAX_CUR, (unsigned)CHASSIS_JOG_MS);
             return;
         }
+        if (strcmp(sub, "map") == 0) {
+            char *t2 = strtok(NULL, " ");
+            int32_t sg;
+
+            if (arg == NULL && t2 == NULL) {
+                dbg_print("[CHASSIS] map vx=%+d vy=%+d wz=%+d ('chassis map vx|vy|wz <1|-1>', 'pick save' keeps it)\r\n",
+                          (int)g_chassis_map_sign[0], (int)g_chassis_map_sign[1], (int)g_chassis_map_sign[2]);
+                return;
+            }
+            if (arg == NULL || t2 == NULL || strtok(NULL, " ") != NULL) goto usage;
+            if (strcmp(arg, "vx") == 0) idx = 0;
+            else if (strcmp(arg, "vy") == 0) idx = 1;
+            else if (strcmp(arg, "wz") == 0) idx = 2;
+            else goto usage;
+            if (!parse_signed(t2, &sg) || arm_chassis_map_set((uint8_t)idx, sg) != 0) goto usage;
+            return;
+        }
         if (strcmp(sub, "pid") == 0) {
             if (arg == NULL) {
                 for (i = 0U; i < 4U; i++) {
@@ -267,6 +284,17 @@ static void servo_test_parse_line(const char *line)
                   (unsigned long)dbus_rx_bytes(), (unsigned long)dbus_rx_count(),
                   (unsigned)dbus_online(), (unsigned long)xb_servo_rx_bytes(),
                   (unsigned long)xb_servo_rx_errors());
+        return;
+    }
+
+    /* ---- 遥控器原始值：调方向第一步就是它 ---- */
+    if (strcmp(token, "rc") == 0) {
+        if (strtok(NULL, " ") != NULL) goto usage;
+        dbg_print("[RC] ch1=%d ch2=%d ch3=%d ch4=%d | sw1=%u sw2=%u sw3=%u | lock=%u dbus=%u rx=%lu\r\n",
+                  (int)wbus_rc.data.ch1, (int)wbus_rc.data.ch2, (int)wbus_rc.data.ch3, (int)wbus_rc.data.ch4,
+                  (unsigned)wbus_rc.data.sw1, (unsigned)wbus_rc.data.sw2, (unsigned)wbus_rc.data.sw3,
+                  (unsigned)lock_flag, (unsigned)dbus_online(), (unsigned long)dbus_rx_count());
+        dbg_print("[RC] right stick ch2=fwd ch1=side, left stick ch3=spin; sw2 down + sw1 not mid = line follow\r\n");
         return;
     }
 
@@ -589,7 +617,7 @@ usage:
     dbg_print("[SERVO_TEST] usage: servo ping|read|setid|bind|config|run|map | joint shoulder|elbow|gripper <pulse|+d|-d> | joint status | joint limit <j> <min> <max>\r\n");
     dbg_print("[SERVO_TEST] usage: yaw enable|disable|status|target <ecd>|step <d>|probe|dir <1|-1>|limit <n>|speed <rpm>|gain <kp> <kd> <kp> <kd>|fault [clear]|monitor|stop|set|clear\r\n");
     dbg_print("[SERVO_TEST] usage: stop | mode manual|protect|status | teach status|pt <n>|enter|exit|record|save|play|stop|load|erase|origin | flash test\r\n");
-    dbg_print("[SERVO_TEST] usage: chassis status|line|stop|motor <0..3> <cur>|pid [line|0..3 kp ki kd] | can stat|recover <1|2>|raw <ch> <id> [hex..] | uart\r\n");
+    dbg_print("[SERVO_TEST] usage: chassis status|line|stop|motor <0..3> <cur>|pid [line|0..3 kp ki kd]|map [vx|vy|wz <1|-1>] | can stat|recover <1|2>|raw <ch> <id> [hex..] | uart | rc\r\n");
     dbg_print("[SERVO_TEST] usage: pick status|learn <0..4>|run|time <n> <ms>|open <p>|close <p>|auto on|off|vis <x> <y>|apply|save | ik status|l1|l2|learn|xy|vis|depth|k|dy|yawk|save | vis | w25 id|test\r\n");
     dbg_print("[SERVO_TEST] usage: wp <0..4> <sh> <el>   set pick waypoint by pulse numbers, no servo read needed\r\n");
 }

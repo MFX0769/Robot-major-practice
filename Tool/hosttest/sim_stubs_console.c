@@ -13,6 +13,7 @@
 
 static bsp_can_stat_t s_can[2];
 volatile uint32_t ir_isr_bytes;
+uint8_t lock_flag;                     /* 真固件里在 mode_switch_task.c；测试里只有 rc 命令打印它 */
 /* 初值和真驱动一致：肩 ID=002，肘 ID=001 */
 xb_servo_dev_t xb_servo[XB_JOINT_NUM] = {
     {2, 0, XB_PULSE_ZERO, 0, 0, 0},

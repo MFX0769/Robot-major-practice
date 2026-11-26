@@ -132,6 +132,10 @@ int main(void)
     CHECK(arm_teach_count == 0 && arm_ctrl.cal.ik_valid == 0, "blank flash: no track, IK uncalibrated");
     CHECK(arm_ctrl.cal.l1_mm == 150 && arm_ctrl.cal.l2_mm == 150, "default link lengths 150/150");
     CHECK(arm_ctrl.yaw.out_limit == 8000, "default yaw output limit 8000");
+    CHECK(arm_ctrl.pick_wp[1].shoulder == 1700U && arm_ctrl.pick_wp[1].elbow == 2000U,
+          "factory pick = June demo EXTEND 1700/2000");
+    CHECK(arm_ctrl.cal.pick_open == 1100U && arm_ctrl.cal.pick_close == 1450U,
+          "factory gripper = June demo 1100 open / 1450 close");
 
     /* ------------------------------------------------------------------ */
     section("T2 保护模式拒绝一切运动");
@@ -387,7 +391,7 @@ int main(void)
     CHECK(arm_busy == 0, "chassis free after stopping");
 
     /* ------------------------------------------------------------------ */
-    section("T11 没有存档时三击不动作");
+    section("T11 出厂默认就是 6 月表演动作：三击就跑，再按停止");
     arm_teach_cmd("erase", NULL);
     CHECK(arm_teach_count == 0 && arm_ctrl.teach.saved_valid == 0, "track erased from RAM");
     CHECK(FLASH_U32(SLOT_A) == 0xFFFFFFFFUL, "slot A blank after erase");
@@ -395,9 +399,24 @@ int main(void)
     CHECK(arm_ctrl.cal.ik_valid == 0, "IK uncalibrated");
     n_x = (uint16_t)g_cmd_log_n;
     tripleclick();
-    run(1500U);
-    CHECK(arm_ctrl.teach.state == ARM_TEACH_IDLE, "triple click with nothing saved: stays IDLE");
-    CHECK(g_cmd_log_n == n_x, "no servo command, nothing moved");
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK, "triple click with no saved track runs the factory June demo");
+    t0 = g_now_ms;
+    CHECK(run_until_state(ARM_TEACH_SAVED, 15000U), "demo finished");
+    CHECK(g_now_ms - t0 >= 6000U, "demo took the June 2s-per-pose time");
+    CHECK(g_cmd_log_n > n_x, "the demo really moved the servos");
+    n_sh1700 = 0U;
+    for (i = 0U; i < g_cmd_log_n; i++) if (g_cmd_log[i].joint == 0U && g_cmd_log[i].pulse == 1700U) n_sh1700 = 1U;
+    CHECK(n_sh1700 == 1U, "demo reached the June EXTEND pose (shoulder 1700)");
+    n_close = 0;
+    for (i = 0U; i < g_cmd_log_n; i++) if (g_cmd_log[i].joint == 2U && g_cmd_log[i].pulse == 1450U) n_close++;
+    CHECK(n_close > 0, "demo closes the gripper to the June 1450");
+    tripleclick();
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK, "triple click restarts the demo");
+    run(2500U);
+    tripleclick();
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_SAVED && arm_busy == 0, "triple again mid-demo stops it");
+    long2();
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_IDLE, "back to IDLE for the next section");
 
     /* ------------------------------------------------------------------ */
     section("T12 死程序采摘：学 5 个路点，三击执行");
@@ -430,12 +449,20 @@ int main(void)
     n_close = 0U; n_last_grip = 0U; n_sh1700 = 0U;
     for (i = 0U; i < g_cmd_log_n; i++) {
         if (g_cmd_log[i].joint == 2U) {
-            if (g_cmd_log[i].pulse == 1300U) { n_close++; if (n_sh1700 == 0U) n_sh1700 = i; }
+            if (g_cmd_log[i].pulse == 1450U) { n_close++; if (n_sh1700 == 0U) n_sh1700 = i; }
             n_last_grip = g_cmd_log[i].pulse;
         }
     }
-    CHECK(n_close != 0U, "gripper closed (1300) during the sequence");
-    CHECK(n_last_grip == 1500U, "gripper open (1500) at the end");
+    { uint32_t q, n2 = 0U; int32_t mn = 99999, mx = -99999;
+      for (q = 0U; q < g_cmd_log_n; q++) if (g_cmd_log[q].joint == 2U) {
+          n2++;
+          if ((int32_t)g_cmd_log[q].pulse < mn) mn = (int32_t)g_cmd_log[q].pulse;
+          if ((int32_t)g_cmd_log[q].pulse > mx) mx = (int32_t)g_cmd_log[q].pulse;
+          if (q < 2U || q + 1U >= g_cmd_log_n) printf("DBG12 grip t=%lu/%u p=%u\n", (unsigned long)q, (unsigned)g_cmd_log_n, g_cmd_log[q].pulse);
+      }
+      printf("DBG12 joint2 n=%lu min=%d max=%d\n", (unsigned long)n2, mn, mx); }
+    CHECK(n_close != 0U, "gripper closed (1450) during the sequence");
+    CHECK(n_last_grip == 1100U, "gripper open (1100) at the end");
     CHECK(arm_ctrl.teach.saved_valid == 1, "pick track still valid after run");
 
     /* ------------------------------------------------------------------ */
@@ -495,7 +522,7 @@ int main(void)
     run(100U);
     CHECK(arm_ctrl.cal.ik_valid == 1 && arm_ctrl.cal.sh90_pulse == 1000 && arm_ctrl.cal.el90_pulse == 2000, "calibration survives power cycle");
     CHECK(arm_ctrl.cal.vis_depth_mm == 200 && arm_ctrl.cal.vis_k_x100 == 150, "vision parameters survive power cycle");
-    CHECK(arm_ctrl.cal.pick_close == 1300 && arm_ctrl.cal.pick_open == 1500, "gripper pulses survive power cycle");
+    CHECK(arm_ctrl.cal.pick_close == 1450 && arm_ctrl.cal.pick_open == 1100, "gripper pulses survive power cycle");
     CHECK(s_joint_min[0] == 600 && s_joint_max[0] == 2400 && s_joint_min[2] == 1100 && s_joint_max[2] == 1900, "joint limits survive power cycle");
     CHECK(arm_ctrl.yaw.out_limit == 6000 && arm_ctrl.yaw.angle_pid.MaxOutput == 200, "yaw limits survive power cycle");
     CHECK(arm_ctrl.yaw.angle_pid.p == 10.0f && arm_ctrl.yaw.angle_pid.d == 2.0f &&
@@ -623,10 +650,13 @@ int main(void)
     CHECK(s_joint_min[0] == 700 && s_joint_max[0] == 2300, "joint limits kept across erase + reboot");
     CHECK(arm_ctrl.cal.vis_depth_mm == 250 && arm_ctrl.cal.ik_valid == 1, "vision depth and IK kept across erase + reboot");
     (void)arm_joint_set_limit(0, 500, 2500);
-    n_x = (uint16_t)g_cmd_log_n;
     tripleclick();
-    run(1500U);
-    CHECK(arm_ctrl.teach.state == ARM_TEACH_IDLE && g_cmd_log_n == n_x, "triple click after erase: nothing moves");
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK, "after erase the factory June demo runs again");
+    run(2000U);
+    tripleclick();
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_SAVED && arm_busy == 0, "triple stops the demo");
+    long2();
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_IDLE, "back to IDLE");
 
     /* ------------------------------------------------------------------ */
     printf("\n%d checks, %d failed\n", g_pass + g_fail, g_fail);

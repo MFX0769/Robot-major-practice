@@ -2,11 +2,15 @@
 #include <stdint.h>
 #include "servo_test.h"
 #include "prot_sbus.h"
+#include "chassis_task.h"
 
 uint8_t s_config_allowed_for_arm_test;
 
 /* 真固件里定义在 prot_sbus.c；这两个测试不编它 */
 wbus_frame_u wbus_rc;
+
+/* 机械臂测试不编 chassis_task.c：方向微调只记不生效 */
+void chassis_map_sign_set(uint8_t idx, int8_t sign) { (void)idx; (void)sign; }
 
 void servo_test_init(void) {}
 void servo_test_process(void) {}

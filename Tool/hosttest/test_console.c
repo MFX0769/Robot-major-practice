@@ -123,6 +123,10 @@ static void arm_run(uint32_t ms)
         servo_test_poll();
         ev = BSP_UserKey_Poll();
         if (ev != KEY_EVT_NONE) handle_key(ev);
+        if (s_pick_trig_pending != 0U) {             /* 与真 arm_task() 的主循环一致 */
+            s_pick_trig_pending = 0U;
+            pick_run();
+        }
         teach_tick();
         arm_yaw_pid_calc();
         sim_advance(3U);
@@ -187,6 +191,7 @@ static const char *const s_bad[] = {
     "yaw target", "yaw monitor x", "yaw stop x", "yaw set 1", "yaw clear x",
     "servo ping", "servo ping 300", "servo ping x", "servo read", "servo read x", "servo setid 2", "servo setid 2 2",
     "servo bind knee 2", "servo bind shoulder", "servo config x", "servo run x", "servo map x",
+    "rc x", "chassis map bogus 1", "chassis map vx", "chassis map vx 0", "chassis map vx 1 x",
     "unknowncommand", "STOP", "mode\tmanual",
 };
 
@@ -218,7 +223,7 @@ int main(int argc, char **argv)
         chassis_run(900U);
         CHECK(pattern_line() && s_absmax > 0, "first 1.8s: straight at full speed, sensor ignored");
         chassis_run(300U);
-        CHECK(all_sign(-1), "after 2s: line lost, last seen at +40 -> turn by memory (vx 350, wz -900)");
+        CHECK(all_sign(1), "after 2s: lost at +40 -> steer the same side the tracker corrects (all currents positive)");
         chassis_run(400U);
         CHECK(all_sign(0), "line lost for more than 0.7s: stop");
         cmd("chassis stop");
@@ -343,34 +348,45 @@ int main(int argc, char **argv)
     CHECK(s_absmax == 0 && chassis_dbg_jog_active() == 0, "'stop' ends a jog at once");
 
     /* ------------------------------------------------------------------ */
-    section("C5 接了遥控器：右拨杆上 = 摇杆直驱；左拨杆下或右拨杆中 = 零输出");
+    section("C5 接了遥控器（DBUS 映射）：右摇杆平移，左摇杆横 = 旋转");
     wbus_rc.data.sw1 = 1;
     wbus_rc.data.sw2 = 2;
     wbus_rc.data.sw3 = 1;
     wbus_rc.data.ch1 = 0;
-    wbus_rc.data.ch2 = 200;                          /* 右摇杆竖向：下 = 正 */
+    wbus_rc.data.ch2 = 300;                          /* 右摇杆上推（DR16 竖向上 = +） */
     cmd("chassis line");
     cmd("chassis line");
     CHECK(arm_ctrl.chassis_run == 1, "released");
     chassis_run(20U);
-    CHECK(pattern_reverse(), "right stick down (ch2>0): vx=-600, opposite to the line-follow direction");
-    wbus_rc.data.sw1 = 0;                            /* 左拨杆下 */
-    chassis_run(1500U);                              /* 给定归零，轮子自己停下来 */
+    CHECK(pattern_line(), "right stick up (ch2>0): forward, same direction line following uses");
+    wbus_rc.data.ch2 = -300;
+    chassis_run(2000U);
+    CHECK(pattern_reverse(), "right stick down: backward");
+    wbus_rc.data.ch2 = 0;
+    wbus_rc.data.ch1 = 300;
+    chassis_run(20U);
+    CHECK(s_last_tx[0] > 0 && s_last_tx[1] < 0 && s_last_tx[2] > 0 && s_last_tx[3] < 0,
+          "right stick side (ch1>0): FL/FR positive, BL/BR negative = strafe");
+    wbus_rc.data.ch1 = 0;
+    wbus_rc.data.ch3 = 300;
+    chassis_run(20U);
+    CHECK(all_sign(1), "left stick (ch3>0): all four currents the same sign = spin");
+    wbus_rc.data.ch3 = -300;
+    chassis_run(2000U);
+    CHECK(all_sign(-1), "left stick the other way: spin the other way");
+    wbus_rc.data.ch3 = 0;
+    wbus_rc.data.sw1 = 0;                            /* 全局拨杆下 */
+    chassis_run(1500U);
     CHECK(all_sign(0), "left switch down: zero output once the wheels have stopped");
     wbus_rc.data.sw1 = 1;
-    wbus_rc.data.sw2 = 1;                            /* 右拨杆中 */
+    wbus_rc.data.sw2 = 1;                            /* 底盘拨杆中 */
     chassis_run(1500U);
-    CHECK(all_sign(0), "right switch middle: stop");
+    CHECK(all_sign(0), "chassis switch middle: stop");
     wbus_rc.data.sw2 = 2;
-    wbus_rc.data.ch2 = 0;
-    wbus_rc.data.ch4 = -200;                         /* 左摇杆横：左 = 负 */
-    chassis_run(60U);
-    CHECK(all_sign(-1), "left stick left (ch4<0): all four wheels negative = spin");
-    wbus_rc.data.ch4 = 200;
-    chassis_run(2000U);                              /* 先刹住再反转 */
-    CHECK(all_sign(1), "left stick right: the other way");
+    wbus_rc.data.ch2 = 300;
     cmd("mode manual");
     CHECK(arm_ctrl.chassis_run == 0 && arm_busy == 1, "manual takes it back even with a remote");
+    wbus_rc.data.ch2 = 0;
     chassis_run(2000U);
     CHECK(all_sign(0), "zero under manual once the wheels have stopped");
     cmd("chassis stop");
@@ -384,8 +400,8 @@ int main(int argc, char **argv)
     cmd("chassis line");
     CHECK(arm_ctrl.chassis_run == 1, "line following started");
     chassis_run(300U);
-    CHECK(all_sign(-1) && s_last_tx[2] < s_last_tx[0] && s_last_tx[3] < s_last_tx[1],
-          "line lost, last seen at +40: vx 350 / wz -900 -> left -550, right -1250");
+    CHECK(all_sign(1),
+          "line lost, last seen at +40: vx 350 / wz +900 -> steer toward the last-seen side (all currents positive)");
     chassis_run(400U);
     CHECK(all_sign(0), "line lost for more than 0.7s: stop (wheels have almost stopped, output exactly 0)");
     sim_line_set(LINE_STATE_OK, 0);
@@ -529,11 +545,25 @@ int main(int argc, char **argv)
     CHECK(sim_out_has("pid motor set kp=1.00 ki=2.00 kd=3.00"), "chassis pid set");
     cmd("chassis pid line 4 0 0");
     CHECK(sim_out_has("pid line set kp=4.00"), "line pid set");
+    cmd("rc");
+    CHECK(sim_out_has("[RC] ch1=") && sim_out_has("lock="), "rc dumps raw channels, switches and lock");
+    cmd("chassis map");
+    CHECK(sim_out_has("map vx=") && sim_out_has("wz=+1"), "chassis map shows the sign trims");
+    cmd("chassis map wz -1");
+    CHECK(sim_out_has("map wz -> -1"), "chassis map flips a direction without reflashing");
+    cmd("chassis map");
+    CHECK(sim_out_has("wz=-1"), "and it reads back flipped");
+    cmd("chassis map wz 1");
+    CHECK(sim_out_has("map wz -> +1"), "and back");
 
     /* ------------------------------------------------------------------ */
-    section("C10 死程序按数字设路点（wp）：不读舵机也能跑");
+    section("C10 死程序：出厂默认 = 6 月表演；wp 按数字设路点，不读舵机也能跑");
+    n_cmd = g_cmd_log_n;
     cmd("pick run");
-    CHECK(sim_out_has("no saved track") && arm_ctrl.teach.state == ARM_TEACH_IDLE, "nothing taught yet: refuses to move");
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK && arm_busy == 1,
+          "factory June demo runs even with nothing taught or saved");
+    cmd("pick run");
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_SAVED && arm_busy == 0, "'pick run' again stops it");
     cmd("joint limit shoulder 500 2500");
     cmd("joint limit elbow 500 2500");
     CHECK(arm_ctrl.cal.lim_sh_min == 500 && arm_ctrl.cal.lim_el_max == 2500, "joint limits widened");
@@ -546,15 +576,15 @@ int main(int argc, char **argv)
     CHECK(arm_teach_count == 5U && arm_ctrl.teach.saved_valid == 1U, "5-point track built");
     n_cmd = g_cmd_log_n;
     cmd("pick run");
-    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK && arm_busy == 1, "pick run starts the sequence, chassis locked");
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK && arm_busy == 1, "pick run starts the edited sequence, chassis locked");
     cmd("wp 1 1500 1500");
     CHECK(sim_out_has("wp rejected while playing") && arm_ctrl.pick_wp[1].shoulder == 1700, "wp refused while playing");
     t0 = g_now_ms;
     CHECK(wait_teach_state(ARM_TEACH_SAVED, 20000U), "sequence finished");
-    CHECK(g_cmd_log_n > n_cmd && g_gripper_cmd == 1500U, "servos were driven, gripper open at the end");
+    CHECK(g_cmd_log_n > n_cmd && g_gripper_cmd == 1100U, "servos were driven, gripper open (1100) at the end");
     n_close = 0;
-    for (i = 0U; i < g_cmd_log_n; i++) if (g_cmd_log[i].joint == 2U && g_cmd_log[i].pulse == 1300U) n_close++;
-    CHECK(n_close > 0, "gripper closed during the sequence");
+    for (i = 0U; i < g_cmd_log_n; i++) if (g_cmd_log[i].joint == 2U && g_cmd_log[i].pulse == 1450U) n_close++;
+    CHECK(n_close > 0, "gripper closed (1450) during the sequence");
     printf("    pick sequence took %lums\n", (unsigned long)(g_now_ms - t0));
     n0 = g_flash_erase_cnt;
     cmd("chassis line");
@@ -577,6 +607,31 @@ int main(int argc, char **argv)
     CHECK(arm_ctrl.teach.state == ARM_TEACH_SAVED && arm_busy == 0, "'pick run' again stops it");
     cmd("stop");
     CHECK(arm_ctrl.teach.state == ARM_TEACH_IDLE && ctrl_mode == PROTECT_MODE, "back to IDLE / PROTECT");
+
+    /* ------------------------------------------------------------------ */
+    section("C13 巡线中左摇杆竖向拨一下 = 触发/停止表演");
+    sim_line_set(LINE_STATE_OK, 0);
+    cmd("chassis line");
+    cmd("chassis line");
+    CHECK(arm_ctrl.chassis_run == 1 && arm_ctrl.teach.saved_valid == 1U, "line following, taught track still saved");
+    chassis_run(20U);
+    CHECK(pattern_line(), "car is following the line");
+    wbus_rc.data.ch4 = 400;                          /* 左摇杆竖向拨一下（DR16 竖向上 = +） */
+    chassis_run(20U);
+    wbus_rc.data.ch4 = 0;
+    arm_run(30U);
+    CHECK(arm_ctrl.teach.state == ARM_TEACH_PLAYBACK && arm_busy == 1, "stick flick starts the performance");
+    chassis_run(100U);
+    CHECK(arm_busy == 1 && chassis_2006[0].speed_rpm == 0 && chassis_2006[1].speed_rpm == 0 &&
+          chassis_2006[2].speed_rpm == 0 && chassis_2006[3].speed_rpm == 0 &&
+          s_last_tx[0] > -50 && s_last_tx[0] < 50,
+          "chassis locked while performing: wheels stopped, wheel-0 PID dithers within +-50 of 10000");
+    CHECK(wait_teach_state(ARM_TEACH_SAVED, 25000U), "performance finished");
+    mode_user_set(REMOTER_MODE);                     /* 真车上模式任务会自己回到 REMOTER */
+    chassis_run(20U);
+    CHECK(pattern_line(), "line resumes after the performance");
+    cmd("chassis stop");
+    CHECK(arm_ctrl.chassis_run == 0, "stopped");
 
     /* ------------------------------------------------------------------ */
     section("C11 yaw 走控制台：先探测方向，再给目标；回保护立即归零");
