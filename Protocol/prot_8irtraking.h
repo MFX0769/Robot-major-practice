@@ -36,6 +36,7 @@ extern volatile uint32_t ir_poll_bytes;
 extern volatile uint32_t ir_isr_bytes;
 extern volatile uint32_t ir_diag_ticks;
 extern volatile uint32_t ir_last_isr;
+extern volatile uint32_t ir_last_rx_tick;   /* 最近一次有效帧到达的 ms 时间戳（不是 ISR 寄存器值） */
 extern volatile uint32_t ir_ore_count;
 extern volatile uint32_t ir_pe7_changes;
 

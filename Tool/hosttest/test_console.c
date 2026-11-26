@@ -248,7 +248,7 @@ static const char *const s_bad[] = {
     "rc x", "chassis map bogus 1", "chassis map vx", "chassis map vx 0", "chassis map vx 1 x",
     "avoid x", "avoid status x", "avoid app", "avoid app 10", "avoid app 2001", "avoid shift 900", "avoid fwd 1600",
     "avoid wheel 10", "avoid calib 10", "avoid side front", "avoid unit m", "avoid off x", "avoid run x", "avoid odo x",
-    "unknowncommand", "STOP", "mode\tmanual",
+    "diag x", "unknowncommand", "STOP", "mode\tmanual",
 };
 
 int main(int argc, char **argv)
@@ -333,6 +333,24 @@ int main(int argc, char **argv)
     CHECK(g_canraw_cnt == n0, "a motor with an id outside 0x201..0x208 sends nothing (no write past the frame)");
     for (i = 0U; i < 4U; i++) chassis_2006[i].tx_current = 0;
 
+    /* 编码器过零：8191 -> 0 应 +1 圈，反向应 -1 圈；前 50 帧只锁上电原点 */
+    {
+        dji_motor_t m;
+        uint8_t raw[8] = {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U};
+        dji_motor_init(&m, DJI_6020_MOTOR, PROT_CAN_CHANNEL_2, 0x208U, 1.0f);
+        raw[0] = 0x1FU; raw[1] = 0xFFU;             /* 8191 */
+        dji_motor_get_single_data(&m, raw);
+        raw[0] = 0U; raw[1] = 0U;                    /* 0，第二帧也必须正常累计 */
+        dji_motor_get_single_data(&m, raw);
+        CHECK(m.round_cnt == 1 && m.total_ecd == 1, "8191 -> 0 counts one positive turn");
+        raw[0] = 0x1FU; raw[1] = 0xFFU;
+        dji_motor_get_single_data(&m, raw);
+        CHECK(m.round_cnt == 0 && m.total_ecd == 0, "0 -> 8191 counts the wrap back");
+        raw[0] = 0x0FU; raw[1] = 0xA0U;             /* 4000，小于半圈，不算过零 */
+        dji_motor_get_single_data(&m, raw);
+        CHECK(m.round_cnt == 1 && m.total_ecd == 4001, "a large non-wrap jump changes round count once and keeps the absolute ECD");
+    }
+
     /* ------------------------------------------------------------------ */
     section("C3 mode manual：放开机械臂命令，底盘保持锁零；chassis line 要两条才启动");
     cmd("mode manual");
@@ -351,6 +369,12 @@ int main(int argc, char **argv)
     CHECK(g_cmd_log_n == 1U && g_cmd_log[0].joint == 0U && g_cmd_log[0].pulse == 1550U, "shoulder 1550 sent");
     cmd("yaw target 3000");
     CHECK(sim_out_has("rejected") && arm_ctrl.yaw.enable == 0, "yaw target needs 'yaw probe' first");
+    cmd("diag");
+    CHECK(sim_out_has("last_reject=-4 'yaw dir uncalibrated'") &&
+          sim_out_has("mode=ARM_TEACH allowed=1 arm_busy=1 manual=1 chassis_run=0"),
+          "diag shows the exact last gate rejection and all interlock inputs");
+    CHECK(sim_out_has("DBUS frames=") && sim_out_has("CONSOLE bytes=") && sim_out_has("USB enq=") && sim_out_has("LOG enq="),
+          "diag covers the input and output diagnostic chains");
     cmd("chassis line");
     CHECK(sim_out_has("ARMED") && arm_ctrl.chassis_run == 0 && ctrl_mode == ARM_TEACH_MODE, "first 'chassis line' only arms");
     chassis_run(200U);

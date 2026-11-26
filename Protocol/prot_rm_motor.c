@@ -65,13 +65,18 @@ void dji_motor_get_single_data(dji_motor_t *motor, uint8_t *data)
     motor->speed_rpm = (int16_t)((data[2] << 8) | data[3]);
     motor->rx_current = (int16_t)((data[4] << 8) | data[5]);
     motor->temperature = data[6];
-    if (motor->receive_cnt < 50U)
+    if (motor->receive_cnt == 1U)
     {
+        /* 只在第一帧锁上电原点。旧写法前 50 帧每次都重置 round_cnt，
+           6020 上电后很快跨过 8191->0 时会丢掉第一圈，连续位置环和限位都会错。 */
         motor->offset_ecd = motor->ecd;
         motor->round_cnt = 0;
     }
-    if (motor->ecd - motor->last_ecd >= 4096) motor->round_cnt--;
-    else if (motor->ecd - motor->last_ecd <= -4096) motor->round_cnt++;
+    if (motor->receive_cnt > 1U)
+    {
+        if (motor->ecd - motor->last_ecd >= 4096) motor->round_cnt--;
+        else if (motor->ecd - motor->last_ecd <= -4096) motor->round_cnt++;
+    }
     motor->total_ecd = motor->round_cnt * 8192 + motor->ecd - motor->offset_ecd;
     motor->p = 2.0f * PI * motor->total_ecd / 8192 / motor->reduction_ratio;
     motor->real_p = 2.0f * PI * motor->ecd / 8192 / motor->reduction_ratio;

@@ -65,6 +65,17 @@ volatile uint32_t vision_uart_rx_frames;
 volatile uint32_t vision_uart_last_tick;
 ctrl_mode_e ctrl_mode;
 uint32_t g_sim_primask;
+volatile uint32_t ir_last_isr;
+volatile uint32_t ir_last_rx_tick;
+
+void dbg_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *trunc, uint32_t *tx, uint32_t *timeout)
+{
+    if (enq != NULL) *enq = 0U;
+    if (drop != NULL) *drop = 0U;
+    if (trunc != NULL) *trunc = 0U;
+    if (tx != NULL) *tx = 0U;
+    if (timeout != NULL) *timeout = 0U;
+}
 
 /* chassis_2006[4]、arm_yaw_motor、dji_send_current、wbus_rc 都来自真实固件文件
    （prot_rm_motor.c / prot_sbus.c），所以电机怎么打包进 CAN 帧、遥控开关怎么映射，测的就是上板的那份代码。 */

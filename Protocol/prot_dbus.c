@@ -19,6 +19,7 @@ static uint8_t s_raw_len;
 static volatile uint32_t s_rx_count;
 static volatile uint32_t s_rx_bytes;
 static volatile uint32_t s_last_tick;
+static volatile uint32_t s_bad_frames, s_queue_drop, s_last_interval, s_max_interval;
 
 static void dbus_push_frame(void)
 {
@@ -26,9 +27,16 @@ static void dbus_push_frame(void)
 
     if (s_queue != NULL) {
         memcpy(frame.data, s_raw, DBUS_FRAME_LEN);
-        (void)xQueueSendFromISR(s_queue, &frame, NULL);
+        if (xQueueSendFromISR(s_queue, &frame, NULL) != pdTRUE) s_queue_drop++;
+    } else {
+        s_queue_drop++;
     }
     s_rx_count++;
+    if (s_last_tick != 0U) {
+        uint32_t gap = osKernelSysTick() - s_last_tick;
+        s_last_interval = gap;
+        if (gap > s_max_interval) s_max_interval = gap;
+    }
     s_last_tick = osKernelSysTick();
 }
 
@@ -44,6 +52,7 @@ void dbus_rx_isr(void)
         __HAL_UART_CLEAR_FLAG(&huart5, UART_CLEAR_FEF);
         __HAL_UART_CLEAR_FLAG(&huart5, UART_CLEAR_NEF);
         s_raw_len = DBUS_FRAME_LEN + 1U;      /* 出错：丢到下一个 IDLE 重新对齐 */
+        s_bad_frames++;
     }
 
     while (UART5->ISR & USART_ISR_RXNE_RXFNE) {
@@ -59,6 +68,7 @@ void dbus_rx_isr(void)
     if ((UART5->ISR & USART_ISR_IDLE) != 0U) {
         UART5->ICR = USART_ICR_IDLECF;
         if (s_raw_len == DBUS_FRAME_LEN) dbus_push_frame();
+        else if (s_raw_len != 0U) s_bad_frames++;
         s_raw_len = 0U;
     }
 }
@@ -70,6 +80,10 @@ void dbus_init(void)
     s_rx_count = 0;
     s_rx_bytes = 0;
     s_last_tick = 0;
+    s_bad_frames = 0U;
+    s_queue_drop = 0U;
+    s_last_interval = 0U;
+    s_max_interval = 0U;
     __HAL_UART_DISABLE_IT(&huart5, UART_IT_RXNE);
     while (UART5->ISR & USART_ISR_RXNE_RXFNE) (void)UART5->RDR;
     __HAL_UART_CLEAR_FLAG(&huart5, UART_CLEAR_OREF);
@@ -102,4 +116,13 @@ uint32_t dbus_rx_count(void)
 uint32_t dbus_rx_bytes(void)
 {
     return s_rx_bytes;
+}
+
+void dbus_stats_get(uint32_t *frames, uint32_t *bad, uint32_t *drop, uint32_t *last_ms, uint32_t *max_ms)
+{
+    if (frames != NULL) *frames = s_rx_count;
+    if (bad != NULL) *bad = s_bad_frames;
+    if (drop != NULL) *drop = s_queue_drop;
+    if (last_ms != NULL) *last_ms = s_last_interval;
+    if (max_ms != NULL) *max_ms = s_max_interval;
 }

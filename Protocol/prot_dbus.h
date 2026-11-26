@@ -20,5 +20,7 @@ void dbus_process(void);
 uint8_t dbus_online(void);
 uint32_t dbus_rx_count(void);
 uint32_t dbus_rx_bytes(void);
+/* 接收链统计：有效帧、坏帧长/出错帧、队列满丢弃、最近/最大帧间隔（ms） */
+void dbus_stats_get(uint32_t *frames, uint32_t *bad, uint32_t *drop, uint32_t *last_ms, uint32_t *max_ms);
 
 #endif

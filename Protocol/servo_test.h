@@ -22,5 +22,7 @@ void servo_test_process(void);
 void servo_test_poll(void);
 void servo_test_set_config_allowed(uint8_t allowed);
 uint8_t servo_test_config_active(void);
+/* 控制台输入链：两路合计字节/完整行/入队/满队列丢弃 */
+void servo_test_stats_get(uint32_t *bytes, uint32_t *lines, uint32_t *enq, uint32_t *drop);
 
 #endif

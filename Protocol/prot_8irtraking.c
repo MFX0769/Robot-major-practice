@@ -31,6 +31,7 @@ volatile uint32_t ir_isr_bytes  = 0;
 volatile uint32_t ir_poll_bytes = 0;
 volatile uint32_t ir_diag_ticks = 0;
 volatile uint32_t ir_last_isr   = 0;
+volatile uint32_t ir_last_rx_tick = 0;
 volatile uint32_t ir_ore_count  = 0;
 volatile uint32_t ir_pe7_changes = 0;
 static char     ir_fbuf[96];
@@ -121,6 +122,7 @@ void prot_8irtraking_on_receive(const uint8_t *buf, uint16_t len)
 {
     if (!buf || len < 8) return;
     s_data.rx_cnt++;
+    ir_last_rx_tick = osKernelSysTick();
 
     const uint8_t *p = buf;
     const uint8_t *end = buf + len;

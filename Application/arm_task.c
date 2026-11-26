@@ -19,6 +19,10 @@
 #include "pid.h"
 #include "stm32h7xx_hal_flash.h"
 #include "stm32h7xx_hal_flash_ex.h"
+#include "tfmini.h"
+#include "prot_8irtraking.h"
+#include "prot_dbus.h"
+#include "usb_comm.h"
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -243,6 +247,71 @@ static uint16_t pulse_electrical_clamp(int32_t p)
     return (uint16_t)p;
 }
 
+/* 所有拒绝路径共用：不只打印一次原因，还留下“最后一次为什么没动”，diag 随时能查 */
+void arm_diag_note_reject(int32_t code, const char *why)
+{
+    if (why == NULL) why = "unknown";
+    arm_ctrl.reject_count++;
+    arm_ctrl.reject_code = code;
+    strncpy(arm_ctrl.reject_why, why, sizeof(arm_ctrl.reject_why) - 1U);
+    arm_ctrl.reject_why[sizeof(arm_ctrl.reject_why) - 1U] = '\0';
+}
+
+/* 控制台 diag：把“为什么不动”所需的状态一次性打全，避免在多个命令之间猜 */
+void arm_diag_print(void)
+{
+    uint32_t enq, drop, trunc, tx, tout;
+    uint32_t rb, rl, re, rd, df, db, dd, dlast, dmax, ue, ud, ut, ub;
+    const prot_8irtraking_data_t *line = prot_8irtraking_get_data();
+    uint8_t line_on = (line != NULL) ? 1U : 0U;
+    uint32_t line_age = (line != NULL && ir_last_rx_tick != 0U)
+                        ? (uint32_t)(now_ms() - ir_last_rx_tick) : 0U;
+
+    dbg_stats_get(&enq, &drop, &trunc, &tx, &tout);
+    servo_test_stats_get(&rb, &rl, &re, &rd);
+    dbus_stats_get(&df, &db, &dd, &dlast, &dmax);
+    usb_tx_stats_get(&ue, &ud, &ut, &ub);
+    dbg_print("[DIAG] mode=%s allowed=%u arm_busy=%u manual=%u chassis_run=%u teach=%s pts=%u saved=%u config=%u\r\n",
+              arm_mode_name(), (unsigned)arm_motion_allowed(), (unsigned)arm_busy,
+              (unsigned)arm_ctrl.manual, (unsigned)arm_ctrl.chassis_run,
+              arm_teach_state_name(), (unsigned)arm_teach_count,
+              (unsigned)arm_ctrl.teach.saved_valid, (unsigned)servo_config_active());
+    dbg_print("[DIAG] last_reject=%ld '%s' count=%lu\r\n",
+              (long)arm_ctrl.reject_code, arm_ctrl.reject_why, (unsigned long)arm_ctrl.reject_count);
+    dbg_print("[DIAG] servo sh_on=%u el_on=%u gr=%u | yaw en=%u on=%u dir=%d valid=%u fault=%u ecd=%ld/%ld err=%ld out=%.0f/%d\r\n",
+              (unsigned)servo_online(0U), (unsigned)servo_online(1U), (unsigned)servo_get_current_pulse(2U),
+              (unsigned)arm_ctrl.yaw.enable, (unsigned)arm_ctrl.yaw.online, (int)arm_ctrl.yaw.dir,
+              (unsigned)arm_ctrl.yaw.dir_valid, (unsigned)arm_ctrl.yaw.fault,
+              (long)arm_ctrl.yaw.fdb_ecd, (long)arm_ctrl.yaw.target_ecd,
+              (long)arm_ctrl.yaw.err_ecd, (double)arm_ctrl.yaw.out, (int)arm_ctrl.yaw.out_limit);
+    dbg_print("[DIAG] flash_ok=%u seq=%lu ik_valid=%u L1/L2=%u/%umm depth=%u k=%u dy=%d yawk=%d\r\n",
+              (unsigned)s_flash_ok, (unsigned long)s_flash_seq, (unsigned)arm_ctrl.cal.ik_valid,
+              (unsigned)arm_ctrl.cal.l1_mm, (unsigned)arm_ctrl.cal.l2_mm,
+              (unsigned)arm_ctrl.cal.vis_depth_mm, (unsigned)arm_ctrl.cal.vis_k_x100,
+              (int)arm_ctrl.cal.cam_dy_mm, (int)arm_ctrl.cal.yaw_k_x100);
+    dbg_print("[DIAG] vis_tick=%lu age=%lums xy=(%d,%d) fresh=%u | line=%u line_rx=%lu line_age=%lums dbus=%u rx=%lu lock=%u\r\n",
+              (unsigned long)arm_ctrl.vis_tick,
+              (unsigned long)((arm_ctrl.vis_tick != 0U) ? (now_ms() - arm_ctrl.vis_tick) : 0xFFFFFFFFU),
+              (int)arm_ctrl.vis_x, (int)arm_ctrl.vis_y,
+              (unsigned)((arm_ctrl.vis_tick != 0U && (uint32_t)(now_ms() - arm_ctrl.vis_tick) < TEACH_VIS_FRESH_MS) ? 1U : 0U),
+              (unsigned)line_on, (unsigned long)(line != NULL ? line->rx_cnt : 0U),
+              (unsigned long)line_age, (unsigned)dbus_online(), (unsigned long)dbus_rx_count(), (unsigned)lock_flag);
+    dbg_print("[DIAG] DBUS frames=%lu bad=%lu qdrop=%lu interval=%lums max=%lums | CONSOLE bytes=%lu lines=%lu enq=%lu qdrop=%lu\r\n",
+              (unsigned long)df, (unsigned long)db, (unsigned long)dd,
+              (unsigned long)dlast, (unsigned long)dmax,
+              (unsigned long)rb, (unsigned long)rl, (unsigned long)re, (unsigned long)rd);
+    dbg_print("[DIAG] limits sh=%u..%u el=%u..%u gr=%u..%u yaw=%d/%d out=%d spd=%lu | yaw_guard=30ECD/15rpm hold=20 probeBand=150\r\n",
+              (unsigned)s_joint_min[0], (unsigned)s_joint_max[0],
+              (unsigned)s_joint_min[1], (unsigned)s_joint_max[1],
+              (unsigned)s_joint_min[2], (unsigned)s_joint_max[2],
+              ARM_YAW_ECD_LEFT_DEFAULT, ARM_YAW_ECD_RIGHT_DEFAULT, (int)arm_ctrl.yaw.out_limit,
+              (unsigned long)arm_ctrl.yaw.angle_pid.MaxOutput);
+    dbg_print("[DIAG] LOG enq=%lu drop=%lu trunc=%lu uart_tx=%lu timeout=%lu | USB enq=%lu qdrop=%lu tx=%lu busy_drop=%lu | dbgQ=8x192B usbQ=16x120B\r\n",
+              (unsigned long)enq, (unsigned long)drop, (unsigned long)trunc,
+              (unsigned long)tx, (unsigned long)tout,
+              (unsigned long)ue, (unsigned long)ud, (unsigned long)ut, (unsigned long)ub);
+}
+
 /* ========================= 模式门控 ========================= */
 uint8_t arm_motion_allowed(void)
 {
@@ -278,6 +347,7 @@ int arm_mode_manual(void)
 
     if (st == ARM_TEACH_READY || st == ARM_TEACH_RECORD || st == ARM_TEACH_PLAYBACK) {
         dbg_print("[MODE] manual rejected while teach=%s\r\n", state_name(st));
+        arm_diag_note_reject(-1, "teach active (manual)");
         return -1;
     }
     /* 走 ARM_TEACH 而不是 REMOTER：没有遥控器时 wbus 全 0，REMOTER 下底盘会自己进巡线开跑 */
@@ -295,10 +365,12 @@ int arm_chassis_release(void)
 
     if (st == ARM_TEACH_READY || st == ARM_TEACH_RECORD || st == ARM_TEACH_PLAYBACK) {
         dbg_print("[CHASSIS] rejected while teach=%s\r\n", state_name(st));
+        arm_diag_note_reject(-1, "teach active (chassis)");
         return -1;
     }
     if (servo_config_active()) {
         dbg_print("[CHASSIS] rejected: servo config active ('servo run' first)\r\n");
+        arm_diag_note_reject(-1, "servo config active");
         return -1;
     }
     arm_yaw_set_enable(0U);
@@ -624,6 +696,7 @@ int arm_flash_commit(void)
     /* 写片内 Flash 时整颗 CPU 停 1~2 秒，这期间发不出任何 CAN 帧。车在跑就先不存 */
     if (arm_ctrl.chassis_run != 0U) {
         dbg_print("[PICK] save rejected: line-following is running, send 'chassis stop' first\r\n");
+        arm_diag_note_reject(-9, "flash write while chassis runs");
         return -9;
     }
     prev = flash_guard_enter();        /* 底盘归零、零值帧先发出去，再让 CPU 停下来 */
@@ -1094,10 +1167,12 @@ static void teach_play_start(void)
     }
     if (servo_config_active()) {
         dbg_print("[TEACH] play rejected: servo config active\r\n");
+        arm_diag_note_reject(-5, "servo config active");
         return;
     }
     if (servo_online(0U) == 0U || servo_online(1U) == 0U) {
         dbg_print("[TEACH] play rejected: shoulder/elbow offline (5V? wiring?)\r\n");
+        arm_diag_note_reject(-8, "shoulder/elbow offline");
         return;
     }
 
@@ -1789,31 +1864,38 @@ static int yaw_gate(const char *cmd, uint8_t need_dir)
 
     if (servo_config_active()) {
         dbg_print("[YAW] %s rejected: servo config active ('servo run' first)\r\n", cmd);
+        arm_diag_note_reject(-1, "servo config active");
         return -1;
     }
     if (st == ARM_TEACH_READY || st == ARM_TEACH_RECORD) {
         dbg_print("[YAW] %s rejected: arm released for drag-teach\r\n", cmd);
+        arm_diag_note_reject(-2, "arm released for teach");
         return -2;
     }
     if (st == ARM_TEACH_PLAYBACK) {
         dbg_print("[YAW] %s rejected: playback running ('teach stop' first)\r\n", cmd);
+        arm_diag_note_reject(-3, "playback running");
         return -3;
     }
     if (need_dir != 0U && arm_ctrl.yaw.dir_valid == 0U) {
         dbg_print("[YAW] %s rejected: direction not calibrated, send 'yaw probe' first\r\n", cmd);
+        arm_diag_note_reject(-4, "yaw dir uncalibrated");
         return -4;
     }
     if (arm_ctrl.yaw.fault != 0U) {
         dbg_print("[YAW] %s rejected: fault %u locked, send 'yaw fault clear'\r\n",
                   cmd, (unsigned)arm_ctrl.yaw.fault);
+        arm_diag_note_reject(-5, "yaw fault latched");
         return -5;
     }
     if (arm_ctrl.chassis_run != 0U) {
         dbg_print("[YAW] %s rejected: chassis is running, send 'chassis stop' first\r\n", cmd);
+        arm_diag_note_reject(-6, "chassis running");
         return -6;
     }
     if (arm_motion_allowed() == 0U) {
         dbg_print("[YAW] %s rejected: mode=%s, send 'mode manual' first\r\n", cmd, arm_mode_name());
+        arm_diag_note_reject(-7, "mode not allowed");
         return -7;
     }
     return 0;
@@ -2182,22 +2264,27 @@ int arm_joint_jog(uint8_t joint, const char *value)
     if (joint > 2U || value == NULL) return -1;
     if (servo_config_active()) {
         dbg_print("[JOG] rejected: servo config active ('servo run' first)\r\n");
+        arm_diag_note_reject(-5, "servo config active");
         return -5;
     }
     if (st == ARM_TEACH_PLAYBACK) {
         dbg_print("[JOG] rejected: playback running ('teach stop' first)\r\n");
+        arm_diag_note_reject(-3, "playback running");
         return -3;
     }
     if ((st == ARM_TEACH_READY || st == ARM_TEACH_RECORD) && joint != 2U) {
         dbg_print("[JOG] rejected: shoulder/elbow released for drag-teach (only gripper allowed)\r\n");
+        arm_diag_note_reject(-4, "shoulder/elbow released");
         return -4;
     }
     if (arm_ctrl.chassis_run != 0U) {
         dbg_print("[JOG] rejected: chassis is running, send 'chassis stop' first\r\n");
+        arm_diag_note_reject(-2, "chassis running");
         return -2;
     }
     if (arm_motion_allowed() == 0U) {
         dbg_print("[JOG] rejected: mode=%s, send 'mode manual' first\r\n", arm_mode_name());
+        arm_diag_note_reject(-2, "mode not allowed");
         return -2;
     }
 

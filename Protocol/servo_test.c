@@ -37,7 +37,16 @@ static uint8_t s_config_active;
 static uint8_t s_yaw_monitor_active;
 static uint8_t s_yaw_monitor_div;
 static volatile uint32_t s_rx_bytes;
+static volatile uint32_t s_rx_lines, s_rx_enq, s_rx_drop;
 static uint32_t s_line_arm_tick;
+
+void servo_test_stats_get(uint32_t *bytes, uint32_t *lines, uint32_t *enq, uint32_t *drop)
+{
+    if (bytes != NULL) *bytes = s_rx_bytes;
+    if (lines != NULL) *lines = s_rx_lines;
+    if (enq != NULL) *enq = s_rx_enq;
+    if (drop != NULL) *drop = s_rx_drop;
+}
 
 static int32_t parse_signed(const char *s, int32_t *value)
 {
@@ -295,6 +304,13 @@ static void servo_test_parse_line(const char *line)
                   (unsigned)wbus_rc.data.sw1, (unsigned)wbus_rc.data.sw2, (unsigned)wbus_rc.data.sw3,
                   (unsigned)lock_flag, (unsigned)dbus_online(), (unsigned long)dbus_rx_count());
         dbg_print("[RC] right stick ch2=fwd ch1=side, left stick ch3=spin; sw2 down + sw1 not mid = line follow\r\n");
+        return;
+    }
+
+    /* ---- 统一诊断快照：为什么不动、阈值、在线、日志健康 ---- */
+    if (strcmp(token, "diag") == 0) {
+        if (strtok(NULL, " ") != NULL) goto usage;
+        arm_diag_print();
         return;
     }
 
@@ -629,7 +645,7 @@ usage:
     dbg_print("[SERVO_TEST] usage: chassis status|line|stop|motor <0..3> <cur>|pid [line|0..3 kp ki kd]|map [vx|vy|wz <1|-1>] | can stat|recover <1|2>|raw <ch> <id> [hex..] | uart | rc\r\n");
     dbg_print("[SERVO_TEST] usage: pick status|learn <0..4>|run|time <n> <ms>|open <p>|close <p>|auto on|off|vis <x> <y>|apply|save | ik status|l1|l2|learn|xy|vis|depth|k|dy|yawk|save | vis | w25 id|test\r\n");
     dbg_print("[SERVO_TEST] usage: wp <0..4> <sh> <el>   set pick waypoint by pulse numbers, no servo read needed\r\n");
-    dbg_print("[SERVO_TEST] usage: avoid status|on|off|run|app <mm>|shift <mm>|fwd <mm>|side left|right|unit cm|mm|wheel <mm>|odo|calib <mm>   front TF-mini sidestep\r\n");
+    dbg_print("[SERVO_TEST] usage: diag | avoid status|on|off|run|app <mm>|shift <mm>|fwd <mm>|side left|right|unit cm|mm|wheel <mm>|odo|calib <mm>   front TF-mini sidestep\r\n");
 }
 
 /* 行组装。USART10 中断和 USB 中断都会调，所以进临界区。 */
@@ -643,8 +659,12 @@ static void console_rx_byte(char ch)
             servo_test_msg_t msg;
             memcpy(msg.line, s_line, s_line_len);
             msg.line[s_line_len] = '\0';
+            s_rx_lines++;
             if (s_queue != NULL) {
-                (void)xQueueSendFromISR(s_queue, &msg, NULL);
+                if (xQueueSendFromISR(s_queue, &msg, NULL) == pdTRUE) s_rx_enq++;
+                else s_rx_drop++;
+            } else {
+                s_rx_drop++;
             }
             s_line_len = 0U;
         }

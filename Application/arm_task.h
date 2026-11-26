@@ -126,6 +126,9 @@ typedef struct {
     uint32_t            vis_tick;
     uint8_t             manual;                    /* 1 = 控制台 mode manual：只放开机械臂，底盘锁零 */
     uint8_t             chassis_run;               /* 1 = chassis line 运行中，机械臂命令拒绝 */
+    uint32_t            reject_count;
+    int32_t             reject_code;
+    char                reject_why[40];
 } arm_ctrl_t;
 
 extern arm_ctrl_t arm_ctrl;
@@ -181,5 +184,7 @@ void arm_ik_cmd(const char *sub, const char *a1, const char *a2);
 void arm_pick_toggle(void);        /* 三击：开始 / 停止死程序 */
 int  arm_pick_set(uint8_t n, uint16_t shoulder, uint16_t elbow);   /* 控制台 wp：按数字设路点，不读舵机 */
 void arm_pick_remote_trig(void);   /* 底盘任务：巡线中摇杆拨动 -> 触发/停止表演 */
+void arm_diag_note_reject(int32_t code, const char *why);
+void arm_diag_print(void);         /* 控制台 diag：门控/阈值/反馈/轨迹/逆解/日志健康快照 */
 
 #endif /* __ARM_TASK_H__ */

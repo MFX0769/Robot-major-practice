@@ -24,6 +24,16 @@ typedef struct {
 } dbg_msg_t;
 
 static QueueHandle_t s_queue;
+static volatile uint32_t s_enqueued, s_dropped, s_truncated, s_uart_tx, s_uart_timeout;
+
+void dbg_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *trunc, uint32_t *tx, uint32_t *timeout)
+{
+    if (enq != NULL) *enq = s_enqueued;
+    if (drop != NULL) *drop = s_dropped;
+    if (trunc != NULL) *trunc = s_truncated;
+    if (tx != NULL) *tx = s_uart_tx;
+    if (timeout != NULL) *timeout = s_uart_timeout;
+}
 
 void dbg_init(void)
 {
@@ -46,15 +56,18 @@ int dbg_print(const char *fmt, ...)
     va_end(args);
     if (len <= 0) return 0;
     n = (len >= (int)sizeof(buf)) ? (uint16_t)(sizeof(buf) - 1U) : (uint16_t)len;
+    if ((uint16_t)len != n) s_truncated++;
 
     if (s_queue != NULL && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
         dbg_msg_t msg;
         msg.len = n;
         memcpy(msg.data, buf, n);
-        (void)xQueueSend(s_queue, &msg, 0);      /* 满则丢，绝不阻塞控制任务 */
+        if (xQueueSend(s_queue, &msg, 0) == pdPASS) s_enqueued++;
+        else s_dropped++;                       /* 诊断可见：日志满了是丢日志，不是控制任务卡住 */
         usb_tx_send((const uint8_t *)buf, n);    /* 第二出口，尽力而为 */
     } else {
-        (void)HAL_UART_Transmit(&huart10, (uint8_t *)buf, n, 20U);
+        if (HAL_UART_Transmit(&huart10, (uint8_t *)buf, n, 20U) != HAL_OK) s_uart_timeout++;
+        else s_uart_tx++;
     }
     return (int)n;
 }
@@ -69,7 +82,8 @@ void dbg_task(void const *argu)
     for (;;) {
         if (s_queue != NULL &&
             xQueueReceive(s_queue, &msg, portMAX_DELAY) == pdPASS) {
-            (void)HAL_UART_Transmit(&huart10, (uint8_t *)msg.data, msg.len, 100U);
+            if (HAL_UART_Transmit(&huart10, (uint8_t *)msg.data, msg.len, 100U) == HAL_OK) s_uart_tx++;
+            else s_uart_timeout++;
         } else {
             vTaskDelay(pdMS_TO_TICKS(100));
         }

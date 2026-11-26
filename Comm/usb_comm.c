@@ -50,6 +50,7 @@ void comm_usb_init(void)
 * @return None.
 */
 /* 2026-11-22: single owner of CDC_Transmit_HS. vofa/dbg enqueue via usb_tx_send. */
+static uint32_t s_enq, s_drop, s_tx_count, s_busy_drop;   /* 必须在 usb_tx_send 首次调用前定义 */
 
 /* unified USB tx enqueue (2026-11-22): non-blocking, drop-on-full */
 void usb_tx_send(const uint8_t *buf, uint16_t len)
@@ -59,11 +60,20 @@ void usb_tx_send(const uint8_t *buf, uint16_t len)
     if (len > USB_TX_MSG_DATA_LEN) len = USB_TX_MSG_DATA_LEN;
     m.len = len;
     memcpy(m.data, buf, len);
-    (void)xQueueSend(USB_tx_queue, &m, 0);   /* full -> drop (keeps 1kHz vofa alive) */
+    if (xQueueSend(USB_tx_queue, &m, 0) == pdPASS) s_enq++;
+    else s_drop++;                       /* full -> drop; count it so print overload is diagnosable */
 }
 extern USBD_HandleTypeDef hUsbDeviceHS;
 static usb_tx_msg_t s_tx[2];
 static uint8_t s_tx_idx;
+
+void usb_tx_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *tx, uint32_t *busy_drop)
+{
+    if (enq != NULL) *enq = s_enq;
+    if (drop != NULL) *drop = s_drop;
+    if (tx != NULL) *tx = s_tx_count;
+    if (busy_drop != NULL) *busy_drop = s_busy_drop;
+}
 
 /* USB 还在读上一帧的缓冲区时返回 1 */
 static uint8_t cdc_busy(void)
@@ -95,8 +105,10 @@ void Task_USB_Transmit(void const *arg)
     }
     if (cdc_busy() == 0U)
     {
-      (void)CDC_Transmit_HS(msg->data, msg->len);   /* 未枚举时返回失败，直接丢 */
+      if (CDC_Transmit_HS(msg->data, msg->len) == USBD_OK) s_tx_count++;
+      else s_busy_drop++;                 /* 未枚举/端点未就绪：明确计数，不假装发出去了 */
     }
+    else s_busy_drop++;
     s_tx_idx ^= 1U;
   }
 }

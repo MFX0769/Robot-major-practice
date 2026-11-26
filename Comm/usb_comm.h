@@ -45,5 +45,6 @@ typedef struct {
 } usb_tx_msg_t;
 
 void usb_tx_send(const uint8_t *buf, uint16_t len);
+void usb_tx_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *tx, uint32_t *busy_drop);
 
 #endif

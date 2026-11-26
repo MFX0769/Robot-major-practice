@@ -75,6 +75,7 @@ int main(void)
     uint8_t *f;
     uint8_t big[64];
     uint32_t n0, i, expect18;
+    uint32_t frames, bad, drop, last_ms, max_ms;
 
     sim_reset();
     g_verbose = (getenv("SIM_VERBOSE") != NULL);
@@ -238,6 +239,28 @@ int main(void)
     CHECK(dbus_rx_count() == n0 + 9U, "9 frames arrived");
     CHECK(drain() == 8, "8 decoded, the 9th was dropped (the mode task drains every 5ms, a frame comes every 14ms)");
     CHECK(drain() == 0, "queue empty");
+    dbus_stats_get(&frames, &bad, &drop, &last_ms, &max_ms);
+    CHECK(drop >= 1U && last_ms == 0U, "queue overflow is counted; back-to-back frames have 0ms spacing");
+    sim_advance(14U);
+    uart_deliver(f, 18U);
+    drain();
+    dbus_stats_get(&frames, &bad, &drop, &last_ms, &max_ms);
+    CHECK(last_ms >= 14U && last_ms <= 17U, "after a spaced frame, interval timing becomes meaningful");
+
+    /* ------------------------------------------------------------------ */
+    section("D14 DBUS 统计：坏帧长和真实帧间隔（接收机约 14ms/帧）");
+    bad = 0U;
+    for (i = 0U; i < 10U; i++) uart_deliver(f, 17U);
+    dbus_stats_get(&frames, &bad, &drop, &last_ms, &max_ms);
+    CHECK(bad >= 10U, "ten 17-byte bursts counted as bad frames");
+    for (i = 0U; i < 4U; i++) {
+        sim_advance(14U);
+        uart_deliver(f, 18U);
+        drain();
+    }
+    dbus_stats_get(&frames, &bad, &drop, &last_ms, &max_ms);
+    CHECK(last_ms >= 14U && last_ms <= 17U && max_ms >= last_ms,
+          "valid frames record their real spacing (14ms simulated -> last/max interval)");
 
     printf("\n%d checks, %d failed\n", g_pass + g_fail, g_fail);
     return (g_fail == 0) ? 0 : 1;

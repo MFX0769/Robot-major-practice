@@ -10,6 +10,7 @@
 #include "prot_xb_servo.h"
 #include "prot_servo.h"
 #include "prot_8irtraking.h"
+#include "usb_comm.h"
 
 static bsp_can_stat_t s_can[2];
 volatile uint32_t ir_isr_bytes;
@@ -23,6 +24,15 @@ uint32_t g_wdg_bits;
 uint32_t g_sbus_calls;
 uint32_t g_w25_erase_calls;
 uint32_t g_xb_raw_calls;
+
+/* 测试台不编 USB 发送任务：统计接口给 0，真实发送路径由固件编译和上车验证 */
+void usb_tx_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *tx, uint32_t *busy_drop)
+{
+    if (enq != NULL) *enq = 0U;
+    if (drop != NULL) *drop = 0U;
+    if (tx != NULL) *tx = 0U;
+    if (busy_drop != NULL) *busy_drop = 0U;
+}
 
 /* ---- bsp_can ---- */
 void bsp_can_stat_get(can_channel_e ch, bsp_can_stat_t *out)
@@ -48,11 +58,19 @@ void sim_can_set(int ch, uint32_t tx, uint32_t rx, uint8_t tec, uint8_t bo, uint
 /* ---- DBUS 查询（servo_test.c 的 uart 命令用）。真的 prot_dbus.c 也定义了这几个，
    所以 test_dbus 不编本文件的这一段：用 SIM_NO_DBUS_STUBS 区分 ---- */
 #ifndef SIM_NO_DBUS_STUBS
-static uint32_t s_dbus_bytes, s_dbus_frames;
+static uint32_t s_dbus_bytes, s_dbus_frames, s_dbus_bad, s_dbus_drop, s_dbus_last, s_dbus_max;
 static uint8_t s_dbus_online;
 uint32_t dbus_rx_bytes(void) { return s_dbus_bytes; }
 uint32_t dbus_rx_count(void) { return s_dbus_frames; }
 uint8_t dbus_online(void) { return s_dbus_online; }
+void dbus_stats_get(uint32_t *frames, uint32_t *bad, uint32_t *drop, uint32_t *last_ms, uint32_t *max_ms)
+{
+    if (frames != NULL) *frames = s_dbus_frames;
+    if (bad != NULL) *bad = s_dbus_bad;
+    if (drop != NULL) *drop = s_dbus_drop;
+    if (last_ms != NULL) *last_ms = s_dbus_last;
+    if (max_ms != NULL) *max_ms = s_dbus_max;
+}
 void sim_dbus_set(uint32_t bytes, uint32_t frames, uint8_t online)
 {
     s_dbus_bytes = bytes;

@@ -3,6 +3,9 @@
 #include "servo_test.h"
 #include "prot_sbus.h"
 #include "chassis_task.h"
+#include "prot_dbus.h"
+#include "prot_8irtraking.h"
+#include "usb_comm.h"
 
 uint8_t s_config_allowed_for_arm_test;
 
@@ -21,3 +24,31 @@ void servo_test_process(void) {}
 void servo_test_poll(void) {}
 void servo_test_set_config_allowed(uint8_t allowed) { s_config_allowed_for_arm_test = allowed; }
 uint8_t servo_test_config_active(void) { return s_config_allowed_for_arm_test; }
+void servo_test_stats_get(uint32_t *bytes, uint32_t *lines, uint32_t *enq, uint32_t *drop)
+{
+    if (bytes != NULL) *bytes = 0U;
+    if (lines != NULL) *lines = 0U;
+    if (enq != NULL) *enq = 0U;
+    if (drop != NULL) *drop = 0U;
+}
+uint8_t lock_flag;
+
+/* 机械臂/按键测试不编这些任务：诊断接口给确定值即可 */
+void dbus_stats_get(uint32_t *frames, uint32_t *bad, uint32_t *drop, uint32_t *last_ms, uint32_t *max_ms)
+{
+    if (frames != NULL) *frames = 0U;
+    if (bad != NULL) *bad = 0U;
+    if (drop != NULL) *drop = 0U;
+    if (last_ms != NULL) *last_ms = 0U;
+    if (max_ms != NULL) *max_ms = 0U;
+}
+void usb_tx_stats_get(uint32_t *enq, uint32_t *drop, uint32_t *tx, uint32_t *busy_drop)
+{
+    if (enq != NULL) *enq = 0U;
+    if (drop != NULL) *drop = 0U;
+    if (tx != NULL) *tx = 0U;
+    if (busy_drop != NULL) *busy_drop = 0U;
+}
+prot_8irtraking_data_t s_arm_test_line;
+uint32_t dbus_rx_count(void) { return 0U; }
+uint8_t dbus_online(void) { return 0U; }
