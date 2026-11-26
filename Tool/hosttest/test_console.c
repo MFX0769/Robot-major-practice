@@ -629,6 +629,11 @@ int main(int argc, char **argv)
     CHECK(sim_out_has("pid motor set kp=1.00 ki=2.00 kd=3.00"), "chassis pid set");
     cmd("chassis pid line 4 0 0");
     CHECK(sim_out_has("pid line set kp=4.00"), "line pid set");
+    cmd("chassis pid line -20 0 0");
+    CHECK(sim_out_has("pid line set kp=-20.00") && chassis_dbg_line_pid_get()->p == -20.0f,
+          "only the line tracker accepts a negative Kp for live direction/sign tuning");
+    cmd("chassis pid line -12 0 0");
+    CHECK(chassis_dbg_line_pid_get()->p == -12.0f, "line Kp restored to the researched default");
     cmd("rc");
     CHECK(sim_out_has("[RC] ch1=") && sim_out_has("lock="), "rc dumps raw channels, switches and lock");
     cmd("chassis map");

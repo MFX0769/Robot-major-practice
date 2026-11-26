@@ -214,7 +214,8 @@ static void servo_test_parse_line(const char *line)
             arg = strtok(NULL, " ");
             if (t2 == NULL || t3 == NULL || arg == NULL || strtok(NULL, " ") != NULL) goto usage;
             if (!parse_float(t2, &kp) || !parse_float(t3, &ki) || !parse_float(arg, &kd)) goto usage;
-            if (kp < 0.0f || kp > 500.0f || ki < 0.0f || ki > 500.0f || kd < 0.0f || kd > 500.0f) goto usage;
+            if (kp < -500.0f || kp > 500.0f || ki < 0.0f || ki > 500.0f || kd < 0.0f || kd > 500.0f ||
+                (kp < 0.0f && p != chassis_dbg_line_pid_get())) goto usage;
             p->p = kp;
             p->i = ki;
             p->d = kd;
